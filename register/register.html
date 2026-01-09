@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <title>Regisztráció – F1 Fan Club</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #000 0%, #1a1a1a 40%, #111 100%);
+      color: #eee;
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .bg-lines {
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      background: repeating-linear-gradient(
+        60deg,
+        rgba(225, 6, 0, 0.1) 0px,
+        rgba(225, 6, 0, 0.1) 2px,
+        transparent 2px,
+        transparent 10px
+      );
+      animation: slide 10s linear infinite;
+      opacity: 0.2;
+      z-index: -1;
+    }
+
+    @keyframes slide {
+      from { transform: translateX(0); }
+      to { transform: translateX(-200px); }
+    }
+
+    .register-box {
+      background: #151515;
+      padding: 40px 35px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(225, 6, 0, 0.3);
+      width: 360px;
+      text-align: center;
+      border-top: 2px solid #e10600;
+    }
+
+    .logo-title {
+      font-size: 26px;
+      color: white;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-title img {
+      width: 40px;
+      filter: drop-shadow(0 0 6px rgba(225, 6, 0, 0.8));
+    }
+
+    h2 {
+      margin: 0 0 20px;
+      color: #e10600;
+      font-weight: 600;
+    }
+
+    .field-label {
+      text-align: left;
+      font-size: 0.85rem;
+      color: #ccc;
+      margin-bottom: 4px;
+      margin-top: 10px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      border: none;
+      border-radius: 6px;
+      background: #2b2b2b;
+      color: white;
+      font-size: 14px;
+      outline: none;
+      transition: 0.2s;
+    }
+
+    input:focus, select:focus {
+      background: #333;
+      box-shadow: 0 0 8px #e10600;
+    }
+
+    select {
+      cursor: pointer;
+    }
+
+    input[type="submit"] {
+      background: #e10600;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+
+    input[type="submit"]:hover {
+      background: #ff2a2a;
+      transform: scale(1.03);
+    }
+
+    .back {
+      display: block;
+      margin-top: 15px;
+      color: #ccc;
+      text-decoration: none;
+      font-size: 14px;
+      transition: 0.2s;
+    }
+
+    .back:hover {
+      color: #fff;
+      text-shadow: 0 0 6px rgba(255,255,255,0.4);
+    }
+
+    .hint {
+      font-size: 0.75rem;
+      color: #888;
+      text-align: left;
+      margin-top: -6px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="bg-lines"></div>
+
+<form class="register-box" action="/register/register.php" method="post">
+  
+  <div class="logo-title">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg" alt="F1 Logo">
+    Fan Club
+  </div>
+
+  <h2>Regisztráció</h2>
+
+  <div class="field-label">Felhasználónév</div>
+  <input type="text" name="username" placeholder="Felhasználónév" required>
+
+  <div class="field-label">Kedvenc csapat</div>
+  <select name="fav_team">
+    <option value="">Nem választok csapatot</option>
+    <option value="Red Bull">Oracle Red Bull Racing</option>
+    <option value="Ferrari">Scuderia Ferrari</option>
+    <option value="Mercedes">Mercedes-AMG Petronas</option>
+    <option value="McLaren">McLaren</option>
+    <option value="Aston Martin">Aston Martin</option>
+    <option value="Alpine">Alpine</option>
+    <option value="Williams">Williams</option>
+    <option value="RB">RB (Visa Cash App RB)</option>
+    <option value="Sauber">Sauber</option>
+    <option value="Haas">Haas</option>
+  </select>
+  <div class="hint">Válaszd ki, kivel szurkolsz – a neved színe ezt fogja tükrözni 😉</div>
+
+  <div class="field-label">Email cím</div>
+  <input type="email" name="email" placeholder="Email" required>
+
+  <div class="field-label">Jelszó</div>
+  <input type="password" name="password" placeholder="Jelszó" required>
+
+  <div class="field-label">Jelszó megerősítése</div>
+  <input type="password" name="password_confirm" placeholder="Jelszó mégegyszer" required>
+
+  <input type="submit" value="Regisztrálok">
+
+  <a href="/login/login.html" class="back">Már van fiókod? Bejelentkezés →</a>
+  <a href="/index.php" class="back">← Vissza a főoldalra</a>
+  
+</form>
+
+</body>
+</html>

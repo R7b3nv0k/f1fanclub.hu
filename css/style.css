@@ -1,0 +1,1054 @@
+/*======================================
+   1. ALAP STÍLUSOK (GLOBAL)
+======================================*/
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background:
+        radial-gradient(circle at 0% 0%, rgba(225, 6, 0, 0.35), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(30, 65, 255, 0.35), transparent 55%),
+        linear-gradient(135deg, #020202, #111);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    color: #f5f5f5;
+    text-align: center; /* Alapértelmezett középre igazítás */
+}
+
+/* Képek alapbeállítása */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/*======================================
+   2. HEADER & NAVIGÁCIÓ
+======================================*/
+header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    padding: 10px 30px;
+    border-bottom: 1px solid rgba(225, 6, 0, 0.7);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.8);
+}
+
+/* Logo */
+.logo-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    font-size: 1.8rem;
+    letter-spacing: 1px;
+    color: #fff;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(225, 6, 0, 0.6);
+}
+
+.f1-logo {
+    height: 35px;
+    width: auto;
+    filter: drop-shadow(0 0 4px rgba(225, 6, 0, 0.8));
+    transform: translateY(1px);
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.logo-title span {
+    background: linear-gradient(90deg, #e10600, #ffffff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 2px;
+}
+
+.logo-title:hover .f1-logo {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 8px rgba(225, 6, 0, 0.9));
+}
+
+/* Navigáció */
+header nav {
+    display: flex;
+    gap: 20px;
+}
+
+header nav a {
+    position: relative;
+    color: #ddd;
+    padding: 10px 16px;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+
+header nav a:hover {
+    background: rgba(225, 6, 0, 0.15);
+    color: #fff;
+    border-radius: 999px;
+    transform: translateY(-1px);
+}
+
+header nav a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -3px;
+    width: 0%;
+    height: 2px;
+    background: #e10600;
+    transition: width 0.3s;
+}
+
+header nav a:hover::after {
+    width: 100%;
+}
+
+/* Auth Area (Jobb oldal) */
+.auth {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.welcome-text {
+    font-size: 0.9rem;
+    color: #f5f5f5;
+}
+
+/*======================================
+   3. GOMBOK (BUTTONS)
+======================================*/
+.btn {
+    background: linear-gradient(135deg, #e10600, #ff4b2b);
+    color: white;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: inline-block;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 15px rgba(225, 6, 0, 0.7);
+    opacity: 0.95;
+}
+
+.btn-ghost {
+    background: transparent;
+    border: 1px solid #e10600;
+}
+
+.btn-ghost:hover {
+    background: rgba(225, 6, 0, 0.2);
+}
+
+/* Avatar kép */
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #e10600;
+}
+
+/*======================================
+   4. PROFIL KÁRTYA (POPUP)
+======================================*/
+.profile-card {
+    display: none; /* JS kapcsolja be */
+    position: fixed;
+    top: 100px;
+    right: 30px;
+    background: #111;
+    padding: 20px;
+    width: 300px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px #000;
+    z-index: 9999;
+    text-align: center;
+    border: 1px solid #444;
+}
+
+.profile-card h3 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+}
+
+.profile-card img {
+    width: 180px;
+    height: 180px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: 2px solid #e10600;
+    margin-bottom: 12px;
+}
+
+/*======================================
+   5. HOME PAGE: TEAMS & DRIVERS SCROLL
+======================================*/
+#teams, #drivers {
+    margin: 50px 0;
+    display: flex;
+    width: 100%;
+}
+
+#drivers {
+    background-color: #1a1a1a;
+}
+
+.team-container, .drivers-container {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Scroll Wrappers */
+.teams-wrapper, #drivers-wrapper {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    gap: 30px;
+    scrollbar-width: none; /* Firefox */
+    margin-left: 100px;
+    margin-right: 100px;
+    scroll-snap-type: x mandatory;
+}
+
+.teams-wrapper::-webkit-scrollbar,
+#drivers-wrapper::-webkit-scrollbar {
+    display: none; /* Chrome */
+}
+
+/* Anchor positioning for scroll buttons (Experimental CSS) */
+.teams-wrapper { anchor-name: --teamsshowcase; }
+#drivers-wrapper { anchor-name: --driversshowcase; }
+
+/* Közös scroll gomb stílus */
+.teams-wrapper::scroll-button(right),
+.teams-wrapper::scroll-button(left),
+#drivers-wrapper::scroll-button(right),
+#drivers-wrapper::scroll-button(left) {
+    content: '>';
+    border: none;
+    background: #e10600;
+    color: white;
+    font-size: 32px;
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    position: fixed;
+    position-area: right center;
+    translate: 50%;
+}
+
+.teams-wrapper::scroll-button(left),
+#drivers-wrapper::scroll-button(left) {
+    content: '<';
+    position-area: left center;
+    translate: -50%;
+}
+
+.teams-wrapper::scroll-button(right) { position-anchor: --teamsshowcase; }
+.teams-wrapper::scroll-button(left) { position-anchor: --teamsshowcase; }
+#drivers-wrapper::scroll-button(right) { position-anchor: --driversshowcase; }
+#drivers-wrapper::scroll-button(left) { position-anchor: --driversshowcase; }
+
+
+/* Team Card */
+.team-card {
+    scroll-snap-align: start;
+    flex: 0 0 380px;
+    height: 380px;
+    background: radial-gradient(circle at 0 0, rgba(225, 6, 0, 0.15), transparent 60%), #101010;
+    border-radius: 20px;
+    margin: 0 25px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    transition: all 0.25s ease;
+}
+
+.team-card img {
+    max-width: 220px;
+    max-height: 120px;
+    object-fit: contain;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.7));
+    transition: transform 0.25s ease;
+}
+
+.team-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.9);
+    border-color: rgba(225, 6, 0, 0.6);
+}
+
+.team-card:hover img {
+    transform: scale(1.05);
+}
+
+.team-card h3 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+}
+
+/* Drivers Card */
+.drivers-card {
+    scroll-snap-align: start;
+    flex: 0 0 400px;
+    margin-top: 25px;
+    height: 450px;
+    background: radial-gradient(circle at 0 100%, rgba(30, 65, 255, 0.25), transparent 55%), #151515;
+    border-radius: 22px;
+    margin-left: 50px;
+    margin-right: 50px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    cursor: pointer;
+    overflow: hidden;
+    box-shadow: 0 14px 35px rgba(0, 0, 0, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    transition: all 0.25s ease;
+}
+
+.drivers-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 22px 55px rgba(0, 0, 0, 1);
+    border-color: rgba(30, 65, 255, 0.7);
+}
+
+/* Driver Specifics (Home Page) */
+.picture_show {
+    flex: auto;
+    height: 200px;
+    width: 500px;
+    display: grid;
+}
+
+.nametag {
+    position: relative;
+    z-index: 3;
+    width: 500px;
+    text-align: center;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 10px 0;
+}
+
+#MAX_V_nametag { background-color: #1E41FF; color: white; }
+#picture_show_MAX_V { background-image: linear-gradient(0deg, #2b2b2b, #1E41FF); opacity: 0.75; }
+
+.driver-img { z-index: 2; transform: translate(60px, 0px); }
+.team-logo { z-index: 1; transform: translate(10px, -200px); }
+
+
+/*======================================
+   6. CHAMPIONSHIP TABLES
+======================================*/
+.table-container {
+    width: min(1000px, 90%);
+    margin: 40px auto;
+    background: linear-gradient(135deg, #181818, #121212);
+    padding: 24px 26px 28px;
+    border-radius: 18px;
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.8), 0 0 8px rgba(225, 6, 0, 0.35);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Halvány rács háttér */
+.table-container::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(120deg, rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(60deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Színes felső szegélyek */
+.table-container:first-of-type { border-top: 3px solid #e10600; }
+.table-container:nth-of-type(2) { border-top: 3px solid #00D2BE; }
+
+.table-container h2 {
+    color: #e10600;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 1.4rem;
+    position: relative;
+    z-index: 1;
+}
+
+.table-container h2::after {
+    content: "";
+    display: block;
+    width: 80px;
+    height: 3px;
+    margin: 8px auto 0;
+    background: linear-gradient(90deg, #e10600, #ff4a4a);
+    border-radius: 10px;
+}
+
+/* Táblázat */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 0.95rem;
+    position: relative;
+    z-index: 1;
+}
+
+table thead {
+    background: linear-gradient(90deg, #3a0202, #e10600 40%, #3a0202);
+}
+
+table th {
+    padding: 10px 8px;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    font-size: 0.85rem;
+}
+
+table td {
+    padding: 10px 8px;
+    border-bottom: 1px solid #2d2d2d;
+}
+
+table th:first-child, table td:first-child,
+table th:last-child, table td:last-child {
+    text-align: center;
+}
+
+table tbody tr {
+    transition: background 0.18s ease, transform 0.12s ease;
+}
+
+table tbody tr:nth-child(even):not(.champion-row):not(.driver-champion) {
+    background: rgba(255, 255, 255, 0.02);
+}
+table tbody tr:nth-child(odd):not(.champion-row):not(.driver-champion) {
+    background: rgba(0, 0, 0, 0.2);
+}
+table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.06);
+    transform: translateY(-1px);
+}
+
+/* Kiemelt Bajnokok */
+.champion-row, .driver-champion {
+    background: linear-gradient(90deg, #d4af37, #f6e27a);
+    color: #000;
+    font-weight: 700;
+    box-shadow: 0 0 18px rgba(255, 215, 0, 0.7);
+}
+
+.champion-row:hover, .driver-champion:hover {
+    background: linear-gradient(90deg, #e6c45a, #fff3aa);
+}
+
+.champion-row td:nth-child(2), .driver-champion td:nth-child(2) {
+    font-weight: 800;
+}
+.champion-row td:nth-child(2)::before, .driver-champion td:nth-child(2)::before {
+    content: "🏆 ";
+    margin-right: 4px;
+}
+
+.placeholder-row {
+    color: #999;
+    font-style: italic;
+}
+
+
+/*======================================
+   7. NEWS PAGE STYLES
+======================================*/
+main.news-main {
+    padding: 40px 20px 60px;
+    text-align: left; /* Hírekhez balra igazítás */
+}
+/* Főcím középre a híreknél */
+.news-main h1, .news-subtitle, .no-news {
+    text-align: center;
+}
+
+.news-main h1 {
+    font-size: 2.4rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 0 0 12px rgba(225, 6, 0, 0.7);
+    margin-bottom: 10px;
+}
+
+.news-subtitle {
+    color: #bbb;
+    max-width: 700px;
+    margin: 0 auto 30px;
+    font-size: 0.95rem;
+}
+
+.news-section {
+    max-width: 1100px;
+    margin: 0 auto 40px;
+}
+
+.news-section-title {
+    text-transform: uppercase;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    color: #e10600;
+}
+
+.news-section-title::after {
+    content: "";
+    display: block;
+    width: 80px;
+    height: 3px;
+    margin-top: 5px;
+    background: linear-gradient(90deg, #e10600, #ff4a4a);
+    border-radius: 999px;
+}
+
+/* Hírkártyák */
+.news-card {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.news-thumb {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 40%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.25;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.news-content {
+    position: relative;
+    z-index: 2;
+    max-width: 60%;
+}
+
+.general-title, .featured-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #fff;
+    text-shadow: 0 0 8px rgba(255,0,0,0.5);
+}
+
+.full-content {
+    max-height: 0;
+    overflow: hidden;
+    padding: 0;
+    transition: max-height .45s ease, padding .3s ease;
+    opacity: 0.9;
+    font-size: 0.9rem;
+    color: #ddd;
+}
+
+.news-card.open .full-content {
+    padding-top: 10px;
+}
+
+/* Reaction Bar */
+.reaction-bar {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+}
+
+.react-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(0,0,0,0.4);
+    color: #fff;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all .15s ease;
+}
+
+.react-btn span.count {
+    min-width: 16px;
+    text-align: right;
+    font-weight: 600;
+}
+
+.react-btn.like { border-color: rgba(0,255,120,0.4); }
+.react-btn.dislike { border-color: rgba(255,80,80,0.4); }
+
+.react-btn:hover {
+    background: rgba(255,255,255,0.08);
+    transform: translateY(-1px);
+    box-shadow: 0 0 8px rgba(0,0,0,0.7);
+}
+
+/* Featured & General Grids */
+.featured-grid { display: grid; gap: 20px; }
+
+.featured-card {
+    background: linear-gradient(135deg, #1b1b1b, #101010);
+    border-radius: 16px;
+    padding: 18px 20px;
+    box-shadow: 0 0 25px rgba(0,0,0,0.8), 0 0 8px rgba(225, 6, 0, 0.35);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border: 1px solid rgba(255,255,255,0.04);
+}
+
+.general-grid {
+    display: grid;
+    gap: 18px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.general-card {
+    background: #171717;
+    border-radius: 14px;
+    padding: 14px 16px 16px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.7);
+    border: 1px solid rgba(255,255,255,0.04);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: all 0.12s ease;
+}
+
+.general-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 20px rgba(0,0,0,0.9);
+    background: #1e1e1e;
+}
+
+.general-meta, .featured-meta {
+    font-size: 0.75rem;
+    color: #999;
+}
+/*-----------------------------------NEXT GP-----------------------------------*/
+/* ===== NEXT RACE SECTION ===== */
+.next-race-section {
+  background: var(--gradient-dark);
+  position: relative;
+  overflow: hidden;
+}
+
+.next-race-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, var(--f1-red) 0%, transparent 70%);
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.countdown-timer {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.countdown-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--f1-dark-secondary);
+  padding: 1rem 1.5rem;
+  border-radius: var(--border-radius-md);
+  min-width: 80px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.countdown-value {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--f1-red);
+  line-height: 1;
+}
+
+.countdown-label {
+  font-size: 0.9rem;
+  color: var(--f1-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 5px;
+}
+
+.race-card {
+  background: var(--f1-dark-secondary);
+  border-radius: var(--border-radius-lg);
+  padding: 2.5rem;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.race-location {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  margin-bottom: 3rem;
+}
+
+.country-info {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.country-flag-large {
+  width: 120px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: var(--border-radius-sm);
+  box-shadow: var(--shadow-md);
+}
+
+.location-details {
+  text-align: left;
+}
+
+.race-name {
+  font-size: 2rem;
+  color: var(--f1-text);
+  margin-bottom: 0.5rem;
+}
+
+.circuit-name {
+  font-size: 1.2rem;
+  color: var(--f1-text-secondary);
+  margin-bottom: 1rem;
+  font-style: italic;
+}
+
+.race-date {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--f1-red);
+  font-weight: 600;
+}
+
+.circuit-visual {
+  position: relative;
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  height: 200px;
+}
+
+.circuit-map {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.circuit-visual:hover .circuit-map {
+  transform: scale(1.05);
+}
+
+.circuit-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.circuit-length,
+.circuit-laps {
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.race-schedule {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: var(--border-radius-md);
+  padding: 2rem;
+}
+
+.schedule-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.schedule-header h4 {
+  font-size: 1.5rem;
+}
+
+.timezone {
+  color: var(--f1-text-secondary);
+  font-size: 0.9rem;
+}
+
+.schedule-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+}
+
+.session-card {
+  background: var(--f1-card-bg);
+  border-radius: var(--border-radius-md);
+  padding: 1.5rem 1rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.session-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--f1-red);
+  box-shadow: var(--shadow-md);
+}
+
+.session-icon {
+  font-size: 1.5rem;
+  color: var(--f1-red);
+  margin-bottom: 0.8rem;
+}
+
+.session-card h5 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.session-time {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--f1-text);
+}
+
+.session-date {
+  font-size: 0.9rem;
+  color: var(--f1-text-secondary);
+}
+
+.highlight-session {
+  background: rgba(225, 6, 0, 0.1);
+  border-color: var(--f1-red);
+}
+
+.main-session {
+  background: var(--gradient-primary);
+  color: white;
+}
+
+.main-session .session-icon {
+  color: white;
+}
+
+/* Mobil nézet a hírekhez */
+@media (max-width: 768px) {
+    .news-content { max-width: 100%; }
+    .news-thumb { display: none; }
+    
+    header { flex-wrap: wrap; gap: 10px; padding: 10px 16px; }
+    header nav { width: 100%; justify-content: center; flex-wrap: wrap; }
+    .auth { flex-direction: row; justify-content: flex-end; }
+}
+
+/* ==================================
+   PADDOCK TALK (COMMENTS)
+================================== */
+.comments-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 15px;
+}
+
+.comments-title {
+    font-size: 1rem;
+    color: #e10600;
+    margin-bottom: 15px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Komment lista */
+.comments-list {
+    max-height: 300px; /* Görgethető ha sok van */
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 15px;
+    padding-right: 5px;
+}
+
+/* Scrollbar a kommentekhez */
+.comments-list::-webkit-scrollbar { width: 6px; }
+.comments-list::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+
+.comment-item {
+    display: flex;
+    gap: 12px;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+.comment-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid transparent; /* JS színezi majd */
+    flex-shrink: 0;
+}
+
+.comment-bubble {
+    background: #252525;
+    padding: 10px 14px;
+    border-radius: 0 12px 12px 12px;
+    position: relative;
+    font-size: 0.9rem;
+    color: #ddd;
+    width: 100%;
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+    font-size: 0.75rem;
+}
+
+.comment-user {
+    font-weight: 700;
+    color: #fff;
+}
+
+.comment-team-badge {
+    font-size: 0.7rem;
+    padding: 1px 4px;
+    border-radius: 4px;
+    margin-left: 6px;
+    background: rgba(255,255,255,0.1);
+    font-weight: normal;
+}
+
+.comment-date {
+    color: #777;
+}
+
+/* Saját komment stílusa (jobb oldalt) - Opcionális, ha chat jellegűt akarsz */
+/* .comment-item.mine { flex-direction: row-reverse; } */
+
+/* Input mező */
+.comment-form {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.comment-input {
+    flex-grow: 1;
+    background: #111;
+    border: 1px solid #333;
+    color: #fff;
+    padding: 10px;
+    border-radius: 20px;
+    resize: none;
+    height: 40px; /* Egy soros alapból */
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.2s;
+}
+
+.comment-input:focus {
+    outline: none;
+    border-color: #e10600;
+    height: 70px; /* Megnő ha írsz */
+}
+
+.comment-submit {
+    background: #e10600;
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: 0.2s;
+}
+
+.comment-submit:hover {
+    background: #ff2c2c;
+    transform: scale(1.1);
+}

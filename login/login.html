@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <title>Bejelentkezés – F1 Fan Club</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #000 0%, #1a1a1a 40%, #111 100%);
+      color: #eee;
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* F1 háttér animáció */
+    .bg-lines {
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      background: repeating-linear-gradient(
+        60deg,
+        rgba(225, 6, 0, 0.1) 0px,
+        rgba(225, 6, 0, 0.1) 2px,
+        transparent 2px,
+        transparent 10px
+      );
+      animation: slide 10s linear infinite;
+      opacity: 0.2;
+      z-index: -1;
+    }
+
+    @keyframes slide {
+      from { transform: translateX(0); }
+      to { transform: translateX(-200px); }
+    }
+
+    .login-box {
+      background: #151515;
+      padding: 40px 35px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(225, 6, 0, 0.3);
+      width: 330px;
+      text-align: center;
+      border-top: 2px solid #e10600;
+    }
+
+    .logo-title {
+      font-size: 26px;
+      color: white;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-title img {
+      width: 40px;
+      filter: drop-shadow(0 0 6px rgba(225, 6, 0, 0.8));
+    }
+
+    h2 {
+      margin: 0 0 20px;
+      color: #e10600;
+      font-weight: 600;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0 20px;
+      border: none;
+      border-radius: 6px;
+      background: #2b2b2b;
+      color: white;
+      font-size: 15px;
+      outline: none;
+      transition: 0.2s;
+    }
+
+    input:focus {
+      background: #333;
+      box-shadow: 0 0 8px #e10600;
+    }
+
+    input[type="submit"] {
+      background: #e10600;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      border-radius: 6px;
+      transition: 0.2s;
+    }
+
+    input[type="submit"]:hover {
+      background: #ff2a2a;
+      transform: scale(1.03);
+    }
+
+    .back {
+      display: block;
+      margin-top: 15px;
+      color: #ccc;
+      text-decoration: none;
+      font-size: 14px;
+      transition: 0.2s;
+    }
+
+    .back:hover {
+      color: #fff;
+      text-shadow: 0 0 6px rgba(255,255,255,0.4);
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="bg-lines"></div>
+
+<form class="login-box" action="/login/login.php" method="post">
+  
+  <div class="logo-title">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg">
+    Fan Club
+  </div>
+
+  <h2>Bejelentkezés</h2>
+
+  <input type="text" name="username" placeholder="Felhasználónév" required>
+  <input type="password" name="password" placeholder="Jelszó" required>
+<div style="text-align: left; margin-bottom: 20px; color: #ccc; font-size: 14px;">
+    <input type="checkbox" name="remember_me" id="remember_me" style="width: auto; margin: 0 5px 0 0;">
+    <label for="remember_me">Emlékezz rám</label>
+    <a href="/profile/forgot.php" style="float: right; color: #e10600; text-decoration: none;">Elfelejtett jelszó?</a>
+  </div>
+
+  <input type="submit" value="Bejelentkezem">
+
+  <a href="/index.php" class="back">← Vissza a főoldalra</a>
+  
+</form>
+
+</body>
+</html>

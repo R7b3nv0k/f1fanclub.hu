@@ -1,20 +1,20 @@
-[07-Jan-2026 09:51:39 Europe/Budapest] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'race_date' in 'WHERE' in /home/swmjndga/public_html/index.php:62
-Stack trace:
-#0 /home/swmjndga/public_html/index.php(62): mysqli->query('SELECT * FROM f...')
-#1 {main}
-  thrown in /home/swmjndga/public_html/index.php on line 62
-[07-Jan-2026 09:51:39 Europe/Budapest] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'race_date' in 'WHERE' in /home/swmjndga/public_html/index.php:62
-Stack trace:
-#0 /home/swmjndga/public_html/index.php(62): mysqli->query('SELECT * FROM f...')
-#1 {main}
-  thrown in /home/swmjndga/public_html/index.php on line 62
-[07-Jan-2026 09:55:48 Europe/Budapest] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'race_date' in 'WHERE' in /home/swmjndga/public_html/index.php:62
-Stack trace:
-#0 /home/swmjndga/public_html/index.php(62): mysqli->query('SELECT * FROM f...')
-#1 {main}
-  thrown in /home/swmjndga/public_html/index.php on line 62
 [07-Jan-2026 09:55:57 Europe/Budapest] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'race_date' in 'WHERE' in /home/swmjndga/public_html/index.php:62
 Stack trace:
 #0 /home/swmjndga/public_html/index.php(62): mysqli->query('SELECT * FROM f...')
 #1 {main}
   thrown in /home/swmjndga/public_html/index.php on line 62
+[16-Jan-2026 12:46:55 Europe/Budapest] PHP Warning:  Undefined variable $isLoggedIn in /home/swmjndga/public_html/f1fanclub/index.php on line 32
+[16-Jan-2026 12:46:55 Europe/Budapest] PHP Warning:  Undefined variable $nextRace in /home/swmjndga/public_html/f1fanclub/index.php on line 70
+[16-Jan-2026 12:46:55 Europe/Budapest] PHP Warning:  Undefined variable $nextRace in /home/swmjndga/public_html/f1fanclub/index.php on line 92
+[16-Jan-2026 12:46:55 Europe/Budapest] PHP Warning:  Undefined variable $nextRace in /home/swmjndga/public_html/f1fanclub/index.php on line 165
+[03-Feb-2026 21:31:18 Europe/Budapest] PHP Parse error:  syntax error, unexpected end of file, expecting "elseif" or "else" or "endif" in /home/swmjndga/public_html/f1fanclub/index.php on line 348
+[03-Feb-2026 21:31:18 Europe/Budapest] PHP Parse error:  syntax error, unexpected end of file, expecting "elseif" or "else" or "endif" in /home/swmjndga/public_html/f1fanclub/index.php on line 348
+[03-Feb-2026 21:31:19 Europe/Budapest] PHP Parse error:  syntax error, unexpected end of file, expecting "elseif" or "else" or "endif" in /home/swmjndga/public_html/f1fanclub/index.php on line 348
+[03-Feb-2026 21:31:19 Europe/Budapest] PHP Parse error:  syntax error, unexpected end of file, expecting "elseif" or "else" or "endif" in /home/swmjndga/public_html/f1fanclub/index.php on line 348
+[03-Feb-2026 21:31:19 Europe/Budapest] PHP Parse error:  syntax error, unexpected end of file, expecting "elseif" or "else" or "endif" in /home/swmjndga/public_html/f1fanclub/index.php on line 348
+[03-Feb-2026 21:31:19 Europe/Budapest] PHP Parse error:  syntax error, unexpected end of file, expecting "elseif" or "else" or "endif" in /home/swmjndga/public_html/f1fanclub/index.php on line 348
+[03-Feb-2026 21:31:19 Europe/Budapest] PHP Parse error:  syntax error, unexpected end of file, expecting "elseif" or "else" or "endif" in /home/swmjndga/public_html/f1fanclub/index.php on line 348
+[03-Feb-2026 21:31:26 Europe/Budapest] PHP Parse error:  syntax error, unexpected end of file, expecting "elseif" or "else" or "endif" in /home/swmjndga/public_html/f1fanclub/index.php on line 348
+[03-Feb-2026 21:31:27 Europe/Budapest] PHP Parse error:  syntax error, unexpected end of file, expecting "elseif" or "else" or "endif" in /home/swmjndga/public_html/f1fanclub/index.php on line 348
+[03-Feb-2026 21:31:43 Europe/Budapest] PHP Parse error:  syntax error, unexpected end of file, expecting "elseif" or "else" or "endif" in /home/swmjndga/public_html/f1fanclub/index.php on line 348
+[03-Feb-2026 21:31:47 Europe/Budapest] PHP Parse error:  syntax error, unexpected end of file, expecting "elseif" or "else" or "endif" in /home/swmjndga/public_html/f1fanclub/index.php on line 348

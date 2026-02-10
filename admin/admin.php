@@ -2,7 +2,7 @@
 session_start();
 
 if (!isset($_SESSION['username'])) {
-    header("Location: login.html");
+    header("Location: /f1fanclub/login/login.html");
     exit;
 }
 
@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->close();
         }
 
-        header("Location: /admin/admin.php");
+        header("Location: /f1fanclub/admin/admin.php");
         exit;
     }
 
@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->close();
         }
 
-        header("Location: admin.php");
+        header("Location: /f1fanclub/admin/admin.php");
         exit;
     }
 }
@@ -86,7 +86,7 @@ $usersResult = $conn->query("SELECT id, username, email, role, fav_team, reg_dat
 <head>
   <meta charset="UTF-8">
   <title>Admin panel - F1 Fan Club</title>
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/f1fanclub/css/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;800&display=swap" rel="stylesheet">
   <style>
     .admin-container {
@@ -156,6 +156,7 @@ $usersResult = $conn->query("SELECT id, username, email, role, fav_team, reg_dat
     .btn-delete:hover {
       background: #ff0000;
     }
+
   </style>
 </head>
 <body>
@@ -169,17 +170,17 @@ $usersResult = $conn->query("SELECT id, username, email, role, fav_team, reg_dat
   </div>
 
   <nav>
-    <a href="/index.php">Home</a>
-    <a href="/Championship/championship.php">Championship</a>
-    <a href="/teams/teams.php">Teams</a>
-    <a href="/drivers/drivers.php">Drivers</a>
-    <a href="/news/news.php">News</a>
+    <a href="/f1fanclub/index.php">Home</a>
+    <a href="/f1fanclub/Championship/championship.php">Championship</a>
+    <a href="/f1fanclub/teams/teams.php">Teams</a>
+    <a href="/f1fanclub/drivers/drivers.php">Drivers</a>
+    <a href="/f1fanclub/news/news.php">Paddock</a>
   </nav>
 
   <div class="auth">
     <div class="welcome">
       <?php if ($profile_image): ?>
-        <img src="uploads/<?= htmlspecialchars($profile_image); ?>" class="avatar" alt="Profile">
+        <img src="/f1fanclub/uploads/<?= htmlspecialchars($profile_image); ?>" class="avatar" alt="Profile">
       <?php endif; ?>
       <span class="welcome-text">
         Admin:
@@ -188,7 +189,7 @@ $usersResult = $conn->query("SELECT id, username, email, role, fav_team, reg_dat
         </span>
       </span>
     </div>
-    <a href="/logout/logout.php" class="btn">Log out</a>
+    <a href="/f1fanclub/logout/logout.php" class="btn">Log out</a>
   </div>
 </header>
 
@@ -242,6 +243,7 @@ $usersResult = $conn->query("SELECT id, username, email, role, fav_team, reg_dat
               <?php else: ?>
                 <!-- Saját magad mellé nem rakunk törlés gombot 😄 -->
                 <small> (saját fiók)</small>
+                
               <?php endif; ?>
             </div>
           </td>
@@ -250,6 +252,5 @@ $usersResult = $conn->query("SELECT id, username, email, role, fav_team, reg_dat
     </tbody>
   </table>
 </div>
-
 </body>
 </html>

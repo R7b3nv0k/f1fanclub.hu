@@ -32,7 +32,7 @@ $news = $conn->query("SELECT * FROM news ORDER BY created_at DESC");
 <head>
 <meta charset="UTF-8">
 <title>Hírkezelő – Admin</title>
-<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/f1fanclub/css/style.css">
 <style>
 .admin-container {
     width: 90%;
@@ -69,16 +69,16 @@ $news = $conn->query("SELECT * FROM news ORDER BY created_at DESC");
   </div>
 
   <nav>
-    <a href="/index.php">Home</a>
-    <a href="/Championship/championship.php">Championship</a>
-    <a href="/news/news.php">News</a>
+    <a href="/f1fanclub/index.php">Home</a>
+    <a href="/f1fanclub/Championship/championship.php">Championship</a>
+    <a href="/f1fanclub/news/news.php">News</a>
   </nav>
 </header>
 
 <div class="admin-container">
     <h2>Hírek kezelése</h2>
 
-    <a href="/news/ujhir.php" class="btn" style="margin-bottom:20px; display:inline-block;">+ Új hír</a>
+    <a href="/f1fanclub/news/ujhir.php" class="btn" style="margin-bottom:20px; display:inline-block;">+ Új hír</a>
 
     <?php while ($n = $news->fetch_assoc()): ?>
         <div class="news-item">
@@ -86,8 +86,8 @@ $news = $conn->query("SELECT * FROM news ORDER BY created_at DESC");
             <p><small><?= $n['created_at']; ?></small></p>
 
             <div class="actions">
-                <a href="/news/edit_hir.php?id=<?= $n['id']; ?>" class="btn">✏️ Szerkesztés</a>
-                <a href="/news/torol_hir.php?id=<?= $n['id']; ?>" class="btn" style="background:#c40000;"
+                <a href="f1fanclub/news/edit_hir.php?id=<?= $n['id']; ?>" class="btn">✏️ Szerkesztés</a>
+                <a href="/f1fanclub/news/torol_hir.php?id=<?= $n['id']; ?>" class="btn" style="background:#c40000;"
                    onclick="return confirm('Biztos törlöd?');">🗑️ Törlés</a>
             </div>
         </div>

@@ -56,7 +56,7 @@ if ($isLoggedIn) {
 <head>
 <meta charset="UTF-8">
 <title>Teams – F1 Fan Club</title>
-<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/f1fanclub/css/style.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;800&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -70,18 +70,18 @@ if ($isLoggedIn) {
   </div>
 
   <nav style="margin: 20px 0;">
-    <a href="/index.php" style="color:white; margin:0 10px;">Home</a>
-    <a href="/Championship/championship.php" style="color:white; margin:0 10px;">Championship</a>
-    <a href="/teams/teams.php" style="color:#e10600; margin:0 10px; font-weight:bold;">Teams</a>
-    <a href="/drivers/drivers.php" style="color:white; margin:0 10px;">Drivers</a>
-    <a href="/news/news.php" style="color:white; margin:0 10px;">News</a>
+    <a href="/f1fanclub/index.php" style="color:white; margin:0 10px;">Home</a>
+    <a href="/f1fanclub/Championship/championship.php" style="color:white; margin:0 10px;">Championship</a>
+    <a href="/f1fanclub/teams/teams.php" style="color:#e10600; margin:0 10px; font-weight:bold;">Teams</a>
+    <a href="/f1fanclub/drivers/drivers.php" style="color:white; margin:0 10px;">Drivers</a>
+    <a href="/f1fanclub/news/news.php" style="color:white; margin:0 10px;">News</a>
   </nav>
 
   <?php if ($isLoggedIn): ?>
     <div class="auth">
       <div class="welcome">
         <?php if ($profile_image): ?>
-         <img src="/uploads/<?php echo htmlspecialchars($profile_image); ?>" class="avatar" alt="Profile" style="width:30px; height:30px; border-radius:50%; vertical-align:middle; object-fit: cover;">
+         <img src="/f1fanclub/uploads/<?php echo htmlspecialchars($profile_image); ?>" class="avatar" alt="Profile" style="width:30px; height:30px; border-radius:50%; vertical-align:middle; object-fit: cover;">
         <?php endif; ?>
         <span class="welcome-text">
           Welcome,
@@ -90,13 +90,13 @@ if ($isLoggedIn) {
           </span>!
         </span>
       </div>
-      <a href="/logout/logout.php" class="btn">Log out</a>
-      <a href="/profile/profile.php" class="btn">Profile</a>
+      <a href="/f1fanclub/logout/logout.php" class="btn">Log out</a>
+      <a href="/f1fanclub/profile/profile.php" class="btn">Profile</a>
     </div>
   <?php else: ?>
     <div class="auth">
-      <a href="/register/register.html" class="btn">Register</a>
-      <a href="/login/login.html" class="btn">Login</a>
+      <a href="/f1fanclub/register/register.html" class="btn">Register</a>
+      <a href="/f1fanclub/login/login.html" class="btn">Login</a>
     </div>
   <?php endif; ?>
 </header>
@@ -107,7 +107,7 @@ if ($isLoggedIn) {
   <?php if ($profile_image): ?>
     <img src="/uploads/<?php echo htmlspecialchars($profile_image); ?>" alt="Profile picture" style="max-width:100px;">
   <?php endif; ?>
-  <form action="upload_profile.php" method="post" enctype="multipart/form-data">
+  <form action="/f1fanclub/profile/upload_profile.php" method="post" enctype="multipart/form-data">
     <p><small>Upload new profile picture (max 250×250 px)</small></p>
     <input type="file" name="profile_image" required>
     <input type="submit" value="Upload" class="btn">

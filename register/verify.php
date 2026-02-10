@@ -1,5 +1,4 @@
 <?php
-// Hibák megjelenítése, hogy lássuk, ha valami baj van
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
@@ -14,56 +13,49 @@ if ($conn->connect_error) {
 }
 
 $message = "";
-$messageType = ""; // success vagy error
+$messageType = "error";
 
 if (isset($_GET['token'])) {
-    $token = $_GET['token'];
+    // Fontos: szóközök levágása, ha véletlenül rosszul másolta ki a user
+    $token = trim($_GET['token']);
     
-    // 1. Megnézzük, létezik-e ez a token, és nincs-e még aktiválva
+    // 1. Keresés: Token egyezik ÉS még nincs verifikálva
     $stmt = $conn->prepare("SELECT id, username FROM users WHERE verification_token = ? AND is_verified = 0");
-    
-    if ($stmt === false) {
-        die("SQL Hiba (SELECT): " . $conn->error);
-    }
-
     $stmt->bind_param("s", $token);
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
         $user = $result->fetch_assoc();
+        $userId = $user['id'];
         $username = $user['username'];
 
-        // 2. Ha megvan, aktiváljuk a fiókot (is_verified = 1) és töröljük a tokent
-        $update = $conn->prepare("UPDATE users SET is_verified = 1, verification_token = NULL WHERE id = ?");
+        // 2. Aktiválás
+        $stmt_update = $conn->prepare("UPDATE users SET is_verified = 1, verification_token = NULL WHERE id = ?");
+        $stmt_update->bind_param("i", $userId);
         
-        if ($update === false) {
-            die("SQL Hiba (UPDATE): " . $conn->error);
-        }
-
-        $update->bind_param("i", $user['id']);
-        
-        if ($update->execute()) {
-            $message = "Szia $username! <br> A fiókodat sikeresen aktiváltuk!";
+        if ($stmt_update->execute()) {
+            $message = "Szia <strong>$username</strong>!<br>A fiókodat sikeresen aktiváltuk!";
             $messageType = "success";
         } else {
-            $message = "Hiba történt az adatbázis frissítésekor: " . $stmt->error;
-            $messageType = "error";
+            $message = "Hiba történt az aktiválás közben: " . $conn->error;
         }
-        $update->close();
-    } else {
-        // Lehet, hogy már aktiválva van? Nézzük meg.
-        $checkActive = $conn->prepare("SELECT id FROM users WHERE verification_token = ? OR (verification_token IS NULL AND is_verified = 1)");
-        // Ez egy egyszerűsített ellenőrzés, de a lényeg:
-        // Ha a token nincs a DB-ben a 'is_verified=0' sorok között, akkor vagy rossz a token, vagy már aktivált.
+        $stmt_update->close();
         
-        $message = "Ez az aktiváló link érvénytelen vagy már felhasználtad.";
-        $messageType = "error";
+    } else {
+        // Hibakeresés: Miért nem találtuk?
+        // 1. eset: Rossz a token
+        // 2. eset: Már aktiválva van
+        
+        // Megnézzük, hogy létezik-e ez a token egyáltalán (akár aktiváltnál is, ha nem nulláztuk volna, de mi nullázzuk)
+        // Vagy megnézzük, hogy a user már aktív-e. De mivel a tokent töröljük aktiváláskor, 
+        // a "már felhasznált link" üzenet a legkorrektebb.
+        
+        $message = "Ez az aktiváló link érvénytelen, vagy a fiókodat már korábban aktiváltad.";
     }
     $stmt->close();
 } else {
-    $message = "Hiányzó aktiváló kód (token)!";
-    $messageType = "error";
+    $message = "Hiányzó aktiváló kód!";
 }
 $conn->close();
 ?>
@@ -77,7 +69,7 @@ $conn->close();
   <style>
     body {
       font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #000 0%, #1a1a1a 40%, #111 100%);
+      background: #111;
       color: #eee;
       height: 100vh;
       margin: 0;
@@ -86,54 +78,44 @@ $conn->close();
       justify-content: center;
     }
     .card {
-      background: #151515;
+      background: #1e2126;
       padding: 40px;
       border-radius: 12px;
-      box-shadow: 0 0 20px rgba(225, 6, 0, 0.3);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
       width: 400px;
       text-align: center;
-      border-top: 3px solid #e10600;
+      border-top: 4px solid #e10600;
     }
-    h2 {
-      margin-top: 0;
-      color: #fff;
-    }
-    .message {
-      margin: 20px 0;
-      font-size: 16px;
-      line-height: 1.5;
-    }
-    .success { color: #52E252; }
-    .error { color: #e10600; }
-    
+    h2 { margin-top: 0; }
     .btn {
       display: inline-block;
       background: #e10600;
       color: white;
-      padding: 10px 20px;
+      padding: 12px 24px;
       text-decoration: none;
-      border-radius: 5px;
+      border-radius: 30px;
       font-weight: bold;
-      transition: 0.3s;
       margin-top: 20px;
+      transition: 0.2s;
     }
-    .btn:hover {
-      background: #ff2a2a;
-      transform: scale(1.05);
-    }
+    .btn:hover { background: #ff3333; transform: scale(1.05); }
+    .success-icon { font-size: 50px; color: #52E252; display: block; margin-bottom: 10px; }
+    .error-icon { font-size: 50px; color: #e10600; display: block; margin-bottom: 10px; }
   </style>
 </head>
 <body>
 
 <div class="card">
   <?php if ($messageType == 'success'): ?>
-      <h2 style="color: #52E252;">Sikeres Aktiválás! <span style="font-size:30px;">✔</span></h2>
-      <div class="message success"><?php echo $message; ?></div>
-      <a href="/login/login.html" class="btn">Bejelentkezés</a>
+      <span class="success-icon">✔</span>
+      <h2 style="color: #52E252;">Siker!</h2>
+      <div class="message"><?php echo $message; ?></div>
+      <a href="/f1fanclub/login/login.html" class="btn">Bejelentkezés</a>
   <?php else: ?>
-      <h2 style="color: #e10600;">Hiba történt! <span style="font-size:30px;">✖</span></h2>
-      <div class="message error"><?php echo $message; ?></div>
-      <a href="/index.php" class="btn" style="background:#333;">Vissza a főoldalra</a>
+      <span class="error-icon">✖</span>
+      <h2 style="color: #e10600;">Hiba</h2>
+      <div class="message"><?php echo $message; ?></div>
+      <a href="/f1fanclub/index.php" class="btn" style="background:#444;">Főoldal</a>
   <?php endif; ?>
 </div>
 

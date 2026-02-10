@@ -51,7 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // 5. ÚJ: Irányítás szerepkör alapján
             if ($user['role'] === 'admin') {
-                header("Location: /admin//admin.php"); // Ha admin, ide megy
+                header("Location: /f1fanclub/admin/admin.php"); // Ha admin, ide megy
             } else {
                 header("Location: /index.php"); // Ha user, ide megy
             }

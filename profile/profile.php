@@ -25,7 +25,7 @@ $message = "";
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['profile_image'])) {
 
     $target_dir = "../uploads/";
-    // Biztosítjuk, hogy egyedi neve legyen a fájlnak (ne írja felül másét)
+    // Biztosítjuk, hogy egyedi neve legyen a fájlnak
     $file_extension = strtolower(pathinfo($_FILES["profile_image"]["name"], PATHINFO_EXTENSION));
     $new_filename = $username . "_" . time() . "." . $file_extension;
     $target_file = $target_dir . $new_filename;
@@ -61,7 +61,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['profile_image'])) {
             $stmt->bind_param("ss", $new_filename, $username);
             
             if ($stmt->execute()) {
-                $message = "Sikeres profilkép csere!";
+                // Sikeres feltöltés után frissítjük az oldalt, hogy ne ragadjon be a POST adat
+                header("Location: " . $_SERVER['PHP_SELF']); 
+                exit;
             } else {
                 $message = "Adatbázis hiba: " . $stmt->error;
             }
@@ -87,7 +89,8 @@ $stmt->close();
     <meta charset="UTF-8">
     <title><?php echo htmlspecialchars($username); ?> Profilja</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css"> <style>
+    <link rel="stylesheet" href="/f1fanclub/css/style.css"> 
+    <style>
         body {
             background: linear-gradient(135deg, #000 0%, #1a1a1a 40%, #111 100%);
             color: white;
@@ -108,14 +111,65 @@ $stmt->close();
             border-top: 3px solid #e10600;
             text-align: center;
         }
-        .profile-pic-large {
+
+        /* --- ÚJ CSS A PROFILKÉPHEZ --- */
+        .profile-pic-wrapper {
+            position: relative;
             width: 150px;
             height: 150px;
+            margin: 0 auto 20px auto;
             border-radius: 50%;
-            object-fit: cover; /* Ez biztosítja, hogy ne torzuljon a kép, bármekkora is */
+            cursor: pointer; /* Kéz ikon, ha ráviszed az egeret */
+            overflow: hidden; /* Hogy a körön kívül ne lógjon ki semmi */
             border: 4px solid #e10600;
-            margin-bottom: 20px;
         }
+
+        .profile-pic-large {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* A sötét réteg és a kamera ikon/szöveg */
+        .profile-pic-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6); /* Félig átlátszó fekete */
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0; /* Alapból láthatatlan */
+            transition: opacity 0.3s ease;
+        }
+
+        /* Ha a wrapper fölé viszed az egeret, megjelenik az overlay */
+        .profile-pic-wrapper:hover .profile-pic-overlay {
+            opacity: 1;
+        }
+
+        .camera-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .change-text {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* Elrejtjük az eredeti fájl inputot */
+        #fileInput {
+            display: none;
+        }
+        /* --- CSS VÉGE --- */
+
         .info-group {
             margin-bottom: 20px;
             text-align: left;
@@ -132,32 +186,6 @@ $stmt->close();
             font-size: 1.2em;
             font-weight: 600;
             color: #fff;
-        }
-        .upload-form {
-            margin-top: 30px;
-            border-top: 1px solid #333;
-            padding-top: 20px;
-        }
-        input[type="file"] {
-            margin: 10px 0;
-            background: #2b2b2b;
-            padding: 10px;
-            border-radius: 5px;
-            width: 100%;
-            color: #ccc;
-        }
-        .btn-upload {
-            background: #e10600;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-        .btn-upload:hover {
-            background: #ff2a2a;
         }
         .back-btn {
             display: inline-block;
@@ -184,15 +212,27 @@ $stmt->close();
             <div class="alert"><?php echo $message; ?></div>
         <?php endif; ?>
 
-        <h2>Profil Adataim</h2>
+        <h2>Profil Adatok</h2>
 
         <?php 
-        // Ha van kép, azt mutatjuk, ha nincs, egy alap képet
-// A "/" jelzi a böngészőnek, hogy a főkönyvtárból induljon
-$img_src = $user['profile_image'] ? "/uploads/" . htmlspecialchars($user['profile_image']) : "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png";
+        $img_src = $user['profile_image'] ? "/f1fanclub/uploads/" . htmlspecialchars($user['profile_image']) : "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png";
         ?>
-        <img src="<?php echo $img_src; ?>" class="profile-pic-large" alt="Profilkép">
 
+        <form action="" method="post" enctype="multipart/form-data" id="profileForm">
+            
+            <label for="fileInput">
+                <div class="profile-pic-wrapper">
+                    <img src="<?php echo $img_src; ?>" class="profile-pic-large" alt="Profilkép">
+                    
+                    <div class="profile-pic-overlay">
+                        <span class="change-text">Csere</span>
+                    </div>
+                </div>
+            </label>
+
+            <input type="file" name="profile_image" id="fileInput" onchange="document.getElementById('profileForm').submit();">
+        
+        </form>
         <div class="info-group">
             <span class="info-label">Felhasználónév</span>
             <span class="info-value"><?php echo htmlspecialchars($username); ?></span>
@@ -208,16 +248,9 @@ $img_src = $user['profile_image'] ? "/uploads/" . htmlspecialchars($user['profil
             <span class="info-value"><?php echo htmlspecialchars($user['fav_team'] ?? "Nincs kiválasztva"); ?></span>
         </div>
 
-        <div class="upload-form">
-            <h3>Profilkép módosítása</h3>
-            <form action="/profile/profile.php" method="post" enctype="multipart/form-data">
-                <input type="file" name="profile_image" required>
-                <button type="submit" class="btn-upload">Feltöltés</button>
-            </form>
-            <p style="font-size: 12px; color: #666; margin-top: 5px;">Bármilyen méretű képet feltölthetsz (Max 5MB).</p>
-        </div>
+        <p style="font-size: 12px; color: #666; margin-top: 5px;">Kattints a képre a módosításhoz (Max 5MB).</p>
 
-        <a href="/index.php" class="back-btn">← Vissza a főoldalra</a>
+        <a href="/f1fanclub/index.php" class="back-btn">← Vissza a főoldalra</a>
 
     </div>
 

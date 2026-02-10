@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="hu">
+
 <head>
   <meta charset="UTF-8">
   <title>Regisztráció – F1 Fan Club</title>
@@ -22,21 +23,24 @@
       position: absolute;
       width: 200%;
       height: 200%;
-      background: repeating-linear-gradient(
-        60deg,
-        rgba(225, 6, 0, 0.1) 0px,
-        rgba(225, 6, 0, 0.1) 2px,
-        transparent 2px,
-        transparent 10px
-      );
+      background: repeating-linear-gradient(60deg,
+          rgba(225, 6, 0, 0.1) 0px,
+          rgba(225, 6, 0, 0.1) 2px,
+          transparent 2px,
+          transparent 10px);
       animation: slide 10s linear infinite;
       opacity: 0.2;
       z-index: -1;
     }
 
     @keyframes slide {
-      from { transform: translateX(0); }
-      to { transform: translateX(-200px); }
+      from {
+        transform: translateX(0);
+      }
+
+      to {
+        transform: translateX(-200px);
+      }
     }
 
     .register-box {
@@ -81,7 +85,8 @@
       margin-top: 10px;
     }
 
-    input, select {
+    input,
+    select {
       width: 100%;
       padding: 10px 12px;
       margin-bottom: 12px;
@@ -94,7 +99,8 @@
       transition: 0.2s;
     }
 
-    input:focus, select:focus {
+    input:focus,
+    select:focus {
       background: #333;
       box-shadow: 0 0 8px #e10600;
     }
@@ -127,7 +133,7 @@
 
     .back:hover {
       color: #fff;
-      text-shadow: 0 0 6px rgba(255,255,255,0.4);
+      text-shadow: 0 0 6px rgba(255, 255, 255, 0.4);
     }
 
     .hint {
@@ -142,51 +148,52 @@
 
 <body>
 
-<div class="bg-lines"></div>
+  <div class="bg-lines"></div>
 
-<form class="register-box" action="/register/register.php" method="post">
-  
-  <div class="logo-title">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg" alt="F1 Logo">
-    Fan Club
-  </div>
+  <form class="register-box" action="/f1fanclub/register/register.php" method="post">
 
-  <h2>Regisztráció</h2>
+    <div class="logo-title">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg" alt="F1 Logo">
+      Fan Club
+    </div>
 
-  <div class="field-label">Felhasználónév</div>
-  <input type="text" name="username" placeholder="Felhasználónév" required>
+    <h2>Regisztráció</h2>
 
-  <div class="field-label">Kedvenc csapat</div>
-  <select name="fav_team">
-    <option value="">Nem választok csapatot</option>
-    <option value="Red Bull">Oracle Red Bull Racing</option>
-    <option value="Ferrari">Scuderia Ferrari</option>
-    <option value="Mercedes">Mercedes-AMG Petronas</option>
-    <option value="McLaren">McLaren</option>
-    <option value="Aston Martin">Aston Martin</option>
-    <option value="Alpine">Alpine</option>
-    <option value="Williams">Williams</option>
-    <option value="RB">RB (Visa Cash App RB)</option>
-    <option value="Sauber">Sauber</option>
-    <option value="Haas">Haas</option>
-  </select>
-  <div class="hint">Válaszd ki, kivel szurkolsz – a neved színe ezt fogja tükrözni 😉</div>
+    <div class="field-label">Felhasználónév</div>
+    <input type="text" name="username" placeholder="Felhasználónév" required>
 
-  <div class="field-label">Email cím</div>
-  <input type="email" name="email" placeholder="Email" required>
+    <div class="field-label">Kedvenc csapat</div>
+    <select name="fav_team">
+      <option value="">Nem választok csapatot</option>
+      <option value="Red Bull">Oracle Red Bull Racing</option>
+      <option value="Ferrari">Scuderia Ferrari</option>
+      <option value="Mercedes">Mercedes-AMG Petronas</option>
+      <option value="McLaren">McLaren</option>
+      <option value="Aston Martin">Aston Martin</option>
+      <option value="Alpine">Alpine</option>
+      <option value="Williams">Williams</option>
+      <option value="RB">RB (Visa Cash App RB)</option>
+      <option value="Sauber">Sauber</option>
+      <option value="Haas">Haas</option>
+    </select>
+    <div class="hint">Válaszd ki, kivel szurkolsz – a neved színe ezt fogja tükrözni 😉</div>
 
-  <div class="field-label">Jelszó</div>
-  <input type="password" name="password" placeholder="Jelszó" required>
+    <div class="field-label">Email cím</div>
+    <input type="email" name="email" placeholder="Email" required>
 
-  <div class="field-label">Jelszó megerősítése</div>
-  <input type="password" name="password_confirm" placeholder="Jelszó mégegyszer" required>
+    <div class="field-label">Jelszó</div>
+    <input type="password" name="password" placeholder="Jelszó" required>
 
-  <input type="submit" value="Regisztrálok">
+    <div class="field-label">Jelszó megerősítése</div>
+    <input type="password" name="password_confirm" placeholder="Jelszó mégegyszer" required>
 
-  <a href="/login/login.html" class="back">Már van fiókod? Bejelentkezés →</a>
-  <a href="/index.php" class="back">← Vissza a főoldalra</a>
-  
-</form>
+    <input type="submit" value="Regisztrálok">
+
+    <a href="/f1fanclub/login/login.html" class="back">Már van fiókod? Bejelentkezés →</a>
+    <a href="/f1fanclub/index.php" class="back">← Vissza a főoldalra</a>
+
+  </form>
 
 </body>
+
 </html>

@@ -162,6 +162,7 @@ $raceStatus = $raceData['status'] ?? 'stopped';
             gap: 12px;
             transition: 0.3s;
             font-family: inherit;
+            text-decoration: none;
         }
 
         .menu-btn:hover, .menu-btn.active {
@@ -243,6 +244,18 @@ $raceStatus = $raceData['status'] ?? 'stopped';
 
         .alert { padding: 15px; background: rgba(0, 210, 190, 0.1); border: 1px solid #00d2be; border-radius: 8px; margin-bottom: 20px; color: #00d2be; }
 
+/* Vissza a főoldalra gomb egyedi stílusa */
+        .btn-return {
+            color: var(--primary) !important;
+            font-weight: 800;
+            background: rgba(225, 6, 0, 0.08) !important;
+            box-sizing: border-box; /* Megakadályozza, hogy kilógjon a keretből */
+        }
+        .btn-return:hover {
+            background-color: var(--primary) !important;
+            color: #fff !important;
+            box-shadow: 0 4px 15px rgba(225, 6, 0, 0.4); /* Szép, a többivel megegyező F1-es árnyék */
+        }
     </style>
 </head>
 <body>
@@ -254,6 +267,13 @@ $raceStatus = $raceData['status'] ?? 'stopped';
         </div>
 
         <ul class="menu">
+            <li>
+                <a href="/f1fanclub/index.php" class="menu-btn btn-return">
+                    <i class="fas fa-home"></i> Vissza a Főoldalra
+                </a>
+            </li>
+            <hr style="border: 0; border-top: 1px solid #333; margin: 15px 0;">
+            
             <li>
                 <button class="menu-btn active" onclick="showTab('race')">
                     <i class="fas fa-flag-checkered"></i> Verseny Szimulálás
@@ -280,7 +300,7 @@ $raceStatus = $raceData['status'] ?? 'stopped';
             <img src="/f1fanclub/uploads/<?= htmlspecialchars($adminData['profile_image'] ?? 'default.png') ?>" alt="Admin">
             <div>
                 <div style="font-weight:bold;"><?= htmlspecialchars($currentUser) ?></div>
-                <a href="/f1fanclub/index.php" style="color:#888; font-size:0.8rem; text-decoration:none;">Kijelentkezés</a>
+                <a href="/f1fanclub/logout/logout.php" style="color:#888; font-size:0.8rem; text-decoration:none;">Kijelentkezés</a>
             </div>
         </div>
     </aside>
@@ -328,7 +348,7 @@ $raceStatus = $raceData['status'] ?? 'stopped';
                         <tr>
                             <th>User</th>
                             <th>Email</th>
-                            <th>Role</th>
+                            <th>IP Cím</th> <th>Role</th>
                             <th>Csapat</th>
                             <th>Regisztrált</th>
                             <th>Műveletek</th>
@@ -344,7 +364,7 @@ $raceStatus = $raceData['status'] ?? 'stopped';
                                 </div>
                             </td>
                             <td><?= htmlspecialchars($u['email']) ?></td>
-                            <td>
+                            <td style="font-family: monospace; color:#aaa;"><?= htmlspecialchars($u['ip_address'] ?? 'Ismeretlen') ?></td> <td>
                                 <form method="POST" style="display:flex; gap:5px;">
                                     <input type="hidden" name="action" value="change_role">
                                     <input type="hidden" name="user_id" value="<?= $u['id'] ?>">
@@ -383,7 +403,7 @@ $raceStatus = $raceData['status'] ?? 'stopped';
                         <tr>
                             <th>User</th>
                             <th>Email</th>
-                            <th>Regisztrált</th>
+                            <th>IP Cím</th> <th>Regisztrált</th>
                             <th>Műveletek</th>
                         </tr>
                     </thead>
@@ -392,7 +412,7 @@ $raceStatus = $raceData['status'] ?? 'stopped';
                         <tr>
                             <td style="color:#ff4444;"><?= htmlspecialchars($b['username']) ?></td>
                             <td><?= htmlspecialchars($b['email']) ?></td>
-                            <td><?= date('Y.m.d', strtotime($b['reg_date'])) ?></td>
+                            <td style="font-family: monospace; color:#aaa;"><?= htmlspecialchars($b['ip_address'] ?? 'Ismeretlen') ?></td> <td><?= date('Y.m.d', strtotime($b['reg_date'])) ?></td>
                             <td>
                                 <form method="POST">
                                     <input type="hidden" name="action" value="unban_user">
@@ -436,23 +456,19 @@ $raceStatus = $raceData['status'] ?? 'stopped';
     <script>
         // TABS VÁLTÁS JS
         function showTab(tabName) {
-            // Minden tartalom elrejtése
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            // Minden gomb inaktív
             document.querySelectorAll('.menu-btn').forEach(el => el.classList.remove('active'));
 
-            // Kiválasztott megjelenítése
             document.getElementById('tab-' + tabName).classList.add('active');
-            // Gomb aktívvá tétele (keresés onclick attribútum alapján, egyszerűbb megoldás)
             event.currentTarget.classList.add('active');
             
-            // Ha a naplót nézzük, mentsük el a localStorage-ba az utolsó nézetet (opcionális UX)
             localStorage.setItem('activeAdminTab', tabName);
         }
 
         // Oldal betöltéskor utolsó fül megnyitása
         document.addEventListener("DOMContentLoaded", () => {
             const savedTab = localStorage.getItem('activeAdminTab') || 'race';
+            // Megkeressük az adott gombot (kivéve a főoldalra visszadobót)
             const btn = document.querySelector(`button[onclick="showTab('${savedTab}')"]`);
             if(btn) btn.click();
         });
@@ -465,11 +481,9 @@ $raceStatus = $raceData['status'] ?? 'stopped';
                 
             if(confirm(confirmMsg)) {
                 try {
-                    // API hívás logolással
                     const response = await fetch('../race/race_api.php?action=' + action);
                     const data = await response.json();
                     
-                    // Admin log generálása PHP híváson keresztül (trükkös, de most újratöltjük az oldalt, az egyszerűbb)
                     alert(data.msg);
                     location.reload(); 
                 } catch (error) {

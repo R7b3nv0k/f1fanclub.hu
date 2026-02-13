@@ -1596,4 +1596,160 @@ main {
     padding-bottom: 10px;
     border-bottom: 1px solid var(--border);
 }
+/* =========================================
+   F1 CHAMPIONSHIP STANDINGS (PREMIUM DESIGN)
+   ========================================= */
 
+.champ-main {
+    max-width: 1000px;
+    margin: 40px auto 80px;
+    padding: 0 20px;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Évszám választó */
+.season-selector-wrapper {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.f1-select {
+    appearance: none;
+    background: #111;
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    padding: 10px 60px 10px 30px;
+    border: 2px solid #333;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    transition: all 0.3s ease;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23e10600%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right 20px center;
+    background-size: 14px;
+}
+
+.f1-select:hover, .f1-select:focus {
+    border-color: #e10600;
+    box-shadow: 0 0 20px rgba(225,6,0,0.3);
+    outline: none;
+}
+
+/* Szekció Címek */
+.champ-title {
+    color: #e10600;
+    font-size: 2rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.champ-title::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 30px;
+    background: #e10600;
+    border-radius: 3px;
+}
+
+/* TÁBLÁZAT KONTÉNER ÉS DIZÁJN */
+.f1-table-wrapper {
+    background: #0d0d0d;
+    border-radius: 12px;
+    border: 1px solid #222;
+    overflow: hidden;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+    margin-bottom: 60px;
+}
+
+.f1-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+/* Fejléc */
+.f1-table th {
+    background: #151515;
+    color: #666;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    padding: 18px 20px;
+    border-bottom: 2px solid #222;
+}
+
+/* Sorok alap */
+.f1-row {
+    transition: background 0.2s ease, transform 0.2s ease;
+    border-bottom: 1px solid #1a1a1a;
+}
+.f1-row:hover {
+    background: #161616;
+}
+
+/* Cellák */
+.f1-table td {
+    padding: 16px 20px;
+    vertical-align: middle;
+}
+
+/* Pozíció oszlop */
+.f1-pos {
+    font-size: 1.3rem;
+    font-weight: 900;
+    text-align: center;
+}
+.f1-red-text { color: #fff; }
+
+/* Név oszlop */
+.f1-name {
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+}
+.f1-white { color: #ccc; }
+.f1-white span { color: #fff; } /* Vezetéknév fehér */
+
+/* Csapat oszlop */
+.f1-team {
+    color: #888;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+/* Pontok oszlop */
+.f1-points {
+    color: #fff;
+    font-size: 1.3rem;
+    font-weight: 800;
+    text-align: right;
+    padding-right: 30px !important;
+    font-family: monospace;
+    letter-spacing: -1px;
+}
+
+/* 🏆 1. HELYEZETT (BAJNOK) KIEMELÉS 🏆 */
+.f1-champion {
+    /* Gyönyörű arany átmenet a sor hátterének */
+    background: linear-gradient(90deg, rgba(212, 175, 55, 0.15) 0%, rgba(212, 175, 55, 0.05) 40%, transparent 100%);
+    border-left: 4px solid #d4af37;
+    position: relative;
+}
+.f1-champion:hover {
+    background: linear-gradient(90deg, rgba(212, 175, 55, 0.2) 0%, rgba(212, 175, 55, 0.1) 40%, transparent 100%);
+}
+.f1-gold {
+    color: #d4af37 !important;
+    text-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+}
+.f1-champion .f1-points {
+    color: #d4af37;
+}

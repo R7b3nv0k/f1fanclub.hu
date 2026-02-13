@@ -70,6 +70,7 @@ if ($isLoggedIn) {
   <meta charset="UTF-8">
   <title>Drivers – F1 Fan Club</title>
   <link rel="stylesheet" href="/f1fanclub/css/style.css">
+  <link rel="stylesheet" href="/f1fanclub/drivers/drivers_style.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;800&display=swap" rel="stylesheet">
 </head>
 
@@ -116,38 +117,37 @@ if ($isLoggedIn) {
       </div>
     <?php endif; ?>
   </header>
-  <section id="teams">
-
+  <section id="drivers">
     <!-- Statistics Panel (hidden by default) -->
     <div class="statistics-panel" id="statistics-panel">
       <button class="close-panel" id="close-panel">×</button>
       <div class="statistics-header">
         <div class="stats-image-container">
-          <img id="stats-team-image" src="" alt="Team" class="stats-team-image">
+          <img id="stats-driver-image" src="" alt="Driver" class="stats-driver-image">
           <div class="glow-effect"></div>
         </div>
-        <div class="stats-team-info">
-          <h2 id="stats-team-name">TEAM NAME</h2>
-          <p id="stats-team-base">BASE LOCATION</p>
-          <div class="stats-team-nationality">
+        <div class="stats-driver-info">
+          <h2 id="stats-driver-name">DRIVER NAME</h2>
+          <p id="stats-driver-team">TEAM NAME</p>
+          <div class="stats-driver-nationality">
             <span id="stats-flag">🏁</span>
-            <span id="stats-country">COUNTRY</span>
+            <span id="stats-nationality">NATIONALITY</span>
           </div>
         </div>
       </div>
-
+      
       <!-- Stats Toggle -->
       <div class="stats-toggle">
         <button class="toggle-btn active" data-period="current">
-          <span class="toggle-text">2025 SEASON</span>
+          <span class="toggle-text">THIS SEASON</span>
           <span class="toggle-glow"></span>
         </button>
         <button class="toggle-btn" data-period="career">
-          <span class="toggle-text">TEAM HISTORY</span>
+          <span class="toggle-text">CAREER</span>
           <span class="toggle-glow"></span>
         </button>
       </div>
-
+      
       <!-- Statistics Content - 2x3 Grid -->
       <div class="statistics-content">
         <div class="stats-grid" id="current-stats">
@@ -159,299 +159,520 @@ if ($isLoggedIn) {
           </div>
           <div class="stat-item">
             <span class="stat-label">POINTS</span>
-            <span class="stat-value" id="current-points">654</span>
+            <span class="stat-value" id="current-points">454</span>
             <div class="stat-glow"></div>
           </div>
-
+          
           <!-- Current Season Stats - Row 2 -->
           <div class="stat-item">
             <span class="stat-label">WINS</span>
-            <span class="stat-value" id="current-wins">21</span>
+            <span class="stat-value" id="current-wins">19</span>
             <div class="stat-glow"></div>
           </div>
           <div class="stat-item">
             <span class="stat-label">PODIUMS</span>
-            <span class="stat-value" id="current-podiums">32</span>
+            <span class="stat-value" id="current-podiums">21</span>
             <div class="stat-glow"></div>
           </div>
-
+          
           <!-- Current Season Stats - Row 3 -->
           <div class="stat-item">
             <span class="stat-label">POLES</span>
-            <span class="stat-value" id="current-poles">14</span>
+            <span class="stat-value" id="current-poles">12</span>
             <div class="stat-glow"></div>
           </div>
           <div class="stat-item">
             <span class="stat-label">FASTEST LAPS</span>
-            <span class="stat-value" id="current-fastest-laps">12</span>
+            <span class="stat-value" id="current-fastest-laps">9</span>
             <div class="stat-glow"></div>
           </div>
         </div>
-
+        
         <div class="stats-grid" id="career-stats" style="display: none;">
           <!-- Career Stats - Row 1 -->
           <div class="stat-item">
             <span class="stat-label">GRAND PRIX</span>
-            <span class="stat-value" id="career-races">385</span>
+            <span class="stat-value" id="career-races">185</span>
             <div class="stat-glow"></div>
           </div>
           <div class="stat-item">
             <span class="stat-label">WINS</span>
-            <span class="stat-value" id="career-wins">124</span>
+            <span class="stat-value" id="career-wins">54</span>
             <div class="stat-glow"></div>
           </div>
-
+          
           <!-- Career Stats - Row 2 -->
           <div class="stat-item">
             <span class="stat-label">PODIUMS</span>
-            <span class="stat-value" id="career-podiums">298</span>
+            <span class="stat-value" id="career-podiums">98</span>
             <div class="stat-glow"></div>
           </div>
           <div class="stat-item">
             <span class="stat-label">POLES</span>
-            <span class="stat-value" id="career-poles">133</span>
+            <span class="stat-value" id="career-poles">33</span>
             <div class="stat-glow"></div>
           </div>
-
+          
           <!-- Career Stats - Row 3 -->
           <div class="stat-item">
             <span class="stat-label">FASTEST LAPS</span>
-            <span class="stat-value" id="career-fastest-laps">128</span>
+            <span class="stat-value" id="career-fastest-laps">28</span>
             <div class="stat-glow"></div>
           </div>
           <div class="stat-item">
-            <span class="stat-label">CONSTRUCTORS</span>
-            <span class="stat-value" id="career-titles">8</span>
+            <span class="stat-label">WORLD TITLES</span>
+            <span class="stat-value" id="career-titles">3</span>
             <div class="stat-glow"></div>
           </div>
         </div>
       </div>
     </div>
-
+    
     <!-- F1 Scroll Buttons -->
     <div class="scroll-button left" id="scroll-left">
       <div class="accent-line"></div>
     </div>
-
+    
     <div class="scroll-button right" id="scroll-right">
       <div class="accent-line"></div>
     </div>
-
-    <div class="teams-container">
-      <div class="teams-wrapper" id="teams-wrapper">
+    
+    <div class="drivers-container">
+      <div class="drivers-wrapper" id="drivers-wrapper">
         <!-- ========== RED BULL ========== -->
-        <div class="team-card" data-team="redbull" id="RBR" data-team-id="red_bull">
-          <div class="team-image-container">
-            <img src="kép/RED_BULL_CAR.png" alt="Red Bull Racing" class="team-image">
-            <div class="team-name-logo">Red Bull Racing</div>
-            <div class="team-glow"></div>
+        <!-- Driver 1: Max Verstappen -->
+        <div class="driver-card" data-team="redbull" id="MAX_V" data-driver="max_verstappen">
+          <div class="driver-image-container">
+            <img src="kép/MAX_VERSTAPPEN.png" alt="Max Verstappen" class="driver-image">
+            <div class="team-logo">Red Bull</div>
+            <div class="driver-glow"></div>
           </div>
-          <div class="team-info">
-            <div class="nametag" id="RBR_nametag">
-              <h2 class="team-name">RED BULL RACING</h2>
-              <p class="team-principal">Christian Horner</p>
-              <div class="team-details">
-                <span class="flag">🇦🇹</span>
-                MILTON KEYNES
+          <div class="driver-info">
+            <div class="nametag" id="MAX_V_nametag">
+              <h2 class="driver-name">MAX VERSTAPPEN</h2>
+              <p class="driver-team">ORACLE RED BULL RACING</p>
+              <div class="driver-nationality">
+                <span class="flag">🇳🇱</span>
+                NETHERLANDS
               </div>
             </div>
           </div>
         </div>
-
-        <!-- ========== FERRARI ========== -->
-        <div class="team-card" data-team="ferrari" id="FER" data-team-id="ferrari">
-          <div class="team-image-container">
-            <img src="kép/FERRARI_CAR.png" alt="Ferrari" class="team-image">
-            <div class="team-name-logo">Ferrari</div>
-            <div class="team-glow"></div>
+        
+        <!-- Driver 2: Isack Hadjar -->
+        <div class="driver-card" data-team="redbull" id="HAD" data-driver="isack_hadjar">
+          <div class="driver-image-container">
+            <img src="kép/ISACK_HADJAR.png" alt="Isack Hadjar" class="driver-image">
+            <div class="team-logo">Red Bull</div>
+            <div class="driver-glow"></div>
           </div>
-          <div class="team-info">
-            <div class="nametag" id="FER_nametag">
-              <h2 class="team-name">SCUDERIA FERRARI</h2>
-              <p class="team-principal">Frédéric Vasseur</p>
-              <div class="team-details">
-                <span class="flag">🇮🇹</span>
-                MARANELLO
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ========== MERCEDES ========== -->
-        <div class="team-card" data-team="mercedes" id="MER" data-team-id="mercedes">
-          <div class="team-image-container">
-            <img src="kép/MERCEDES_CAR.png" alt="Mercedes" class="team-image">
-            <div class="team-name-logo">Mercedes</div>
-            <div class="team-glow"></div>
-          </div>
-          <div class="team-info">
-            <div class="nametag" id="MER_nametag">
-              <h2 class="team-name">MERCEDES-AMG</h2>
-              <p class="team-principal">Toto Wolff</p>
-              <div class="team-details">
-                <span class="flag">🇩🇪</span>
-                BRACKLEY
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ========== McLAREN ========== -->
-        <div class="team-card" data-team="mclaren" id="MCL" data-team-id="mclaren">
-          <div class="team-image-container">
-            <img src="kép/MCLAREN_CAR.png" alt="McLaren" class="team-image">
-            <div class="team-name-logo">McLaren</div>
-            <div class="team-glow"></div>
-          </div>
-          <div class="team-info">
-            <div class="nametag" id="MCL_nametag">
-              <h2 class="team-name">McLAREN F1 TEAM</h2>
-              <p class="team-principal">Andrea Stella</p>
-              <div class="team-details">
-                <span class="flag">🇬🇧</span>
-                WOKING
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ========== ASTON MARTIN ========== -->
-        <div class="team-card" data-team="astonmartin" id="AST" data-team-id="aston_martin">
-          <div class="team-image-container">
-            <img src="kép/ASTON_MARTIN_CAR.png" alt="Aston Martin" class="team-image">
-            <div class="team-name-logo">Aston Martin</div>
-            <div class="team-glow"></div>
-          </div>
-          <div class="team-info">
-            <div class="nametag" id="AST_nametag">
-              <h2 class="team-name">ASTON MARTIN</h2>
-              <p class="team-principal">Mike Krack</p>
-              <div class="team-details">
-                <span class="flag">🇬🇧</span>
-                SILVERSTONE
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ========== ALPINE ========== -->
-        <div class="team-card" data-team="alpine" id="ALP" data-team-id="alpine">
-          <div class="team-image-container">
-            <img src="kép/ALPINE_CAR.png" alt="Alpine" class="team-image">
-            <div class="team-name-logo">Alpine</div>
-            <div class="team-glow"></div>
-          </div>
-          <div class="team-info">
-            <div class="nametag" id="ALP_nametag">
-              <h2 class="team-name">ALPINE F1 TEAM</h2>
-              <p class="team-principal">Oliver Oakes</p>
-              <div class="team-details">
+          <div class="driver-info">
+            <div class="nametag" id="HAD_nametag">
+              <h2 class="driver-name">ISACK HADJAR</h2>
+              <p class="driver-team">ORACLE RED BULL RACING</p>
+              <div class="driver-nationality">
                 <span class="flag">🇫🇷</span>
-                ENSTONE
+                FRANCE
               </div>
             </div>
           </div>
         </div>
-
-        <!-- ========== WILLIAMS ========== -->
-        <div class="team-card" data-team="williams" id="WIL" data-team-id="williams">
-          <div class="team-image-container">
-            <img src="kép/WILLIAMS_CAR.png" alt="Williams" class="team-image">
-            <div class="team-name-logo">Williams</div>
-            <div class="team-glow"></div>
+        
+        <!-- ========== FERRARI ========== -->
+        <!-- Driver 3: Lewis Hamilton -->
+        <div class="driver-card" data-team="ferrari" id="HAM" data-driver="lewis_hamilton">
+          <div class="driver-image-container">
+            <img src="kép/LEWIS_HAMILTON.png" alt="Lewis Hamilton" class="driver-image">
+            <div class="team-logo">Ferrari</div>
+            <div class="driver-glow"></div>
           </div>
-          <div class="team-info">
-            <div class="nametag" id="WIL_nametag">
-              <h2 class="team-name">WILLIAMS RACING</h2>
-              <p class="team-principal">James Vowles</p>
-              <div class="team-details">
+          <div class="driver-info">
+            <div class="nametag" id="HAM_nametag">
+              <h2 class="driver-name">LEWIS HAMILTON</h2>
+              <p class="driver-team">SCUDERIA FERRARI</p>
+              <div class="driver-nationality">
                 <span class="flag">🇬🇧</span>
-                GROVE
+                UNITED KINGDOM
               </div>
             </div>
           </div>
         </div>
-
-        <!-- ========== RACING BULLS ========== -->
-        <div class="team-card" data-team="racingbulls" id="RB" data-team-id="racing_bulls">
-          <div class="team-image-container">
-            <img src="kép/RACING_BULLS_CAR.png" alt="Racing Bulls" class="team-image">
-            <div class="team-name-logo">Racing Bulls</div>
-            <div class="team-glow"></div>
+        
+        <!-- Driver 4: Charles Leclerc -->
+        <div class="driver-card" data-team="ferrari" id="LEC" data-driver="charles_leclerc">
+          <div class="driver-image-container">
+            <img src="kép/CHARLES_LECLERC.png" alt="Charles Leclerc" class="driver-image">
+            <div class="team-logo">Ferrari</div>
+            <div class="driver-glow"></div>
           </div>
-          <div class="team-info">
-            <div class="nametag" id="RB_nametag">
-              <h2 class="team-name">RACING BULLS</h2>
-              <p class="team-principal">Laurent Mekies</p>
-              <div class="team-details">
+          <div class="driver-info">
+            <div class="nametag" id="LEC_nametag">
+              <h2 class="driver-name">CHARLES LECLERC</h2>
+              <p class="driver-team">SCUDERIA FERRARI</p>
+              <div class="driver-nationality">
+                <span class="flag">🇲🇨</span>
+                MONACO
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ========== MERCEDES ========== -->
+        <!-- Driver 5: Kimi Antonelli -->
+        <div class="driver-card" data-team="mercedes" id="ANT" data-driver="kimi_antonelli">
+          <div class="driver-image-container">
+            <img src="kép/KIMI_ANTONELLI.png" alt="Kimi Antonelli" class="driver-image">
+            <div class="team-logo">Mercedes</div>
+            <div class="driver-glow"></div>
+          </div>
+          <div class="driver-info">
+            <div class="nametag" id="ANT_nametag">
+              <h2 class="driver-name">KIMI ANTONELLI</h2>
+              <p class="driver-team">MERCEDES-AMG PETRONAS</p>
+              <div class="driver-nationality">
                 <span class="flag">🇮🇹</span>
-                FAENZA
+                ITALY
               </div>
             </div>
           </div>
         </div>
-
+        
+        <!-- Driver 6: George Russell -->
+        <div class="driver-card" data-team="mercedes" id="RUS" data-driver="george_russell">
+          <div class="driver-image-container">
+            <img src="kép/GEORGE_RUSSEL.png" alt="George Russell" class="driver-image">
+            <div class="team-logo">Mercedes</div>
+            <div class="driver-glow"></div>
+          </div>
+          <div class="driver-info">
+            <div class="nametag" id="RUS_nametag">
+              <h2 class="driver-name">GEORGE RUSSELL</h2>
+              <p class="driver-team">MERCEDES-AMG PETRONAS</p>
+              <div class="driver-nationality">
+                <span class="flag">🇬🇧</span>
+                UNITED KINGDOM
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ========== RACING BULLS ========== -->
+        <!-- Driver 7: Liam Lawson -->
+        <div class="driver-card" data-team="racingbulls" id="LAW" data-driver="liam_lawson">
+          <div class="driver-image-container">
+            <img src="kép/LIAM_LAWSON.png" alt="Liam Lawson" class="driver-image">
+            <div class="team-logo">Racing Bulls</div>
+            <div class="driver-glow"></div>
+          </div>
+          <div class="driver-info">
+            <div class="nametag" id="LAW_nametag">
+              <h2 class="driver-name">LIAM LAWSON</h2>
+              <p class="driver-team">RACING BULLS</p>
+              <div class="driver-nationality">
+                <span class="flag">🇳🇿</span>
+                NEW ZEALAND
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Driver 8: Arvid Lindblad -->
+        <div class="driver-card" data-team="racingbulls" id="LIN" data-driver="arvid_lindblad">
+          <div class="driver-image-container">
+            <img src="kép/ARVID_LINDBLAD.png" alt="Arvid Lindblad" class="driver-image">
+            <div class="team-logo">Racing Bulls</div>
+            <div class="driver-glow"></div>
+          </div>
+          <div class="driver-info">
+            <div class="nametag" id="LIN_nametag">
+              <h2 class="driver-name">ARVID LINDBLAD</h2>
+              <p class="driver-team">RACING BULLS</p>
+              <div class="driver-nationality">
+                <span class="flag">🇬🇧</span>
+                UNITED KINGDOM
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ========== McLAREN ========== -->
+        <!-- Driver 9: Lando Norris -->
+        <div class="driver-card" data-team="mclaren" id="NOR" data-driver="lando_norris">
+          <div class="driver-image-container">
+            <img src="kép/LANDO_NORRIS.png" alt="Lando Norris" class="driver-image">
+            <div class="team-logo">McLaren</div>
+            <div class="driver-glow"></div>
+          </div>
+          <div class="driver-info">
+            <div class="nametag" id="NOR_nametag">
+              <h2 class="driver-name">LANDO NORRIS</h2>
+              <p class="driver-team">McLAREN F1 TEAM</p>
+              <div class="driver-nationality">
+                <span class="flag">🇬🇧</span>
+                UNITED KINGDOM
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Driver 10: Oscar Piastri -->
+        <div class="driver-card" data-team="mclaren" id="PIA" data-driver="oscar_piastri">
+          <div class="driver-image-container">
+            <img src="kép/OSCAR_PIASTRI.png" alt="Oscar Piastri" class="driver-image">
+            <div class="team-logo">McLaren</div>
+            <div class="driver-glow"></div>
+          </div>
+          <div class="driver-info">
+            <div class="nametag" id="PIA_nametag">
+              <h2 class="driver-name">OSCAR PIASTRI</h2>
+              <p class="driver-team">McLAREN F1 TEAM</p>
+              <div class="driver-nationality">
+                <span class="flag">🇦🇺</span>
+                AUSTRALIA
+              </div>
+            </div>
+          </div>
+        </div>
+        
         <!-- ========== HAAS ========== -->
-        <div class="team-card" data-team="haas" id="HAA" data-team-id="haas">
-          <div class="team-image-container">
-            <img src="kép/HAAS_CAR.png" alt="Haas" class="team-image">
-            <div class="team-name-logo">Haas</div>
-            <div class="team-glow"></div>
+        <!-- Driver 11: Esteban Ocon -->
+        <div class="driver-card" data-team="haas" id="OCO" data-driver="esteban_ocon">
+          <div class="driver-image-container">
+            <img src="kép/ESTEBAN_OCON.png" alt="Esteban Ocon" class="driver-image">
+            <div class="team-logo">Haas</div>
+            <div class="driver-glow"></div>
           </div>
-          <div class="team-info">
-            <div class="nametag" id="HAA_nametag">
-              <h2 class="team-name">MONEYGRAM HAAS</h2>
-              <p class="team-principal">Ayao Komatsu</p>
-              <div class="team-details">
-                <span class="flag">🇺🇸</span>
-                KANNAPOLIS
+          <div class="driver-info">
+            <div class="nametag" id="OCO_nametag">
+              <h2 class="driver-name">ESTEBAN OCON</h2>
+              <p class="driver-team">MONEYGRAM HAAS F1 TEAM</p>
+              <div class="driver-nationality">
+                <span class="flag">🇫🇷</span>
+                FRANCE
               </div>
             </div>
           </div>
         </div>
-
-        <!-- ========== AUDI ========== -->
-        <div class="team-card" data-team="audi" id="AUD" data-team-id="audi">
-          <div class="team-image-container">
-            <img src="kép/AUDI_CAR.png" alt="Audi" class="team-image">
-            <div class="team-name-logo">Audi</div>
-            <div class="team-glow"></div>
+        
+        <!-- Driver 12: Oliver Bearman -->
+        <div class="driver-card" data-team="haas" id="BEA" data-driver="oliver_bearman">
+          <div class="driver-image-container">
+            <img src="kép/OLIVER_BEARMAN.png" alt="Oliver Bearman" class="driver-image">
+            <div class="team-logo">Haas</div>
+            <div class="driver-glow"></div>
           </div>
-          <div class="team-info">
-            <div class="nametag" id="AUD_nametag">
-              <h2 class="team-name">AUDI F1 TEAM</h2>
-              <p class="team-principal">Mattia Binotto</p>
-              <div class="team-details">
-                <span class="flag">🇩🇪</span>
-                HINWIL
+          <div class="driver-info">
+            <div class="nametag" id="BEA_nametag">
+              <h2 class="driver-name">OLIVER BEARMAN</h2>
+              <p class="driver-team">MONEYGRAM HAAS F1 TEAM</p>
+              <div class="driver-nationality">
+                <span class="flag">🇬🇧</span>
+                UNITED KINGDOM
               </div>
             </div>
           </div>
         </div>
-
+        
         <!-- ========== CADILLAC ========== -->
-        <div class="team-card" data-team="cadillac" id="CAD" data-team-id="cadillac">
-          <div class="team-image-container">
-            <img src="kép/CADILLAC_CAR.png" alt="Cadillac" class="team-image">
-            <div class="team-name-logo">Cadillac</div>
-            <div class="team-glow"></div>
+        <!-- Driver 13: Sergio Perez -->
+        <div class="driver-card" data-team="cadillac" id="PER" data-driver="sergio_perez">
+          <div class="driver-image-container">
+            <img src="kép/SERGIO_PEREZ.png" alt="Sergio Perez" class="driver-image">
+            <div class="team-logo">Cadillac</div>
+            <div class="driver-glow"></div>
           </div>
-          <div class="team-info">
-            <div class="nametag" id="CAD_nametag">
-              <h2 class="team-name">CADILLAC RACING</h2>
-              <p class="team-principal">Mario Andretti</p>
-              <div class="team-details">
-                <span class="flag">🇺🇸</span>
-                CHARLOTTE
+          <div class="driver-info">
+            <div class="nametag" id="PER_nametag">
+              <h2 class="driver-name">SERGIO PEREZ</h2>
+              <p class="driver-team">CADILLAC RACING</p>
+              <div class="driver-nationality">
+                <span class="flag">🇲🇽</span>
+                MEXICO
               </div>
             </div>
           </div>
         </div>
-
+        
+        <!-- Driver 14: Valtteri Bottas -->
+        <div class="driver-card" data-team="cadillac" id="BOT" data-driver="valtteri_bottas">
+          <div class="driver-image-container">
+            <img src="kép/VALTTERI_BOTTAS.png" alt="Valtteri Bottas" class="driver-image">
+            <div class="team-logo">Cadillac</div>
+            <div class="driver-glow"></div>
+          </div>
+          <div class="driver-info">
+            <div class="nametag" id="BOT_nametag">
+              <h2 class="driver-name">VALTTERI BOTTAS</h2>
+              <p class="driver-team">CADILLAC RACING</p>
+              <div class="driver-nationality">
+                <span class="flag">🇫🇮</span>
+                FINLAND
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ========== WILLIAMS ========== -->
+        <!-- Driver 15: Carlos Sainz -->
+        <div class="driver-card" data-team="williams" id="SAI" data-driver="carlos_sainz">
+          <div class="driver-image-container">
+            <img src="kép/CARLOS_SAINZ.png" alt="Carlos Sainz" class="driver-image">
+            <div class="team-logo">Williams</div>
+            <div class="driver-glow"></div>
+          </div>
+          <div class="driver-info">
+            <div class="nametag" id="SAI_nametag">
+              <h2 class="driver-name">CARLOS SAINZ</h2>
+              <p class="driver-team">WILLIAMS RACING</p>
+              <div class="driver-nationality">
+                <span class="flag">🇪🇸</span>
+                SPAIN
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Driver 16: Alexander Albon -->
+        <div class="driver-card" data-team="williams" id="ALB" data-driver="alexander_albon">
+          <div class="driver-image-container">
+            <img src="kép/ALEXANDER_ALBON.png" alt="Alexander Albon" class="driver-image">
+            <div class="team-logo">Williams</div>
+            <div class="driver-glow"></div>
+          </div>
+          <div class="driver-info">
+            <div class="nametag" id="ALB_nametag">
+              <h2 class="driver-name">ALEXANDER ALBON</h2>
+              <p class="driver-team">WILLIAMS RACING</p>
+              <div class="driver-nationality">
+                <span class="flag">🇹🇭</span>
+                THAILAND
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ========== AUDI ========== -->
+        <!-- Driver 17: Nico Hülkenberg -->
+        <div class="driver-card" data-team="audi" id="HUL" data-driver="nico_hulkenberg">
+          <div class="driver-image-container">
+            <img src="kép/NICO_HULKENBERG.png" alt="Nico Hülkenberg" class="driver-image">
+            <div class="team-logo">Audi</div>
+            <div class="driver-glow"></div>
+          </div>
+          <div class="driver-info">
+            <div class="nametag" id="HUL_nametag">
+              <h2 class="driver-name">NICO HÜLKENBERG</h2>
+              <p class="driver-team">AUDI F1 TEAM</p>
+              <div class="driver-nationality">
+                <span class="flag">🇩🇪</span>
+                GERMANY
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Driver 18: Gabriel Bortoleto -->
+        <div class="driver-card" data-team="audi" id="BOR" data-driver="gabriel_bortoleto">
+          <div class="driver-image-container">
+            <img src="kép/GABRIEL_BORTOLETO.png" alt="Gabriel Bortoleto" class="driver-image">
+            <div class="team-logo">Audi</div>
+            <div class="driver-glow"></div>
+          </div>
+          <div class="driver-info">
+            <div class="nametag" id="BOR_nametag">
+              <h2 class="driver-name">GABRIEL BORTOLETO</h2>
+              <p class="driver-team">AUDI F1 TEAM</p>
+              <div class="driver-nationality">
+                <span class="flag">🇧🇷</span>
+                BRAZIL
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ========== ASTON MARTIN ========== -->
+        <!-- Driver 19: Fernando Alonso -->
+        <div class="driver-card" data-team="astonmartin" id="ALO" data-driver="fernando_alonso">
+          <div class="driver-image-container">
+            <img src="kép/FERNANDO_ALONSO.png" alt="Fernando Alonso" class="driver-image">
+            <div class="team-logo">Aston Martin</div>
+            <div class="driver-glow"></div>
+          </div>
+          <div class="driver-info">
+            <div class="nametag" id="ALO_nametag">
+              <h2 class="driver-name">FERNANDO ALONSO</h2>
+              <p class="driver-team">ASTON MARTIN ARAMCO</p>
+              <div class="driver-nationality">
+                <span class="flag">🇪🇸</span>
+                SPAIN
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Driver 20: Lance Stroll -->
+        <div class="driver-card" data-team="astonmartin" id="STR" data-driver="lance_stroll">
+          <div class="driver-image-container">
+            <img src="kép/LANCE_STROLL.png" alt="Lance Stroll" class="driver-image">
+            <div class="team-logo">Aston Martin</div>
+            <div class="driver-glow"></div>
+          </div>
+          <div class="driver-info">
+            <div class="nametag" id="STR_nametag">
+              <h2 class="driver-name">LANCE STROLL</h2>
+              <p class="driver-team">ASTON MARTIN ARAMCO</p>
+              <div class="driver-nationality">
+                <span class="flag">🇨🇦</span>
+                CANADA
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ========== ALPINE ========== -->
+        <!-- Driver 21: Pierre Gasly -->
+        <div class="driver-card" data-team="alpine" id="GAS" data-driver="pierre_gasly">
+          <div class="driver-image-container">
+            <img src="kép/PIERRE_GASLY.png" alt="Pierre Gasly" class="driver-image">
+            <div class="team-logo">Alpine</div>
+            <div class="driver-glow"></div>
+          </div>
+          <div class="driver-info">
+            <div class="nametag" id="GAS_nametag">
+              <h2 class="driver-name">PIERRE GASLY</h2>
+              <p class="driver-team">ALPINE F1 TEAM</p>
+              <div class="driver-nationality">
+                <span class="flag">🇫🇷</span>
+                FRANCE
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Driver 22: Franco Colapinto -->
+        <div class="driver-card" data-team="alpine" id="COL" data-driver="franco_colapinto">
+          <div class="driver-image-container">
+            <img src="kép/FRANCO_COLAPINTO.png" alt="Franco Colapinto" class="driver-image">
+            <div class="team-logo">Alpine</div>
+            <div class="driver-glow"></div>
+          </div>
+          <div class="driver-info">
+            <div class="nametag" id="COL_nametag">
+              <h2 class="driver-name">FRANCO COLAPINTO</h2>
+              <p class="driver-team">ALPINE F1 TEAM</p>
+              <div class="driver-nationality">
+                <span class="flag">🇦🇷</span>
+                ARGENTINA
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Add more drivers here following the same pattern -->
+         
       </div>
     </div>
   </section>
-
+  
   <?php if ($isLoggedIn): ?>
     <div class="profile-card" id="profileCard">
       <h3><?php echo htmlspecialchars($username); ?>'s Profile</h3>
@@ -475,7 +696,7 @@ if ($isLoggedIn) {
       pc.style.display = pc.style.display === "block" ? "none" : "block";
     }
   </script>
-  <script src="script.js"></script>
+  <script src="/f1fanclub/drivers/drivers_style.css"></script>
 </body>
 
 </html>

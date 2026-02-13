@@ -57,7 +57,7 @@ if ($isLoggedIn) {
 <meta charset="UTF-8">
 <title>Teams – F1 Fan Club</title>
 <link rel="stylesheet" href="/f1fanclub/css/style.css">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;800&display=swap" rel="stylesheet" href="/f1fanclub/teams/teams_style.css">
 </head>
 <body>
 
@@ -100,6 +100,341 @@ if ($isLoggedIn) {
     </div>
   <?php endif; ?>
 </header>
+<section id="teams">
+    
+    <!-- Statistics Panel (hidden by default) -->
+    <div class="statistics-panel" id="statistics-panel">
+      <button class="close-panel" id="close-panel">×</button>
+      <div class="statistics-header">
+        <div class="stats-image-container">
+          <img id="stats-team-image" src="" alt="Team" class="stats-team-image">
+          <div class="glow-effect"></div>
+        </div>
+        <div class="stats-team-info">
+          <h2 id="stats-team-name">TEAM NAME</h2>
+          <p id="stats-team-base">BASE LOCATION</p>
+          <div class="stats-team-nationality">
+            <span id="stats-flag">🏁</span>
+            <span id="stats-country">COUNTRY</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Stats Toggle -->
+      <div class="stats-toggle">
+        <button class="toggle-btn active" data-period="current">
+          <span class="toggle-text">2025 SEASON</span>
+          <span class="toggle-glow"></span>
+        </button>
+        <button class="toggle-btn" data-period="career">
+          <span class="toggle-text">TEAM HISTORY</span>
+          <span class="toggle-glow"></span>
+        </button>
+      </div>
+      
+      <!-- Statistics Content - 2x3 Grid -->
+      <div class="statistics-content">
+        <div class="stats-grid" id="current-stats">
+          <!-- Current Season Stats - Row 1 -->
+          <div class="stat-item">
+            <span class="stat-label">POSITION</span>
+            <span class="stat-value" id="current-position">1st</span>
+            <div class="stat-glow"></div>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">POINTS</span>
+            <span class="stat-value" id="current-points">654</span>
+            <div class="stat-glow"></div>
+          </div>
+          
+          <!-- Current Season Stats - Row 2 -->
+          <div class="stat-item">
+            <span class="stat-label">WINS</span>
+            <span class="stat-value" id="current-wins">21</span>
+            <div class="stat-glow"></div>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">PODIUMS</span>
+            <span class="stat-value" id="current-podiums">32</span>
+            <div class="stat-glow"></div>
+          </div>
+          
+          <!-- Current Season Stats - Row 3 -->
+          <div class="stat-item">
+            <span class="stat-label">POLES</span>
+            <span class="stat-value" id="current-poles">14</span>
+            <div class="stat-glow"></div>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">FASTEST LAPS</span>
+            <span class="stat-value" id="current-fastest-laps">12</span>
+            <div class="stat-glow"></div>
+          </div>
+        </div>
+        
+        <div class="stats-grid" id="career-stats" style="display: none;">
+          <!-- Career Stats - Row 1 -->
+          <div class="stat-item">
+            <span class="stat-label">GRAND PRIX</span>
+            <span class="stat-value" id="career-races">385</span>
+            <div class="stat-glow"></div>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">WINS</span>
+            <span class="stat-value" id="career-wins">124</span>
+            <div class="stat-glow"></div>
+          </div>
+          
+          <!-- Career Stats - Row 2 -->
+          <div class="stat-item">
+            <span class="stat-label">PODIUMS</span>
+            <span class="stat-value" id="career-podiums">298</span>
+            <div class="stat-glow"></div>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">POLES</span>
+            <span class="stat-value" id="career-poles">133</span>
+            <div class="stat-glow"></div>
+          </div>
+          
+          <!-- Career Stats - Row 3 -->
+          <div class="stat-item">
+            <span class="stat-label">FASTEST LAPS</span>
+            <span class="stat-value" id="career-fastest-laps">128</span>
+            <div class="stat-glow"></div>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">CONSTRUCTORS</span>
+            <span class="stat-value" id="career-titles">8</span>
+            <div class="stat-glow"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- F1 Scroll Buttons -->
+    <div class="scroll-button left" id="scroll-left">
+      <div class="accent-line"></div>
+    </div>
+    
+    <div class="scroll-button right" id="scroll-right">
+      <div class="accent-line"></div>
+    </div>
+    
+    <div class="teams-container">
+      <div class="teams-wrapper" id="teams-wrapper">
+        <!-- ========== RED BULL ========== -->
+        <div class="team-card" data-team="redbull" id="RBR" data-team-id="red_bull">
+          <div class="team-image-container">
+            <img src="kép/RED_BULL_CAR.png" alt="Red Bull Racing" class="team-image">
+            <div class="team-name-logo">Red Bull Racing</div>
+            <div class="team-glow"></div>
+          </div>
+          <div class="team-info">
+            <div class="nametag" id="RBR_nametag">
+              <h2 class="team-name">RED BULL RACING</h2>
+              <p class="team-principal">Christian Horner</p>
+              <div class="team-details">
+                <span class="flag">🇦🇹</span>
+                MILTON KEYNES
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ========== FERRARI ========== -->
+        <div class="team-card" data-team="ferrari" id="FER" data-team-id="ferrari">
+          <div class="team-image-container">
+            <img src="kép/FERRARI_CAR.png" alt="Ferrari" class="team-image">
+            <div class="team-name-logo">Ferrari</div>
+            <div class="team-glow"></div>
+          </div>
+          <div class="team-info">
+            <div class="nametag" id="FER_nametag">
+              <h2 class="team-name">SCUDERIA FERRARI</h2>
+              <p class="team-principal">Frédéric Vasseur</p>
+              <div class="team-details">
+                <span class="flag">🇮🇹</span>
+                MARANELLO
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ========== MERCEDES ========== -->
+        <div class="team-card" data-team="mercedes" id="MER" data-team-id="mercedes">
+          <div class="team-image-container">
+            <img src="kép/MERCEDES_CAR.png" alt="Mercedes" class="team-image">
+            <div class="team-name-logo">Mercedes</div>
+            <div class="team-glow"></div>
+          </div>
+          <div class="team-info">
+            <div class="nametag" id="MER_nametag">
+              <h2 class="team-name">MERCEDES-AMG</h2>
+              <p class="team-principal">Toto Wolff</p>
+              <div class="team-details">
+                <span class="flag">🇩🇪</span>
+                BRACKLEY
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ========== McLAREN ========== -->
+        <div class="team-card" data-team="mclaren" id="MCL" data-team-id="mclaren">
+          <div class="team-image-container">
+            <img src="kép/MCLAREN_CAR.png" alt="McLaren" class="team-image">
+            <div class="team-name-logo">McLaren</div>
+            <div class="team-glow"></div>
+          </div>
+          <div class="team-info">
+            <div class="nametag" id="MCL_nametag">
+              <h2 class="team-name">McLAREN F1 TEAM</h2>
+              <p class="team-principal">Andrea Stella</p>
+              <div class="team-details">
+                <span class="flag">🇬🇧</span>
+                WOKING
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ========== ASTON MARTIN ========== -->
+        <div class="team-card" data-team="astonmartin" id="AST" data-team-id="aston_martin">
+          <div class="team-image-container">
+            <img src="kép/ASTON_MARTIN_CAR.png" alt="Aston Martin" class="team-image">
+            <div class="team-name-logo">Aston Martin</div>
+            <div class="team-glow"></div>
+          </div>
+          <div class="team-info">
+            <div class="nametag" id="AST_nametag">
+              <h2 class="team-name">ASTON MARTIN</h2>
+              <p class="team-principal">Mike Krack</p>
+              <div class="team-details">
+                <span class="flag">🇬🇧</span>
+                SILVERSTONE
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ========== ALPINE ========== -->
+        <div class="team-card" data-team="alpine" id="ALP" data-team-id="alpine">
+          <div class="team-image-container">
+            <img src="kép/ALPINE_CAR.png" alt="Alpine" class="team-image">
+            <div class="team-name-logo">Alpine</div>
+            <div class="team-glow"></div>
+          </div>
+          <div class="team-info">
+            <div class="nametag" id="ALP_nametag">
+              <h2 class="team-name">ALPINE F1 TEAM</h2>
+              <p class="team-principal">Oliver Oakes</p>
+              <div class="team-details">
+                <span class="flag">🇫🇷</span>
+                ENSTONE
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ========== WILLIAMS ========== -->
+        <div class="team-card" data-team="williams" id="WIL" data-team-id="williams">
+          <div class="team-image-container">
+            <img src="kép/WILLIAMS_CAR.png" alt="Williams" class="team-image">
+            <div class="team-name-logo">Williams</div>
+            <div class="team-glow"></div>
+          </div>
+          <div class="team-info">
+            <div class="nametag" id="WIL_nametag">
+              <h2 class="team-name">WILLIAMS RACING</h2>
+              <p class="team-principal">James Vowles</p>
+              <div class="team-details">
+                <span class="flag">🇬🇧</span>
+                GROVE
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ========== RACING BULLS ========== -->
+        <div class="team-card" data-team="racingbulls" id="RB" data-team-id="racing_bulls">
+          <div class="team-image-container">
+            <img src="kép/RACING_BULLS_CAR.png" alt="Racing Bulls" class="team-image">
+            <div class="team-name-logo">Racing Bulls</div>
+            <div class="team-glow"></div>
+          </div>
+          <div class="team-info">
+            <div class="nametag" id="RB_nametag">
+              <h2 class="team-name">RACING BULLS</h2>
+              <p class="team-principal">Laurent Mekies</p>
+              <div class="team-details">
+                <span class="flag">🇮🇹</span>
+                FAENZA
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ========== HAAS ========== -->
+        <div class="team-card" data-team="haas" id="HAA" data-team-id="haas">
+          <div class="team-image-container">
+            <img src="kép/HAAS_CAR.png" alt="Haas" class="team-image">
+            <div class="team-name-logo">Haas</div>
+            <div class="team-glow"></div>
+          </div>
+          <div class="team-info">
+            <div class="nametag" id="HAA_nametag">
+              <h2 class="team-name">MONEYGRAM HAAS</h2>
+              <p class="team-principal">Ayao Komatsu</p>
+              <div class="team-details">
+                <span class="flag">🇺🇸</span>
+                KANNAPOLIS
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ========== AUDI ========== -->
+        <div class="team-card" data-team="audi" id="AUD" data-team-id="audi">
+          <div class="team-image-container">
+            <img src="kép/AUDI_CAR.png" alt="Audi" class="team-image">
+            <div class="team-name-logo">Audi</div>
+            <div class="team-glow"></div>
+          </div>
+          <div class="team-info">
+            <div class="nametag" id="AUD_nametag">
+              <h2 class="team-name">AUDI F1 TEAM</h2>
+              <p class="team-principal">Mattia Binotto</p>
+              <div class="team-details">
+                <span class="flag">🇩🇪</span>
+                HINWIL
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ========== CADILLAC ========== -->
+        <div class="team-card" data-team="cadillac" id="CAD" data-team-id="cadillac">
+          <div class="team-image-container">
+            <img src="kép/CADILLAC_CAR.png" alt="Cadillac" class="team-image">
+            <div class="team-name-logo">Cadillac</div>
+            <div class="team-glow"></div>
+          </div>
+          <div class="team-info">
+            <div class="nametag" id="CAD_nametag">
+              <h2 class="team-name">CADILLAC RACING</h2>
+              <p class="team-principal">Mario Andretti</p>
+              <div class="team-details">
+                <span class="flag">🇺🇸</span>
+                CHARLOTTE
+              </div>
+            </div>
+          </div>
+        </div>
+         
+      </div>
+    </div>
+  </section>
 
 <?php if ($isLoggedIn): ?>
 <div class="profile-card" id="profileCard">
@@ -114,16 +449,27 @@ if ($isLoggedIn) {
   </form>
 </div>
 <?php endif; ?>
-
-<h1 style="margin-top: 60px; text-align: center; color: white;">Teams Page (Work in Progress)</h1>
-<script>
+<script src="./teams/teams_script.js">
 // Profil kártya kapcsoló
 function toggleProfile() {
   const pc = document.getElementById("profileCard");
   if (!pc) return;
   pc.style.display = pc.style.display === "block" ? "none" : "block";
+
 }
 </script>
-
+<script>
+  // Immediate test to see if script is loading
+  console.log('Inline script test');
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM Content Loaded - checking team cards');
+    const cards = document.querySelectorAll('.team-card');
+    console.log('Team cards found on load:', cards.length);
+    
+    cards.forEach((card, index) => {
+      console.log(`Card ${index}:`, card.getAttribute('data-team-id'));
+    });
+  });
+</script>
 </body>
 </html>

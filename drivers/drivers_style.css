@@ -113,22 +113,41 @@ body {
   padding: 0;
 }
 
-/* DRIVER IMAGE - PERFECTLY CENTERED */
+/* ALAPÁLLAPOT - TELJES ALAK */
+/* ALAPÁLLAPOT - KICSIT LEJJEBB HÚZVA */
 .driver-image {
   position: absolute;
-  bottom: 0;
+  
+  /* EDDIG: 0 volt. MOST: -5% (kicsit lejjebb csúszik) */
+  bottom: -5%; 
+  
   left: 50%;
   transform: translateX(-50%);
-  height: 90%; /* Even taller for desktop */
+  height: 90%; 
   width: auto;
   object-fit: contain;
-  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   filter: grayscale(30%) brightness(0.6);
   z-index: 2;
   margin: 0;
   padding: 0;
+  pointer-events: none; 
 }
-
+/* HOVER EFFEKT - ZOOM ÉS KITÖLTÉS */
+/* HOVER EFFEKT - ARCKÖZELI JAVÍTVA */
+/* KORRIGÁLT HOVER - LEJJEBB HÚZVA */
+/* HOVER EFFEKT - MÉG LEJJEBB POZICIONÁLVA */
+.driver-card:hover .driver-image {
+  /* Marad a méret */
+  height: 150% !important; 
+  
+  /* EDDIG: -50% volt. MOST: -60% (még lejjebb húzzuk a képet) 
+     Ha még mindig magas, írd át -65%-ra vagy -70%-ra! */
+  bottom: -60% !important; 
+  
+  filter: grayscale(0%) brightness(1.1);
+  transform: translateX(-50%) scale(1.05);
+}
 /* TEAM LOGO */
 .team-logo {
   position: absolute;

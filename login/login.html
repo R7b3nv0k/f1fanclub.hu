@@ -3,34 +3,58 @@
 <head>
   <meta charset="UTF-8">
   <title>Bejelentkezés – F1 Fan Club</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #000 0%, #1a1a1a 40%, #111 100%);
-      color: #eee;
-      height: 100vh;
+    /* ===== TELJES RESET ÉS GLOBÁLIS STÍLUSOK (register.html-ből másolva) ===== */
+    * {
       margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0a0a0a;
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
+      position: relative;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 20px;
     }
 
-    /* F1 háttér animáció */
+    /* F1-es háttér gradienstel */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 50%, rgba(225, 6, 0, 0.05) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 80%, rgba(225, 6, 0, 0.05) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* sebességcsíkok */
     .bg-lines {
-      position: absolute;
+      position: fixed;
       width: 200%;
       height: 200%;
-      background: repeating-linear-gradient(
-        60deg,
-        rgba(225, 6, 0, 0.1) 0px,
-        rgba(225, 6, 0, 0.1) 2px,
-        transparent 2px,
-        transparent 10px
-      );
+      background: repeating-linear-gradient(60deg,
+          rgba(225, 6, 0, 0.03) 0px,
+          rgba(225, 6, 0, 0.03) 2px,
+          transparent 2px,
+          transparent 10px);
       animation: slide 10s linear infinite;
-      opacity: 0.2;
+      opacity: 0.3;
       z-index: -1;
+      top: 0;
+      left: 0;
     }
 
     @keyframes slide {
@@ -38,84 +62,342 @@
       to { transform: translateX(-200px); }
     }
 
+    /* ----- bejelentkező doboz – teljesen megegyezik a .register-box-szal ----- */
     .login-box {
-      background: #151515;
-      padding: 40px 35px;
-      border-radius: 12px;
-      box-shadow: 0 0 20px rgba(225, 6, 0, 0.3);
-      width: 330px;
-      text-align: center;
-      border-top: 2px solid #e10600;
+      background: linear-gradient(145deg, #111111 0%, #1a1a1a 100%);
+      padding: 50px 40px;
+      border-radius: 30px;
+      width: 100%;
+      max-width: 450px;
+      margin: 0 auto;
+      border: 1px solid rgba(225, 6, 0, 0.3);
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8),
+                  0 0 50px rgba(225, 6, 0, 0.2);
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      animation: slideInUp 0.8s ease-out;
+      transition: all 0.5s ease;
     }
 
+    /* F1-es felső csík */
+    .login-box::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, 
+                  transparent 0%, 
+                  #e10600 20%, 
+                  #e10600 80%, 
+                  transparent 100%);
+      z-index: 2;
+    }
+
+    /* izzó effekt */
+    .login-box::after {
+      content: "";
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, 
+                  transparent 30%, 
+                  rgba(225, 6, 0, 0.15) 50%, 
+                  transparent 70%);
+      border-radius: 32px;
+      z-index: -1;
+      animation: borderGlow 4s infinite;
+    }
+
+    @keyframes borderGlow {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.8; }
+    }
+
+    /* logó + cím */
     .logo-title {
-      font-size: 26px;
+      font-size: 32px;
       color: white;
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 10px;
+      letter-spacing: 2px;
+      margin-bottom: 20px;
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 8px;
+      gap: 12px;
+      position: relative;
+      z-index: 2;
     }
 
     .logo-title img {
-      width: 40px;
-      filter: drop-shadow(0 0 6px rgba(225, 6, 0, 0.8));
+      width: 50px;
+      filter: drop-shadow(0 0 10px currentColor);
+      transition: transform 0.3s ease;
+    }
+
+    .logo-title:hover img {
+      transform: rotate(10deg) scale(1.1);
     }
 
     h2 {
-      margin: 0 0 20px;
+      margin: 0 0 30px;
       color: #e10600;
-      font-weight: 600;
+      font-weight: 800;
+      font-size: 2.2rem;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      position: relative;
+      display: inline-block;
+      width: 100%;
+      text-align: center;
     }
 
-    input {
+    h2::after {
+      content: "";
+      position: absolute;
+      bottom: -12px;
+      left: 0;
       width: 100%;
-      padding: 12px;
-      margin: 10px 0 20px;
+      height: 4px;
+      background: linear-gradient(90deg, 
+                  transparent 0%, 
+                  #e10600 20%, 
+                  #e10600 80%, 
+                  transparent 100%);
+      border-radius: 2px;
+    }
+
+    /* mezőcímkék */
+    .field-label {
+      text-align: left;
+      font-size: 0.9rem;
+      color: #e10600;
+      margin-bottom: 8px;
+      margin-top: 15px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    /* input mezők - pontosan úgy, mint a register.html-ben */
+    input[type="text"],
+    input[type="password"],
+    input[type="email"] {
+      width: 100%;
+      padding: 14px 16px;
+      margin-bottom: 15px;
       border: none;
-      border-radius: 6px;
-      background: #2b2b2b;
+      border-radius: 12px;
+      background: linear-gradient(145deg, #252525 0%, #2b2b2b 100%);
       color: white;
       font-size: 15px;
       outline: none;
-      transition: 0.2s;
+      transition: all 0.3s ease;
+      border-left: 4px solid transparent;
+      font-family: 'Poppins', sans-serif;
     }
 
     input:focus {
       background: #333;
-      box-shadow: 0 0 8px #e10600;
+      border-left: 4px solid #e10600;
+      box-shadow: 0 0 20px rgba(225, 6, 0, 0.3);
+      transform: translateX(5px);
     }
 
-    input[type="submit"] {
+    /* checkbox sor */
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 5px 0 25px 0;
+      color: #ccc;
+      font-size: 0.9rem;
+    }
+
+    .checkbox-row label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      color: #aaa;
+      transition: color 0.2s;
+    }
+
+    .checkbox-row label:hover {
+      color: #e10600;
+    }
+
+    .checkbox-row input[type="checkbox"] {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      background: #2b2b2b;
+      border-radius: 4px;
+      border: 1px solid #555;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .checkbox-row input[type="checkbox"]:checked {
       background: #e10600;
+      border-color: #e10600;
+      position: relative;
+    }
+
+    .checkbox-row input[type="checkbox"]:checked::after {
+      content: "✓";
+      color: white;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .checkbox-row a {
+      color: #e10600;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s;
+      border-bottom: 1px solid transparent;
+    }
+
+    .checkbox-row a:hover {
+      color: white;
+      border-bottom-color: #e10600;
+    }
+
+    /* ===== GOMB STÍLUSOK – MOST MÁR A TELJES REGISTER LOGIKÁVAL ===== */
+    /* Alapértelmezett (nem aktív) gomb – szürke, tiltott, pont mint a register.html-ben */
+    .login-box input[type="submit"] {
+      background: #333;
+      color: #aaa;
+      cursor: not-allowed;
+      font-weight: 700;
+      margin-top: 25px;
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      padding: 16px;
+      border: 2px solid #555;
+      border-radius: 50px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      opacity: 0.7;
+      width: 100%;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* Aktív gomb (valid állapot) – ugyanaz a látvány, mint a register.html valid gombja */
+    .login-box input[type="submit"].valid {
+      background: linear-gradient(145deg, #e10600, #ff4d4d);
       color: white;
       cursor: pointer;
-      font-weight: 600;
-      border-radius: 6px;
-      transition: 0.2s;
+      border: 2px solid #e10600;
+      box-shadow: 0 10px 25px rgba(225, 6, 0, 0.4);
+      opacity: 1;
     }
 
-    input[type="submit"]:hover {
-      background: #ff2a2a;
-      transform: scale(1.03);
+    .login-box input[type="submit"].valid:hover {
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 20px 40px rgba(225, 6, 0, 0.6);
     }
 
+    .login-box input[type="submit"].valid:active {
+      transform: translateY(0);
+    }
+
+    /* sebességcsík effekt a gombon */
+    .login-box input[type="submit"]::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg,
+                  transparent 30%,
+                  rgba(255, 255, 255, 0.2) 50%,
+                  transparent 70%);
+      transform: rotate(45deg) translateY(100%);
+      transition: transform 0.8s ease;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .login-box input[type="submit"]:hover::before {
+      transform: rotate(45deg) translateY(-100%);
+    }
+
+    /* vissza linkek */
     .back {
       display: block;
-      margin-top: 15px;
-      color: #ccc;
+      margin-top: 20px;
+      color: #aaa;
       text-decoration: none;
-      font-size: 14px;
-      transition: 0.2s;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-weight: 500;
+      position: relative;
+      z-index: 2;
+      text-align: center;
+    }
+
+    .back:first-of-type {
+      margin-top: 25px;
     }
 
     .back:hover {
-      color: #fff;
-      text-shadow: 0 0 6px rgba(255,255,255,0.4);
+      color: #e10600;
+      transform: translateX(5px);
+      text-shadow: 0 0 10px rgba(225, 6, 0, 0.5);
+    }
+
+    /* slideInUp animáció */
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* reszponzív finomítás */
+    @media (max-width: 500px) {
+      body {
+        padding: 15px;
+      }
+      .login-box {
+        padding: 35px 25px;
+      }
+      .logo-title {
+        font-size: 26px;
+      }
+      .logo-title img {
+        width: 40px;
+      }
+      h2 {
+        font-size: 1.8rem;
+      }
+      input[type="text"],
+      input[type="password"],
+      .login-box input[type="submit"] {
+        padding: 12px 14px;
+        font-size: 1rem;
+      }
     }
   </style>
 </head>
@@ -124,28 +406,74 @@
 
 <div class="bg-lines"></div>
 
-<form class="login-box" action="/f1fanclub/login/login.php" method="post">
+<form class="login-box" id="loginForm" action="/f1fanclub/login/login.php" method="post">
   
-  <div class="logo-title">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg">
-    Fan Club
-  </div>
+
 
   <h2>Bejelentkezés</h2>
 
-  <input type="text" name="username" placeholder="Felhasználónév" required>
-  <input type="password" name="password" placeholder="Jelszó" required>
-<div style="text-align: left; margin-bottom: 20px; color: #ccc; font-size: 14px;">
-    <input type="checkbox" name="remember_me" id="remember_me" style="width: auto; margin: 0 5px 0 0;">
-    <label for="remember_me">Emlékezz rám</label>
-    <a href="/f1fanclub/profile/forgot.php" style="float: right; color: #e10600; text-decoration: none;">Elfelejtett jelszó?</a>
+  <div class="field-label">Felhasználónév</div>
+  <input type="text" name="username" id="username" placeholder="pl.: hamiltonfan44" required>
+
+  <div class="field-label">Jelszó</div>
+  <input type="password" name="password" id="password" placeholder="••••••••" required>
+
+  <div class="checkbox-row">
+    <label>
+      <input type="checkbox" name="remember_me" id="remember_me">
+      <span>Emlékezz rám</span>
+    </label>
+    <a href="/f1fanclub/profile/forgot.php">Elfelejtett jelszó?</a>
   </div>
 
-  <input type="submit" value="Bejelentkezem">
+  <input type="submit" value="Bejelentkezem" id="submitBtn">
 
   <a href="/f1fanclub/index.php" class="back">← Vissza a főoldalra</a>
   
 </form>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const username = document.getElementById('username');
+    const password = document.getElementById('password');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    // Függvény ami ellenőrzi, hogy minden mező ki van-e töltve
+    function checkFormValidity() {
+      const isUsernameValid = username.value.trim() !== '';
+      const isPasswordValid = password.value.trim() !== '';
+      
+      return isUsernameValid && isPasswordValid;
+    }
+    
+    // Gomb állapotának frissítése
+    function updateButtonState() {
+      const isValid = checkFormValidity();
+      
+      if (isValid) {
+        submitBtn.classList.add('valid');
+        submitBtn.disabled = false;
+      } else {
+        submitBtn.classList.remove('valid');
+        submitBtn.disabled = true;
+      }
+    }
+    
+    // Eseményfigyelők hozzáadása
+    username.addEventListener('input', updateButtonState);
+    password.addEventListener('input', updateButtonState);
+    
+    // Kezdeti állapot beállítása
+    updateButtonState();
+    
+    // Űrlap elküldésének megakadályozása, ha a gomb tiltott
+    submitBtn.addEventListener('click', function(e) {
+      if (!checkFormValidity()) {
+        e.preventDefault();
+      }
+    });
+  });
+</script>
 
 </body>
 </html>

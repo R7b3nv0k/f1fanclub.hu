@@ -2,7 +2,6 @@
 // live.php - HELYEZD A /race MAPPÁBA!
 session_start();
 
-// --- ADATBÁZIS & LOGIN A FEJLÉCHEZ ---
 $DB_HOST = "localhost";
 $DB_USER = "swmjndga_swmjndga";
 $DB_PASS = "Teszt1234!";
@@ -12,33 +11,23 @@ $conn = new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME);
 if ($conn->connect_error) { die("DB Error"); }
 
 $isLoggedIn = isset($_SESSION['username']);
-$username   = $isLoggedIn ? $_SESSION['username'] : null;
+$username = $isLoggedIn ? $_SESSION['username'] : null;
 
 function getTeamColor($team) {
     switch ($team) {
-        case 'Red Bull':      return '#1E41FF';
-        case 'Ferrari':       return '#DC0000';
-        case 'Mercedes':      return '#00D2BE';
-        case 'McLaren':       return '#FF8700';
-        case 'Aston Martin':  return '#006F62';
-        case 'Alpine':        return '#0090FF';
-        case 'Williams':      return '#00A0DE';
-        case 'RB':            return '#2b2bff';
-        case 'Kick Sauber':   return '#52E252';
-        case 'Haas F1 Team':  return '#B6BABD';
-        default:              return '#ffffff';
+        case 'Red Bull': return '#1E41FF'; case 'Ferrari': return '#DC0000'; case 'Mercedes': return '#00D2BE';
+        case 'McLaren': return '#FF8700'; case 'Aston Martin': return '#006F62'; case 'Alpine': return '#0090FF';
+        case 'Williams': return '#00A0DE'; case 'RB': return '#2b2bff'; case 'Audi': return '#e3000f';
+        case 'Haas F1 Team': return '#B6BABD'; case 'Cadillac': return '#1b1b1b'; default: return '#ffffff';
     }
 }
 
-$profile_image = null; $fav_team = null; $teamColor = '#ffffff';
+$profile_image = null; $teamColor = '#ffffff';
 if ($isLoggedIn) {
     $stmt = $conn->prepare("SELECT profile_image, fav_team FROM users WHERE username=?");
-    $stmt->bind_param("s", $username);
-    $stmt->execute();
+    $stmt->bind_param("s", $username); $stmt->execute();
     $row = $stmt->get_result()->fetch_assoc();
-    $profile_image = $row['profile_image'] ?? null;
-    $fav_team      = $row['fav_team'] ?? null;
-    $teamColor     = getTeamColor($fav_team);
+    $profile_image = $row['profile_image'] ?? null; $teamColor = getTeamColor($row['fav_team'] ?? null);
     $stmt->close();
 }
 ?>
@@ -52,100 +41,56 @@ if ($isLoggedIn) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;0,900;1,400&family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
     <style>
-        /* --- MODERN F1 ÉLŐ KÖZVETÍTÉS DIZÁJN --- */
-        body {
-            background-color: #050505;
-            background-image: radial-gradient(circle at 50% 0%, #1a0505 0%, #050505 60%);
-            background-attachment: fixed;
-            font-family: 'Montserrat', sans-serif;
-            color: #fff;
-        }
-
-        /* Szélesebb konténer a TV grafikához */
-        .live-container { 
-            max-width: 1500px; /* Szélesebb lett! */
-            width: 95%; 
-            margin: 40px auto; 
-            padding: 20px; 
-        }
+        body { background-color: #050505; background-image: radial-gradient(circle at 50% 0%, #1a0505 0%, #050505 60%); background-attachment: fixed; font-family: 'Montserrat', sans-serif; color: #fff; }
+        .live-container { max-width: 1500px; width: 95%; margin: 40px auto; padding: 20px; }
         
-        .race-header { 
-            display: flex; justify-content: space-between; align-items: center; 
-            background: rgba(15, 15, 20, 0.8); backdrop-filter: blur(10px);
-            padding: 25px 30px; border-radius: 12px; 
-            border-bottom: 4px solid #e10600; margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
+        .race-header { display: flex; justify-content: space-between; align-items: center; background: rgba(15, 15, 20, 0.8); backdrop-filter: blur(10px); padding: 25px 30px; border-radius: 12px; border-bottom: 4px solid #e10600; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .race-header h1 { margin: 0; font-size: 2.2rem; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; }
         .lap-counter { font-size: 2.8rem; font-weight: 900; color: #fff; font-family: 'Roboto Mono', monospace; line-height: 1; }
         .lap-label { font-size: 1rem; color: #888; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; margin-bottom: 5px; text-align:right;}
         
-        /* --- ANIMÁLT TABELLA GRID --- */
-        .leaderboard-header {
-            display: grid;
-            grid-template-columns: 80px 3.5fr 2.5fr 200px 150px 120px; /* Új oszlop arányok */
-            padding: 10px 20px;
-            color: #888;
-            text-transform: uppercase;
-            font-size: 0.85rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            border-bottom: 2px solid #333;
-            margin-bottom: 10px;
-        }
-
-        .leaderboard-grid {
-            position: relative;
-            width: 100%;
-        }
-
-        .telemetry-row {
-            position: absolute;
-            left: 0; right: 0;
-            height: 70px; /* Magasabb sor a képeknek */
-            display: grid;
-            grid-template-columns: 80px 3.5fr 2.5fr 200px 150px 120px;
-            align-items: center;
-            background: linear-gradient(90deg, #151515, #0f0f0f);
-            border-radius: 8px;
-            border-left: 4px solid transparent;
-            padding: 0 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
-        }
-
-        .telemetry-row.leader {
-            border-left-color: #e10600;
-            background: linear-gradient(90deg, rgba(225,6,0,0.1), #0f0f0f);
-        }
+        .indicators { display: flex; gap: 15px; margin-top: 10px; }
+        .indicator-badge { padding: 5px 15px; border-radius: 6px; font-weight: 800; font-size: 0.9rem; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
+        .weather-sunny { background: rgba(255, 204, 0, 0.1); color: #ffcc00; border: 1px solid #ffcc00; }
+        .weather-rain { background: rgba(0, 122, 255, 0.1); color: #007aff; border: 1px solid #007aff; }
+        .sc-active { background: rgba(255, 204, 0, 0.2); color: #ffcc00; border: 2px solid #ffcc00; animation: blink 1s infinite; }
+        
+        .leaderboard-header { display: grid; grid-template-columns: 80px 3.5fr 2.5fr 200px 150px 120px; padding: 10px 20px; color: #888; text-transform: uppercase; font-size: 0.85rem; font-weight: 700; letter-spacing: 1px; border-bottom: 2px solid #333; margin-bottom: 10px; }
+        .leaderboard-grid { position: relative; width: 100%; transition: height 0.5s; }
+        .telemetry-row { position: absolute; left: 0; right: 0; height: 70px; display: grid; grid-template-columns: 80px 3.5fr 2.5fr 200px 150px 120px; align-items: center; background: linear-gradient(90deg, #151515, #0f0f0f); border-radius: 8px; border-left: 4px solid transparent; padding: 0 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease; }
+        .telemetry-row.leader { border-left-color: #e10600; background: linear-gradient(90deg, rgba(225,6,0,0.1), #0f0f0f); }
+        .telemetry-row.sc-mode { background: linear-gradient(90deg, rgba(255,204,0,0.1), #0f0f0f); border-left-color: #ffcc00; }
 
         .pos-num { font-weight: 900; font-size: 1.6rem; width: 40px; text-align: center; }
         
+        /* FIX DOBOZOK A KÉPEKNEK (Hogy ne ugráljon a szöveg) */
         .driver-info { display: flex; align-items: center; gap: 15px; }
-        
-        /* ÚJ: Pilóta profilképe */
-        .driver-portrait { 
-            width: 50px; 
-            height: 50px; 
+        .driver-pic-box { width: 50px; height: 50px; flex-shrink: 0; border-radius: 50%; border: 2px solid #333; background: rgba(255,255,255,0.05); overflow: hidden; display: flex; align-items: center; justify-content: center; }
+            .driver-portrait { 
+            width: 100%; 
+            height: 100%; 
             object-fit: cover; 
-            border-radius: 50%; 
-            border: 2px solid #333; 
-            background: rgba(255,255,255,0.05); 
+            object-position: top center; /* A kép legtetejéhez (a fejhez) igazítjuk */
+            transform-origin: top center; /* A nagyítás is a fejüktől indul lefelé */
+            transform: scale(1.3); /* Finomított nagyítás, hogy tökéletes portré legyen */
         }
-        
+        .team-logo-box { width: 40px; height: 40px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+        .team-logo-small { max-width: 100%; max-height: 100%; object-fit: contain; }
+
         .driver-name { font-weight: 800; color: #fff; font-size: 1.2rem; }
         .driver-abbr { color: #888; font-size: 0.9rem; font-weight: 700; }
-        
-        .team-logo-small { width: 40px; height: 40px; object-fit: contain; }
         .team-name { font-weight: 600; color: #ccc; font-size: 1rem; }
         
         .gap-text { font-family: 'Roboto Mono', monospace; color: #e10600; font-weight: 700; font-size: 1.2rem; }
+        .gap-sc { color: #ffcc00 !important; }
         
         .tyre-container { display: flex; align-items: center; gap: 10px; }
         .tyre-badge { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; color: #000; font-size: 0.9rem; }
         .tyre-S { background-color: #ff3b30; box-shadow: 0 0 8px rgba(255,59,48,0.5); } 
         .tyre-M { background-color: #ffcc00; box-shadow: 0 0 8px rgba(255,204,0,0.5); } 
         .tyre-H { background-color: #fff; box-shadow: 0 0 8px rgba(255,255,255,0.5); } 
+        .tyre-I { background-color: #34c759; box-shadow: 0 0 8px rgba(52,199,89,0.5); color: #fff;} 
+        .tyre-W { background-color: #007aff; box-shadow: 0 0 8px rgba(0,122,255,0.5); color: #fff;} 
         
         .wear-bar-bg { width: 80px; height: 6px; background: #222; border-radius: 3px; overflow: hidden; }
         .wear-bar-fill { height: 100%; background: #00D2BE; transition: width 0.5s; }
@@ -155,6 +100,13 @@ if ($isLoggedIn) {
         .status-pit { color: #ffcc00; font-weight: 800; animation: blink 1.5s infinite; background: rgba(255,204,0,0.1); padding: 5px 12px; border-radius: 4px; }
         
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+        #postRaceStandings { display: none; margin-top: 60px; animation: fadeIn 1s; }
+        .standings-table { width: 100%; border-collapse: collapse; background: #0d0d0d; border-radius: 12px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.8); }
+        .standings-table th { background: #151515; color: #666; padding: 15px; text-transform: uppercase; text-align: left; }
+        .standings-table td { padding: 15px; border-bottom: 1px solid #1a1a1a; }
+        .standings-table tr:hover { background: #161616; }
+        .champ-gold { color: #d4af37; font-weight: 900; }
     </style>
 </head>
 <body>
@@ -166,44 +118,27 @@ if ($isLoggedIn) {
       <span>Fan Club</span>
     </h1>
   </div>
-
   <nav style="margin: 20px 0;">
-    <a href="/f1fanclub/index.php" style="color:white; margin:0 10px;">Home</a>
-    <a href="/f1fanclub/Championship/championship.php" style="color:white; margin:0 10px;">Championship</a>
-    <a href="/f1fanclub/teams/teams.php" style="color:white; margin:0 10px;">Teams</a>
-    <a href="/f1fanclub/drivers/drivers.php" style="color:white; margin:0 10px;">Drivers</a>
-    <a href="/f1fanclub/news/news.php" style="color:white; margin:0 10px;">Paddock</a>
+      <a href="/f1fanclub/index.php" style="color:white; margin:0 10px;">Home</a>
+      <a href="/f1fanclub/Championship/championship.php" style="color:white; margin:0 10px;">Championship</a>
+      <a href="/f1fanclub/teams/teams.php" style="color:white; margin:0 10px;">Teams</a>
+      <a href="/f1fanclub/drivers/drivers.php" style="color:white; margin:0 10px;">Drivers</a>
+      <a href="/f1fanclub/news/news.php" style="color:white; margin:0 10px;">Paddock</a>
   </nav>
-
-  <?php if ($isLoggedIn): ?>
-    <div class="auth">
-      <div class="welcome">
-        <?php if ($profile_image): ?>
-         <img src="/f1fanclub/uploads/<?php echo htmlspecialchars($profile_image); ?>" class="avatar" alt="Profile" style="width:30px; height:30px; border-radius:50%; vertical-align:middle; object-fit: cover;">
-        <?php endif; ?>
-        <span class="welcome-text">
-          Welcome,
-          <span style="color: <?php echo htmlspecialchars($teamColor); ?>;">
-            <?php echo htmlspecialchars($username); ?>
-          </span>!
-        </span>
-      </div>
-      <a href="/f1fanclub/logout/logout.php" class="btn">Log out</a>
-      <a href="/f1fanclub/profile/profile.php" class="btn">Profile</a>
-    </div>
-  <?php else: ?>
-    <div class="auth">
-      <a href="/f1fanclub/register/register.html" class="btn">Register</a>
-      <a href="/f1fanclub/login/login.html" class="btn">Login</a>
-    </div>
-  <?php endif; ?>
+  <div class="auth">
+      <a href="../index.php" class="btn btn-ghost" style="color: #e10600; border-color: #e10600;">VISSZA A PADDOCKBA</a>
+  </div>
 </header>
 
 <div class="live-container">
     <div class="race-header">
         <div>
             <h1>Canadian Grand Prix <span style="color:#e10600;">2026</span></h1>
-            <span id="raceStatusText" style="color:#e10600; font-weight:800; font-size: 1.1rem; display:inline-block; margin-top:5px;">● LIVE SESSION</span>
+            <div class="indicators">
+                <div id="raceStatusText" class="indicator-badge" style="background: rgba(225,6,0,0.1); color:#e10600; border: 1px solid #e10600;">● LIVE SESSION</div>
+                <div id="weatherBadge" class="indicator-badge weather-sunny"><i class="fas fa-sun"></i> SUNNY</div>
+                <div id="scBadge" class="indicator-badge sc-active" style="display:none;"><i class="fas fa-car"></i> SAFETY CAR</div>
+            </div>
         </div>
         <div>
             <div class="lap-label">Lap</div>
@@ -212,45 +147,67 @@ if ($isLoggedIn) {
     </div>
 
     <div class="leaderboard-header">
-        <div>Poz.</div>
-        <div>Pilóta</div>
-        <div>Csapat</div>
-        <div>Gumi</div>
-        <div>Interval</div>
-        <div>Státusz</div>
+        <div>Poz.</div><div>Pilóta</div><div>Csapat</div><div>Gumi</div><div>Interval</div><div>Státusz</div>
     </div>
 
     <div id="raceGrid" class="leaderboard-grid">
         <p id="loadingMsg" style="text-align:center; color:#666; padding: 20px;">Adatok betöltése...</p>
     </div>
+
+    <div id="postRaceStandings">
+        <h2 style="color: #d4af37; text-align: center; font-size: 2rem; margin-bottom: 20px;"><i class="fas fa-trophy"></i> 2026 Drivers Championship (Mock)</h2>
+        <table class="standings-table">
+            <thead><tr><th>Poz.</th><th>Pilóta</th><th>Csapat</th><th style="text-align:right;">Pontok</th></tr></thead>
+            <tbody id="standingsBody"></tbody>
+        </table>
+    </div>
 </div>
 
 <script>
-    const rowHeight = 80; // 70px magasság + 10px rés a sorok között
+    const rowHeight = 80; 
+    let isFetching = false;
 
     async function fetchData() {
+        if (isFetching) return;
+        isFetching = true;
+        
         try {
             const response = await fetch('race_api.php?action=update');
-            const data = await response.json();
+            const text = await response.text(); 
             
-            if (data.race) {
+            let data;
+            try {
+                data = JSON.parse(text);
+            } catch(e) {
+                console.error("JSON Parse Error:", text);
+                document.getElementById('loadingMsg').innerHTML = '<span style="color:#e10600;">Hiba a szerver kommunikációban!</span>';
+                isFetching = false;
+                return;
+            }
+
+            if (data && data.race) {
                 renderRace(data);
-                
+
                 if (data.race.status === 'running') {
-                    document.getElementById('raceStatusText').innerHTML = '● LIVE SESSION';
-                    document.getElementById('raceStatusText').style.color = '#e10600';
-                    setTimeout(fetchData, 2000); 
+                    let timeout = data.race.safety_car == "1" ? 15000 : 10000;
+                    setTimeout(fetchData, timeout);
                 } else if (data.race.status === 'finished') {
                     document.getElementById('raceStatusText').innerHTML = '<i class="fas fa-flag-checkered"></i> RACE FINISHED';
                     document.getElementById('raceStatusText').style.color = '#fff';
+                    document.getElementById('raceStatusText').style.borderColor = '#fff';
+                    document.getElementById('scBadge').style.display = 'none';
+                    renderStandings(data.standings);
                 } else {
                     document.getElementById('raceStatusText').innerHTML = '⚠️ RACE STOPPED';
                     document.getElementById('raceStatusText').style.color = 'orange';
+                    document.getElementById('raceStatusText').style.borderColor = 'orange';
                     setTimeout(fetchData, 5000);
                 }
             }
         } catch (error) {
-            console.error("Hiba:", error);
+            console.error("Fetch Hiba:", error);
+        } finally {
+            isFetching = false;
         }
     }
 
@@ -258,22 +215,35 @@ if ($isLoggedIn) {
         document.getElementById('currentLap').innerText = data.race.current_lap;
         document.getElementById('totalLaps').innerText = data.race.total_laps;
 
+        const weatherBadge = document.getElementById('weatherBadge');
+        if (data.race.weather === 'Rain') {
+            weatherBadge.className = 'indicator-badge weather-rain';
+            weatherBadge.innerHTML = '<i class="fas fa-cloud-rain"></i> WET TRACK';
+        } else {
+            weatherBadge.className = 'indicator-badge weather-sunny';
+            weatherBadge.innerHTML = '<i class="fas fa-sun"></i> DRY TRACK';
+        }
+
+        const scBadge = document.getElementById('scBadge');
+        const isSC = data.race.safety_car == "1";
+        scBadge.style.display = isSC ? 'flex' : 'none';
+
         const grid = document.getElementById('raceGrid');
         const loadingMsg = document.getElementById('loadingMsg');
-        if(loadingMsg) loadingMsg.remove();
+        if (loadingMsg) loadingMsg.remove();
 
         grid.style.height = (data.grid.length * rowHeight) + 'px';
 
         data.grid.forEach((driver, index) => {
             let tyreClass = 'tyre-S'; let tyreLetter = 'S';
-            if(driver.tyre_type === 'Medium') { tyreClass = 'tyre-M'; tyreLetter = 'M'; }
-            if(driver.tyre_type === 'Hard')   { tyreClass = 'tyre-H'; tyreLetter = 'H'; }
+            if (driver.tyre_type === 'Medium') { tyreClass = 'tyre-M'; tyreLetter = 'M'; }
+            if (driver.tyre_type === 'Hard') { tyreClass = 'tyre-H'; tyreLetter = 'H'; }
+            if (driver.tyre_type === 'Inter') { tyreClass = 'tyre-I'; tyreLetter = 'I'; }
+            if (driver.tyre_type === 'Wet') { tyreClass = 'tyre-W'; tyreLetter = 'W'; }
+
             let wearColorClass = driver.tyre_wear > 60 ? 'wear-high' : '';
-            
-            let gap = '';
-            let posDisplay = '';
-            let statusHtml = '';
-            
+            let gap = ''; let posDisplay = ''; let statusHtml = '';
+
             if (driver.status === 'DNF') {
                 posDisplay = '<span style="color:#e10600; font-size:1.3rem;">OUT</span>';
                 gap = driver.gap ? `<span style="color:#666; font-size:1rem;">${driver.gap}</span>` : 'Kiesett';
@@ -284,7 +254,11 @@ if ($isLoggedIn) {
                     gap = '<span style="color:#ffcc00;">IN PIT</span>';
                     statusHtml = '<span class="status-pit">PIT</span>';
                 } else {
-                    gap = driver.position === 1 ? 'Leader' : '+' + (driver.position * 1.5 + Math.random()).toFixed(1) + 's';
+                    if (isSC) {
+                        gap = driver.position === 1 ? 'SC' : '<span class="gap-sc">SC QUEUE</span>';
+                    } else {
+                        gap = driver.position === 1 ? 'Leader' : '+' + (driver.position * 1.5 + Math.random()).toFixed(1) + 's';
+                    }
                 }
             }
 
@@ -300,38 +274,76 @@ if ($isLoggedIn) {
 
             row.style.transform = `translateY(${targetY}px)`;
             row.style.opacity = driver.status === 'DNF' ? '0.4' : '1';
-            
-            if(driver.position === 1 && driver.status !== 'DNF') {
-                row.classList.add('leader');
-            } else {
-                row.classList.remove('leader');
+
+            row.classList.remove('leader', 'sc-mode');
+            if (driver.status !== 'DNF') {
+                if (isSC) { row.classList.add('sc-mode'); } 
+                else if (driver.position === 1) { row.classList.add('leader'); }
             }
 
-            // Kép betöltése, ha nincs kép, egy üres profilképet mutat
-            let imgPath = driver.driver_image ? `/f1fanclub/${driver.driver_image}` : '/f1fanclub/drivers/default.png';
+            // KÉPEK ÚTVONALÁNAK TISZTÍTÁSA ÉS BEÁLLÍTÁSA
+            let rawDriverImg = driver.driver_image ? driver.driver_image.trim() : '';
+            let imgPath = '../drivers/default.png';
+            if (rawDriverImg !== '') {
+                // Ha már benne van a mappa neve, csak elé tesszük a ../ -t, ha nincs, beletesszük a drivers mappába
+                imgPath = rawDriverImg.includes('/') ? `../${rawDriverImg}` : `../drivers/${rawDriverImg}`;
+            }
+
+            let rawLogo = driver.logo ? driver.logo.trim() : '';
+            let logoPath = '';
+            if (rawLogo !== '') {
+                logoPath = rawLogo.includes('/') ? `../${rawLogo}` : `../logos/${rawLogo}`;
+            }
 
             row.innerHTML = `
                 <div class="pos-num">${posDisplay}</div>
+                
                 <div class="driver-info">
-                    <img src="${imgPath}" class="driver-portrait" onerror="this.style.display='none'">
+                    <div class="driver-pic-box">
+                        <img src="${imgPath}" class="driver-portrait" onerror="this.style.opacity=0;">
+                    </div>
                     <div style="display:flex; flex-direction:column; justify-content:center;">
                         <span class="driver-name">${driver.name}</span>
                         <span class="driver-abbr">${driver.abbreviation}</span>
                     </div>
                 </div>
+                
                 <div class="driver-info">
-                    <img src="/f1fanclub/${driver.logo}" class="team-logo-small">
+                    <div class="team-logo-box">
+                        <img src="${logoPath}" class="team-logo-small" onerror="this.style.opacity=0;">
+                    </div>
                     <span class="team-name">${driver.team_name}</span>
                 </div>
+                
                 <div class="tyre-container">
                     <div class="tyre-badge ${tyreClass}">${tyreLetter}</div>
                     <div class="wear-bar-bg" title="Kopás: ${driver.tyre_wear}%">
                         <div class="wear-bar-fill ${wearColorClass}" style="width: ${driver.tyre_wear}%"></div>
                     </div>
                 </div>
+                
                 <div class="gap-text">${gap}</div>
                 <div>${statusHtml}</div>
             `;
+        });
+    }
+
+    function renderStandings(standings) {
+        if (!standings || standings.length === 0) return;
+        document.getElementById('postRaceStandings').style.display = 'block';
+        const tbody = document.getElementById('standingsBody');
+        tbody.innerHTML = '';
+        
+        standings.forEach(s => {
+            let tr = document.createElement('tr');
+            if(s.pos === 1) tr.style.background = 'linear-gradient(90deg, rgba(212,175,55,0.1), transparent)';
+            tr.innerHTML = `
+                <td class="${s.pos === 1 ? 'champ-gold' : ''}">${s.pos}.</td>
+                <td style="font-weight:bold;">${s.name}</td>
+                <td style="color:#888;">${s.team}</td>
+                <td style="text-align:right; font-family:monospace; font-size:1.2rem; font-weight:bold;" class="${s.pos === 1 ? 'champ-gold' : ''}">${s.points} PTS</td>
+            `;
+            tbody.appendChild(tr);
         });
     }
 

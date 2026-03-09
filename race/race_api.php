@@ -1,6 +1,6 @@
 <?php
 // race_api.php - HELYEZD A /race MAPPÁBA!
-error_reporting(0); // Ne írjon ki felesleges warningokat a JSON-be
+error_reporting(0);
 header('Content-Type: application/json');
 session_start();
 
@@ -13,11 +13,13 @@ $conn = new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME);
 if ($conn->connect_error) { die(json_encode(["error" => "DB Error"])); }
 
 $action = $_GET['action'] ?? 'read';
-$race_id = 25; // Kanadai Nagydíj
+$race_id = 25; 
 
 function resetRace($conn, $race_id) {
     $conn->query("UPDATE race_control SET status='stopped', current_lap=0, weather='Sunny', safety_car=0, last_update=CURRENT_TIMESTAMP WHERE race_id=$race_id");
     $conn->query("DELETE FROM live_telemetry");
+    // Biztonsági törlés az élő chatből, ha új futam indul
+    $conn->query("DELETE FROM race_live_chat WHERE race_id=$race_id");
 
     $sql = "SELECT driver_id FROM pilotak ORDER BY points DESC"; 
     $result = $conn->query($sql);
@@ -37,7 +39,6 @@ function resetRace($conn, $race_id) {
 function simulateLap($conn, $race_id) {
     $control = $conn->query("SELECT * FROM race_control WHERE race_id=$race_id")->fetch_assoc();
     if ($control['status'] != 'running') return;
-
     if ($control['current_lap'] >= $control['total_laps']) {
         $conn->query("UPDATE race_control SET status='finished' WHERE race_id=$race_id");
         return;
@@ -47,11 +48,8 @@ function simulateLap($conn, $race_id) {
     $weather = $control['weather'];
     $sc = $control['safety_car'];
 
-    // --- IDŐJÁRÁS LOGIKA ---
     if ($weather == 'Sunny' && rand(0, 100) < 5) { $weather = 'Rain'; }
     elseif ($weather == 'Rain' && rand(0, 100) < 10) { $weather = 'Sunny'; }
-
-    // --- SAFETY CAR LOGIKA ---
     if ($sc == 1 && rand(0, 100) < 25) { $sc = 0; }
 
     $conn->query("UPDATE race_control SET current_lap=$new_lap, weather='$weather', safety_car=$sc WHERE race_id=$race_id");
@@ -67,7 +65,6 @@ function simulateLap($conn, $race_id) {
         $status = 'Running';
         $new_tyre = $driver['tyre_type'];
         
-        // Gumi kényszerű cseréje eső miatt
         if ($weather == 'Rain' && !in_array($new_tyre, ['Inter', 'Wet'])) { $new_wear = 100; }
         if ($weather == 'Sunny' && in_array($new_tyre, ['Inter', 'Wet'])) { $new_wear = 100; }
 
@@ -92,7 +89,6 @@ function simulateLap($conn, $race_id) {
                  $driverData[$key-1]['position'] = $driver['position'];
              }
         }
-
         $conn->query("UPDATE live_telemetry SET tyre_wear=$new_wear, tyre_type='$new_tyre', status='$status' WHERE id=$id");
     }
 
@@ -102,7 +98,6 @@ function simulateLap($conn, $race_id) {
         $conn->query("UPDATE live_telemetry SET position = $currentPos WHERE id = " . $active['id']);
         $currentPos++;
     }
-    
     if ($new_lap >= $control['total_laps']) {
         $conn->query("UPDATE race_control SET status='finished' WHERE race_id=$race_id");
     }
@@ -110,21 +105,13 @@ function simulateLap($conn, $race_id) {
 
 function catchUpRace($conn, $race_id) {
     $control = $conn->query("SELECT status, current_lap, total_laps, UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - UNIX_TIMESTAMP(last_update) AS seconds_passed FROM race_control WHERE race_id=$race_id")->fetch_assoc();
-    
     if (!$control || $control['status'] != 'running') return;
 
     $seconds_passed = (int)$control['seconds_passed'];
-    
-    // Biztonsági ellenőrzés: ha még nem telt el 10 másodperc, nincs ugrás
     if ($seconds_passed < 10) return;
 
-    // Kiszámoljuk hány kör telt el (10 mp / kör)
     $laps_to_sim = floor($seconds_passed / 10); 
-
-    // Extra védelem a szervernek
-    if ($laps_to_sim > 5) {
-        $laps_to_sim = 5;
-    }
+    if ($laps_to_sim > 5) { $laps_to_sim = 5; }
 
     if ($laps_to_sim > 0) {
         for ($i = 0; $i < $laps_to_sim; $i++) {
@@ -132,11 +119,6 @@ function catchUpRace($conn, $race_id) {
             if ($chk['status'] != 'running' || $chk['current_lap'] >= $chk['total_laps']) { break; }
             simulateLap($conn, $race_id);
         }
-        
-        // ===== ITT A MEGOLDÁS =====
-        // Szinkronizáljuk a "last_update" mezőt a jelenlegi pillanatra!
-        // Ez megszünteti a beragadt másodperceket, így az oldal nézése közben
-        // garantáltan csak akkor szimulál be új kört, ha megint eltelt 10 másodperc.
         $conn->query("UPDATE race_control SET last_update=CURRENT_TIMESTAMP WHERE race_id=$race_id");
     }
 }
@@ -151,22 +133,29 @@ elseif ($action == 'stop') {
     $conn->query("UPDATE race_control SET status='stopped' WHERE race_id=$race_id");
     echo json_encode(["msg" => "Race Stopped"]);
 }
+// ÚJ FUNKCIÓ: HARD STOP (Archiválás)
+elseif ($action == 'hard_stop') {
+    // 1. Átmásoljuk az eddigi chatet az archívumba
+    $conn->query("INSERT INTO race_chat_archives (race_id, username, message, sent_at) SELECT race_id, username, message, sent_at FROM race_live_chat WHERE race_id=$race_id");
+    
+    // 2. Kiürítjük az élő chatet és a telemetriát
+    $conn->query("DELETE FROM race_live_chat WHERE race_id=$race_id");
+    $conn->query("DELETE FROM live_telemetry");
+    
+    // 3. Státusz beállítása 'archived'-re
+    $conn->query("UPDATE race_control SET status='archived', current_lap=0 WHERE race_id=$race_id");
+    
+    echo json_encode(["msg" => "A verseny véglegesen leállítva, a chat archiválva!"]);
+}
 elseif ($action == 'update' || $action == 'read') {
     if ($action == 'update') { catchUpRace($conn, $race_id); }
-    
     $race = $conn->query("SELECT * FROM race_control WHERE race_id=$race_id")->fetch_assoc();
-    
     $sql = "SELECT lt.*, p.name, p.abbreviation, p.image as driver_image, c.team_name, c.logo 
             FROM live_telemetry lt JOIN pilotak p ON lt.driver_id = p.driver_id JOIN csapatok c ON p.`team id` = c.team_id 
             ORDER BY CASE WHEN lt.status = 'DNF' THEN 1 ELSE 0 END, lt.position ASC";     
-    
     $driversRes = $conn->query($sql);
     $drivers = [];
-    if ($driversRes) {
-        while($row = $driversRes->fetch_assoc()) { 
-            $drivers[] = $row; 
-        }
-    }
+    if ($driversRes) { while($row = $driversRes->fetch_assoc()) { $drivers[] = $row; } }
     
     $mockStandings = [];
     if ($race && $race['status'] == 'finished') {
@@ -183,7 +172,6 @@ elseif ($action == 'update' || $action == 'read') {
             ["pos"=>10, "name"=>"Valtteri Bottas", "team"=>"Cadillac", "points"=>28],
         ];
     }
-    
     echo json_encode(["race" => $race, "grid" => $drivers, "standings" => $mockStandings]);
 }
 $conn->close();

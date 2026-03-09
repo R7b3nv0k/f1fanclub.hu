@@ -134,7 +134,7 @@ $teamCssMap = [
       <a href="/f1fanclub/Championship/championship.php" style="color:white; margin:0 10px;">Championship</a>
       <a href="/f1fanclub/teams/teams.php" style="color:white; margin:0 10px;">Teams</a>
       <a href="/f1fanclub/drivers/drivers.php" style="color:#e10600; margin:0 10px; font-weight:bold;">Drivers</a>
-      <a href="/f1fanclub/news/news.php" style="color:white; margin:0 10px;">Paddock</a>
+      <a href="/f1fanclub/news/feed.php" style="color:white; margin:0 10px;">Paddock</a>
     </nav>
     <?php if ($isLoggedIn): ?>
       <div class="auth">

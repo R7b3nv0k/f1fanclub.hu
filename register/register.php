@@ -3,7 +3,12 @@ session_start();
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-/* ==== ADATBÁZIS KONFIGURÁCIÓ ==== */
+/**
+ * ============================================================================
+ * DATABASE CONFIGURATION
+ * ============================================================================
+ * Establishes the connection to the MySQL database.
+ */
 $DB_HOST = "localhost";
 $DB_USER = "swmjndga_swmjndga";
 $DB_PASS = "Teszt1234!";
@@ -15,19 +20,19 @@ if ($conn->connect_error) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Adatok tisztítása
+    /** Sanitize input data */
     $username = trim($_POST['username']);
     $email = trim($_POST['email']);
     $password = $_POST['password'];
     $fav_team = !empty($_POST['fav_team']) ? $_POST['fav_team'] : null;
 
-    // Jelszó hash
+    /** Create password hash */
     $passwordHash = password_hash($password, PASSWORD_DEFAULT);
     
-    // Generálunk egy 64 karakteres tokent
+    /** Generate a 64-character secure verification token */
     $token = bin2hex(random_bytes(32));
 
-    // Ellenőrzés: Foglalt-e a név/email?
+    /** Check if username or email is already registered */
     $sql_check = "SELECT id FROM users WHERE username=? OR email=?";
     $stmt = $conn->prepare($sql_check);
     $stmt->bind_param("ss", $username, $email);
@@ -37,24 +42,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($result->num_rows > 0) {
         echo "<h2 style='color:red; text-align:center;'>Már létezik ilyen felhasználónév vagy e-mail!</h2><div style='text-align:center'><a href='register.html'>Vissza</a></div>";
     } else {
-        // Beszúrás
-        // FONTOS: Az adatbázisban a verification_token legyen VARCHAR(100) !
+        /**
+         * Insert new user into the database.
+         * IMPORTANT: Ensure verification_token column is VARCHAR(100).
+         */
         $sql = "INSERT INTO users (username, email, password, fav_team, verification_token, is_verified) VALUES (?, ?, ?, ?, ?, 0)";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("sssss", $username, $email, $passwordHash, $fav_team, $token);
 
         if ($stmt->execute()) {
-            // Email küldése
+            /** Send verification email */
             $to = $email;
             $subject = "F1 Fan Club - Regisztráció megerősítése";
             
-            // Link összeállítása (ügyelj arra, hogy a domain helyes legyen!)
-            // urlencode-ot használunk, hogy biztosan valid legyen a link
+            /**
+             * Construct verification link.
+             * Uses urlencode to ensure the link remains valid.
+             */
             $link = "http://f1fanclub.hu/f1fanclub/register/verify.php?token=" . urlencode($token);
             
             $message = "Szia $username!\n\nKöszi, hogy regisztráltál!\nKérlek kattints az alábbi linkre a fiókod megerősítéséhez:\n\n$link\n\nÜdvözlettel,\nF1 Fan Club Csapat";
             
-            // Fejlécek a jobb kézbesítésért
+            /** Set email headers for better deliverability */
             $headers = "From: noreply@swmjndga.hu\r\n";
             $headers .= "Reply-To: noreply@swmjndga.hu\r\n";
             $headers .= "X-Mailer: PHP/" . phpversion();

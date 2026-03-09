@@ -1,7 +1,12 @@
 <?php
 session_start();
 
-/* ==== ADATBÁZIS KAPCSOLAT ==== */
+/**
+ * ============================================================================
+ * DATABASE CONNECTION
+ * ============================================================================
+ * Establishes the connection to the MySQL database.
+ */
 $DB_HOST = "localhost";
 $DB_USER = "swmjndga_swmjndga";
 $DB_PASS = "Teszt1234!";
@@ -12,7 +17,12 @@ if ($conn->connect_error) {
   die("Adatbázis hiba: " . $conn->connect_error);
 }
 
-/* ==== LOGIN ADATOK KEZELÉSE ==== */
+/**
+ * ============================================================================
+ * SESSION DETAILS & USER AUTHENTICATION
+ * ============================================================================
+ * Retrieves the current logged-in user details from the session variables.
+ */
 $isLoggedIn = isset($_SESSION['username']);
 $username = $isLoggedIn ? $_SESSION['username'] : null;
 
@@ -51,7 +61,12 @@ $profile_image = null;
 $fav_team = null;
 $teamColor = '#ffffff';
 
-/* ==== FELHASZNÁLÓ ADATOK LEKÉRÉSE ==== */
+/**
+ * ============================================================================
+ * USER DATA FETCHING
+ * ============================================================================
+ * Retrieves the favorite team and other user details from the database.
+ */
 if ($isLoggedIn) {
   $stmt = $conn->prepare("SELECT profile_image, fav_team FROM users WHERE username=?");
   $stmt->bind_param("s", $username);
@@ -77,7 +92,7 @@ if ($isLoggedIn) {
     href="/f1fanclub/teams/teams_style.css">
 </head>
 
-<body>
+<body class="BODY_PADDING_FIX">
 
   <header>
     <div class="left-header">
@@ -93,7 +108,7 @@ if ($isLoggedIn) {
       <a href="/f1fanclub/Championship/championship.php" style="color:white; margin:0 10px;">Championship</a>
       <a href="/f1fanclub/teams/teams.php" style="color:#e10600; margin:0 10px; font-weight:bold;">Teams</a>
       <a href="/f1fanclub/drivers/drivers.php" style="color:white; margin:0 10px;">Drivers</a>
-      <a href="/f1fanclub/news/news.php" style="color:white; margin:0 10px;">Paddock</a>
+      <a href="/f1fanclub/news/feed.php" style="color:white; margin:0 10px;">Paddock</a>
     </nav>
 
     <?php if ($isLoggedIn): ?>

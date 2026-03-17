@@ -88,8 +88,154 @@ if ($isLoggedIn) {
   <title>Teams – F1 Fan Club</title>
   <link rel="stylesheet" href="/f1fanclub/css/style.css">
   <link rel="stylesheet" href="team_style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;800&display=swap" rel="stylesheet"
-    href="/f1fanclub/teams/teams_style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;800&display=swap" rel="stylesheet">
+  <style>
+    /* =========================================
+       FIX FOR STATISTICS PANEL HEIGHT AND TABS
+       ========================================= */
+    
+    /* Override global body padding for teams page */
+    body.BODY_PADDING_FIX {
+        padding-top: 80px !important;
+        min-height: 100vh;
+        height: auto;
+        margin: 0;
+        overflow-x: hidden;
+        overflow-y: hidden;
+    }
+    
+    #teams {
+        width: 100%;
+        height: calc(100vh - 80px) !important;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .teams-container {
+        width: 100%;
+        height: 100% !important;
+        overflow-x: auto;
+        overflow-y: hidden;
+        background: #0a0a0a;
+        position: relative;
+        display: flex;
+        align-items: flex-end;
+        margin: 0;
+        padding: 0;
+    }
+    
+    /* Fix statistics panel height to account for header */
+    .statistics-panel {
+        position: fixed;
+        top: 80px !important;
+        right: -500px;
+        width: 480px;
+        height: calc(100vh - 80px) !important;
+        max-height: calc(100vh - 80px) !important;
+        background: linear-gradient(180deg, 
+                    rgba(10, 10, 10, 0.98) 0%, 
+                    rgba(5, 5, 5, 0.98) 100%);
+        backdrop-filter: blur(20px);
+        border-left: 3px solid #e10600;
+        z-index: 10000;
+        transition: right 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        overflow-y: hidden;
+        overflow-x: hidden;
+        box-shadow: -10px 0 50px rgba(0, 0, 0, 0.8),
+                    -5px 0 30px rgba(225, 6, 0, 0.3);
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .statistics-panel.active {
+        right: 0;
+    }
+    
+    /* Fix statistics header */
+    .statistics-header {
+        padding: 25px 25px 15px;
+        background: linear-gradient(180deg, 
+                    rgba(20, 20, 20, 0.95) 0%, 
+                    rgba(15, 15, 15, 0.9) 100%);
+        border-bottom: 1px solid rgba(225, 6, 0, 0.4);
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        position: relative;
+        flex-shrink: 0;
+        min-height: 120px;
+    }
+    
+    /* Fix stats toggle */
+    .stats-toggle {
+        display: flex;
+        padding: 12px 25px;
+        background: rgba(15, 15, 15, 0.9);
+        border-bottom: 1px solid rgba(225, 6, 0, 0.2);
+        gap: 8px;
+        flex-shrink: 0;
+    }
+    
+    /* Fix statistics content scrolling */
+    .statistics-content {
+        padding: 20px 25px;
+        flex: 1;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+    }
+    
+    /* Fix stats grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        flex: 1;
+        min-height: 0;
+    }
+    
+    /* Fix stat items */
+    .stat-item {
+        background: linear-gradient(145deg, 
+                    rgba(20, 20, 20, 0.9) 0%, 
+                    rgba(25, 25, 25, 0.9) 100%);
+        padding: 18px 12px;
+        border: 1px solid rgba(225, 6, 0, 0.2);
+        border-radius: 6px !important;
+        transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+        min-height: 100px;
+    }
+    
+    /* Fix for team container when panel is active */
+    .teams-container.panel-active {
+        width: calc(100% - 480px) !important;
+        transition: width 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    
+    /* Fix for scroll buttons when panel is active */
+    .scroll-button.right.panel-active {
+        right: 480px !important;
+    }
+    
+    /* Fix scroll buttons position */
+    .scroll-button {
+        position: fixed;
+        top: calc(50% + 40px);
+        transform: translateY(-50%);
+        z-index: 1000;
+    }
+  </style>
 </head>
 
 <body class="BODY_PADDING_FIX">
@@ -113,20 +259,21 @@ if ($isLoggedIn) {
 
     <?php if ($isLoggedIn): ?>
       <div class="auth">
-        <div class="welcome">
-          <?php if ($profile_image): ?>
-            <img src="/f1fanclub/uploads/<?php echo htmlspecialchars($profile_image); ?>" class="avatar" alt="Profile"
-              style="width:30px; height:30px; border-radius:50%; vertical-align:middle; object-fit: cover;">
-          <?php endif; ?>
-          <span class="welcome-text">
-            Welcome,
-            <span style="color: <?php echo htmlspecialchars($teamColor); ?>;">
-              <?php echo htmlspecialchars($username); ?>
-            </span>!
-          </span>
-        </div>
+        <a href="/f1fanclub/profile/profile.php" style="text-decoration: none;">
+          <div class="welcome">
+            <?php if ($profile_image): ?>
+              <img src="/f1fanclub/uploads/<?php echo htmlspecialchars($profile_image); ?>" class="avatar" alt="Profile"
+                style="width:30px; height:30px; border-radius:50%; vertical-align:middle; object-fit: cover;">
+            <?php endif; ?>
+            <span class="welcome-text">
+              Welcome,
+              <span style="color: <?php echo htmlspecialchars($teamColor); ?>;">
+                <?php echo htmlspecialchars($username); ?>
+              </span>!
+            </span>
+          </div>
+        </a>
         <a href="/f1fanclub/logout/logout.php" class="btn">Log out</a>
-        <a href="/f1fanclub/profile/profile.php" class="btn">Profile</a>
       </div>
     <?php else: ?>
       <div class="auth">
@@ -135,6 +282,7 @@ if ($isLoggedIn) {
       </div>
     <?php endif; ?>
   </header>
+  
   <section id="teams">
 
     <!-- Statistics Panel (hidden by default) -->
@@ -484,15 +632,8 @@ if ($isLoggedIn) {
       </form>
     </div>
   <?php endif; ?>
-  <script src="team_script.js">
-    // Profil kártya kapcsoló
-    function toggleProfile() {
-      const pc = document.getElementById("profileCard");
-      if (!pc) return;
-      pc.style.display = pc.style.display === "block" ? "none" : "block";
-
-    }
-  </script>
+  
+  <script src="team_script.js"></script>
   <script>
     // Immediate test to see if script is loading
     console.log('Inline script test');

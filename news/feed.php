@@ -1,71 +1,34 @@
 <?php
 session_start();
-
-/**
- * ============================================================================
- * DEBUG CONFIGURATION
- * ============================================================================
- * Enables error reporting for development purposes.
- */
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-/**
- * ============================================================================
- * DATABASE CONNECTION
- * ============================================================================
- * Establishes the connection to the MySQL database.
- */
 $DB_HOST = "localhost";
 $DB_USER = "swmjndga_swmjndga";
 $DB_PASS = "Teszt1234!";
 $DB_NAME = "swmjndga_f1adat";
 
 $conn = new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME);
-$conn->set_charset("utf8mb4"); // Emojik miatt kötelező!
+$conn->set_charset("utf8mb4"); 
 
-if ($conn->connect_error) {
-    die("Adatbázis hiba: " . $conn->connect_error);
-}
+if ($conn->connect_error) { die("Adatbázis hiba: " . $conn->connect_error); }
 
-/**
- * ============================================================================
- * TINIFY API CONFIGURATION
- * ============================================================================
- * Defines the API key used for image compression via Tinify.
- */
 define('TINIFY_KEY', 'tLwDQHTf6nJrsbFN9Jcvsh9nwlSLh31J');
 
-/**
- * ============================================================================
- * HELPER FUNCTIONS
- * ============================================================================
- * Contains utility functions used throughout the feed processing.
- */
-function getTeamColor($team)
-{
+function getTeamColor($team) {
     switch ($team) {
-        case 'Red Bull': return '#1E41FF';
-        case 'Ferrari': return '#DC0000';
-        case 'Mercedes': return '#00D2BE';
-        case 'McLaren': return '#FF8700';
-        case 'Aston Martin': return '#006F62';
-        case 'Alpine': return '#0090FF';
-        case 'Williams': return '#00A0DE';
-        case 'RB': return '#2b2bff';
-        case 'Audi': return '#e3000f';
-        case 'Haas F1 Team': return '#B6BABD';
-        case 'Cadillac': return '#1b1b1b';
-        default: return '#777777';
+        case 'Red Bull': return '#1E41FF'; case 'Ferrari': return '#DC0000'; case 'Mercedes': return '#00D2BE';
+        case 'McLaren': return '#FF8700'; case 'Aston Martin': return '#006F62'; case 'Alpine': return '#0090FF';
+        case 'Williams': return '#00A0DE'; case 'RB': return '#2b2bff'; case 'Audi': return '#e3000f';
+        case 'Haas F1 Team': return '#B6BABD'; case 'Cadillac': return '#1b1b1b'; default: return '#777777';
     }
 }
-function compressImageWithTinify($sourcePath, $targetPath)
-{
-    // 1. Lépés: Kép beküldése a Tinify-nak (Ez eddig is jó volt)
+
+function compressImageWithTinify($sourcePath, $targetPath) {
     $request = curl_init();
     curl_setopt($request, CURLOPT_URL, "https://api.tinify.com/shrink");
     curl_setopt($request, CURLOPT_USERPWD, "api:" . TINIFY_KEY);
-    curl_setopt($request, CURLOPT_POSTFIELDS, file_get_contents($sourcePath)); // Helyi fájlra működik a file_get_contents
+    curl_setopt($request, CURLOPT_POSTFIELDS, file_get_contents($sourcePath));
     curl_setopt($request, CURLOPT_BINARYTRANSFER, true);
     curl_setopt($request, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($request, CURLOPT_SSL_VERIFYPEER, true);
@@ -77,16 +40,13 @@ function compressImageWithTinify($sourcePath, $targetPath)
     if ($httpStatus === 201) {
         $data = json_decode($result);
         $url = $data->output->url;
-
-        // 2. Lépés: Átméretezés és letöltés - JAVÍTVA cURL-re!
         $resizeRequest = ["resize" => ["method" => "fit", "width" => 1200, "height" => 1200]];
-        $jsonPayload = json_encode($resizeRequest);
-
+        
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_USERPWD, "api:" . TINIFY_KEY);
         curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonPayload);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($resizeRequest));
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
@@ -106,10 +66,7 @@ function compressImageWithTinify($sourcePath, $targetPath)
 $isLoggedIn = isset($_SESSION['username']);
 $username = $isLoggedIn ? $_SESSION['username'] : null;
 
-$profile_image = null;
-$fav_team = null;
-$teamColor = '#ffffff';
-$isAdmin = false;
+$profile_image = null; $fav_team = null; $teamColor = '#ffffff'; $isAdmin = false;
 
 if ($isLoggedIn) {
     $stmt = $conn->prepare("SELECT profile_image, fav_team, role FROM users WHERE username=?");
@@ -124,45 +81,28 @@ if ($isLoggedIn) {
     $isAdmin = !empty($row['role']) && $row['role'] === 'admin';
 }
 
-/**
- * ============================================================================
- * POST DELETION (ADMIN ONLY)
- * ============================================================================
- * Processes the deletion of a post and its associated assets if the user is an admin.
- */
 if ($isLoggedIn && $isAdmin && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_post_id'])) {
     $delete_id = (int) $_POST['delete_post_id'];
-
     $stmtImg = $conn->prepare("SELECT image_path FROM news_images WHERE news_id = ?");
     $stmtImg->bind_param("i", $delete_id);
     $stmtImg->execute();
     $resImg = $stmtImg->get_result();
     while ($rowImg = $resImg->fetch_assoc()) {
         $filePath = '../uploads/' . $rowImg['image_path'];
-        if (file_exists($filePath))
-            unlink($filePath);
+        if (file_exists($filePath)) unlink($filePath);
     }
     $stmtImg->close();
-
     $conn->query("DELETE FROM news_images WHERE news_id = $delete_id");
     $conn->query("DELETE FROM news_comments WHERE news_id = $delete_id");
     $conn->query("DELETE FROM news_emoji_reactions WHERE news_id = $delete_id");
-
     $stmtDel = $conn->prepare("DELETE FROM news WHERE id = ?");
     $stmtDel->bind_param("i", $delete_id);
     $stmtDel->execute();
     $stmtDel->close();
-
     header("Location: " . $_SERVER['PHP_SELF']);
     exit;
 }
 
-/**
- * ============================================================================
- * SUBMIT NEW POST
- * ============================================================================
- * Processes incoming post submissions including images and content.
- */
 if ($isLoggedIn && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['new_post_content'])) {
     $content = trim($_POST['new_post_content']);
     $category = $_POST['post_category'] ?? 'Általános';
@@ -181,21 +121,17 @@ if ($isLoggedIn && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['new_po
 
             if ($hasFile) {
                 $uploadDir = '../uploads/';
-                if (!is_dir($uploadDir))
-                    mkdir($uploadDir, 0755, true);
+                if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
 
                 $count = 0;
                 foreach ($_FILES['post_images']['tmp_name'] as $key => $tmp_name) {
-                    if ($count >= 2)
-                        break;
+                    if ($count >= 2) break;
                     if ($_FILES['post_images']['error'][$key] === UPLOAD_ERR_OK) {
                         $ext = pathinfo($_FILES['post_images']['name'][$key], PATHINFO_EXTENSION);
                         $newFileName = 'post_' . $news_id . '_' . uniqid() . '.' . $ext;
                         $targetPath = $uploadDir . $newFileName;
                         $compressed = compressImageWithTinify($tmp_name, $targetPath);
-                        if (!$compressed) {
-                            move_uploaded_file($tmp_name, $targetPath);
-                        }
+                        if (!$compressed) { move_uploaded_file($tmp_name, $targetPath); }
 
                         $stmtImg = $conn->prepare("INSERT INTO news_images (news_id, image_path) VALUES (?, ?)");
                         $stmtImg->bind_param("is", $news_id, $newFileName);
@@ -211,13 +147,6 @@ if ($isLoggedIn && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['new_po
     }
 }
 
-/**
- * ============================================================================
- * FETCH POSTS
- * ============================================================================
- * Retrieves posts from the database based on the recent activities and reactions.
- * Algorithm includes emoji reaction counts (2 points per emoji).
- */
 $sql = "
     SELECT 
         n.id, n.content, n.author, n.created_at, n.category,
@@ -238,425 +167,88 @@ $sql = "
         n.created_at DESC
 ";
 $newsResult = $conn->query($sql);
-
-// Emojik listája a popuphoz
 $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂', '😢', '🐐', '🤡', '🤯', '👀'];
 ?>
 <!DOCTYPE html>
 <html lang="hu">
-
 <head>
     <meta charset="UTF-8">
     <title>Paddock Feed – F1 Fan Club</title>
     <link rel="stylesheet" href="/f1fanclub/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* === FEED SPECIFIKUS STÍLUSOK === */
         :root {
-            --card-bg: rgba(20, 20, 20, 0.85);
-            --card-bg-hover: rgba(30, 30, 30, 0.9);
-            --input-bg: rgba(0, 0, 0, 0.5);
-            --text-main: #ffffff;
-            --text-muted: #8899a6;
-            --accent: #e10600;
-            --border: rgba(255, 255, 255, 0.1);
+            --card-bg: rgba(20, 20, 20, 0.85); --card-bg-hover: rgba(30, 30, 30, 0.9); --input-bg: rgba(0, 0, 0, 0.5);
+            --text-main: #ffffff; --text-muted: #8899a6; --accent: #e10600; --border: rgba(255, 255, 255, 0.1);
         }
-
-        .feed-container {
-            max-width: 750px;
-            margin: 40px auto;
-            padding: 0 15px;
-            text-align: left;
-        }
-
-        .create-post-card,
-        .feed-item {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 25px;
-            border: 1px solid var(--border);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            transition: background 0.3s, border-color 0.3s, transform 0.2s;
-        }
-
-        .create-post-card {
-            display: flex;
-            gap: 15px;
-            position: relative;
-        }
-
-        .feed-item:hover {
-            background: var(--card-bg-hover);
-            border-color: rgba(225, 6, 0, 0.4);
-        }
-
-        .post-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid transparent;
-            flex-shrink: 0;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-        }
-
-        .post-form {
-            width: 100%;
-        }
-
-        .category-select {
-            width: 100%;
-            background: var(--input-bg);
-            border: 1px solid var(--border);
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            font-family: inherit;
-            border-radius: 8px;
-            padding: 8px 12px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .category-select:focus {
-            border-color: var(--accent);
-            outline: none;
-        }
-
-        .post-textarea {
-            width: 100%;
-            background: var(--input-bg);
-            border: 1px solid var(--border);
-            color: white;
-            font-size: 1.1rem;
-            resize: none;
-            outline: none;
-            min-height: 80px;
-            font-family: inherit;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 12px;
-            transition: 0.2s;
-            box-sizing: border-box;
-        }
-
-        .post-textarea:focus {
-            background: rgba(0, 0, 0, 0.8);
-            border-color: var(--accent);
-            box-shadow: 0 0 10px rgba(225, 6, 0, 0.2);
-        }
-
-        .post-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 5px;
-            border-top: 1px solid var(--border);
-            margin-top: 5px;
-        }
-
-        .upload-icon {
-            color: var(--accent);
-            font-size: 1.4rem;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 50%;
-            transition: 0.2s;
-            position: relative;
-        }
-
-        .upload-icon:hover {
-            background: rgba(225, 6, 0, 0.15);
-            transform: scale(1.1);
-        }
-
-        #file-input {
-            display: none;
-        }
-
-        #preview-container {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        .preview-thumb {
-            width: 60px;
-            height: 60px;
-            object-fit: cover;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-        }
-
-        .btn-tweet {
-            background: linear-gradient(135deg, #e10600, #ff4b2b);
-            color: white;
-            border: none;
-            padding: 10px 24px;
-            border-radius: 99px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 4px 15px rgba(225, 6, 0, 0.4);
-        }
-
-        .btn-tweet:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(225, 6, 0, 0.6);
-            filter: brightness(1.1);
-        }
-
-        .post-header {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 12px;
-            align-items: center;
-        }
-
-        .author-name {
-            font-weight: 700;
-            font-size: 1.05rem;
-            color: #fff;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-        }
-
-        .post-meta {
-            color: var(--text-muted);
-            font-size: 0.85rem;
-        }
-
-        .post-category-badge {
-            background: rgba(225, 6, 0, 0.2);
-            color: #e10600;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            margin-left: 10px;
-            border: 1px solid rgba(225, 6, 0, 0.4);
-        }
-
-        .post-content {
-            font-size: 1rem;
-            line-height: 1.6;
-            margin-bottom: 15px;
-            white-space: pre-wrap;
-            color: #eee;
-        }
-
-        .admin-delete-btn {
-            background: rgba(225, 6, 0, 0.1);
-            border: 1px solid rgba(225, 6, 0, 0.4);
-            color: #ff4b2b;
-            cursor: pointer;
-            padding: 6px 10px;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: 0.2s;
-        }
-
-        .admin-delete-btn:hover {
-            background: #e10600;
-            color: white;
-            box-shadow: 0 0 10px rgba(225, 6, 0, 0.5);
-        }
-
-        .post-gallery {
-            display: grid;
-            gap: 2px;
-            border-radius: 12px;
-            overflow: hidden;
-            margin-top: 10px;
-            background: #000;
-            border: 1px solid var(--border);
-        }
-
-        .post-gallery.one-image {
-            grid-template-columns: 1fr;
-        }
-
-        .post-gallery.two-images {
-            grid-template-columns: 1fr 1fr;
-        }
-
-        .gallery-item {
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            background: #050505;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .gallery-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
-        /* === ÚJ DISCORD STÍLUSÚ EMOJI REAKCIÓK ÉS INTERAKCIÓS SÁV === */
-        .reactions-container {
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 15px;
-            padding-top: 12px;
-            border-top: 1px solid var(--border);
-        }
-
-        .reaction-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 4px 10px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: 0.2s;
-            color: #bbb;
-            user-select: none;
-        }
-
-        .reaction-pill:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .reaction-pill.active {
-            background: rgba(225, 6, 0, 0.15);
-            border-color: rgba(225, 6, 0, 0.5);
-            color: #fff;
-        }
-
-        .emoji-picker-wrapper {
-            position: relative;
-        }
-
-        .add-reaction-btn {
-            background: transparent;
-            border: 1px dashed rgba(255, 255, 255, 0.2);
-            color: #888;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: 0.2s;
-            font-size: 1rem;
-            padding: 0;
-        }
-
-        .add-reaction-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            border-color: #fff;
-        }
-
-        .emoji-picker-popup {
-            display: none;
-            position: absolute;
-            bottom: 120%;
-            left: 0;
-            background: #1e2126;
-            border: 1px solid #38444d;
-            border-radius: 12px;
-            padding: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-            z-index: 100;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 5px;
-            width: max-content;
-        }
-
-        .emoji-picker-popup.show {
-            display: grid;
-        }
-
-        .emoji-option {
-            font-size: 1.4rem;
-            cursor: pointer;
-            padding: 6px;
-            text-align: center;
-            border-radius: 8px;
-            transition: 0.2s;
-            user-select: none;
-        }
-
-        .emoji-option:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: scale(1.1);
-        }
-
-        .comment-toggle-btn {
-            margin-left: auto;
-            background: none;
-            border: none;
-            color: #888;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.9rem;
-            transition: 0.2s;
-        }
-
-        .comment-toggle-btn:hover {
-            color: #fff;
-        }
-
-        /* Kommentek */
-        .comments-wrapper {
-            display: none;
-            margin-top: 15px;
-            padding-top: 15px;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 15px;
-            border-radius: 12px;
-            margin: 15px -20px -20px -20px;
-        }
-
-        .comment-item {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .comment-bubble {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 10px 15px;
-            border-radius: 12px;
-            flex: 1;
-            font-size: 0.9rem;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .hidden-comment {
-            display: none;
-        }
-
-        .load-more-btn {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: white;
-            padding: 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: 5px;
-            font-weight: 600;
-            transition: 0.2s;
-        }
-
-        .load-more-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
+        .feed-container { max-width: 750px; margin: 40px auto; padding: 0 15px; text-align: left; }
+        .create-post-card, .feed-item { background: var(--card-bg); border-radius: 12px; padding: 20px; margin-bottom: 25px; border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5); backdrop-filter: blur(10px); transition: background 0.3s, border-color 0.3s, transform 0.2s; }
+        .create-post-card { display: flex; gap: 15px; position: relative; }
+        .feed-item:hover { background: var(--card-bg-hover); border-color: rgba(225, 6, 0, 0.4); }
+        .post-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid transparent; flex-shrink: 0; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); }
+        .post-form { width: 100%; }
+        .category-select { width: 100%; background: var(--input-bg); border: 1px solid var(--border); color: var(--text-muted); font-size: 0.9rem; font-family: inherit; border-radius: 8px; padding: 8px 12px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; }
+        .category-select:focus { border-color: var(--accent); outline: none; }
+        .post-textarea { width: 100%; background: var(--input-bg); border: 1px solid var(--border); color: white; font-size: 1.1rem; resize: none; outline: none; min-height: 80px; font-family: inherit; border-radius: 8px; padding: 12px; margin-bottom: 12px; transition: 0.2s; box-sizing: border-box; }
+        .post-textarea:focus { background: rgba(0, 0, 0, 0.8); border-color: var(--accent); box-shadow: 0 0 10px rgba(225, 6, 0, 0.2); }
+        .post-actions { display: flex; justify-content: space-between; align-items: center; padding-top: 5px; border-top: 1px solid var(--border); margin-top: 5px; }
+        .upload-icon { color: var(--accent); font-size: 1.4rem; cursor: pointer; padding: 8px; border-radius: 50%; transition: 0.2s; position: relative; }
+        .upload-icon:hover { background: rgba(225, 6, 0, 0.15); transform: scale(1.1); }
+        #file-input { display: none; }
+        #preview-container { display: flex; gap: 10px; margin-bottom: 10px; }
+        .preview-thumb { width: 60px; height: 60px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border); }
+        .btn-tweet { background: linear-gradient(135deg, #e10600, #ff4b2b); color: white; border: none; padding: 10px 24px; border-radius: 99px; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 15px rgba(225, 6, 0, 0.4); }
+        .btn-tweet:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(225, 6, 0, 0.6); filter: brightness(1.1); }
+        .post-header { display: flex; gap: 12px; margin-bottom: 12px; align-items: center; }
+        .author-name { font-weight: 700; font-size: 1.05rem; color: #fff; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); }
+        .post-meta { color: var(--text-muted); font-size: 0.85rem; }
+        .post-category-badge { background: rgba(225, 6, 0, 0.2); color: #e10600; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; margin-left: 10px; border: 1px solid rgba(225, 6, 0, 0.4); }
+        .post-content { font-size: 1rem; line-height: 1.6; margin-bottom: 15px; white-space: pre-wrap; color: #eee; }
+        .admin-delete-btn { background: rgba(225, 6, 0, 0.1); border: 1px solid rgba(225, 6, 0, 0.4); color: #ff4b2b; cursor: pointer; padding: 6px 10px; border-radius: 8px; font-size: 1rem; transition: 0.2s; }
+        .admin-delete-btn:hover { background: #e10600; color: white; box-shadow: 0 0 10px rgba(225, 6, 0, 0.5); }
+        .post-gallery { display: grid; gap: 2px; border-radius: 12px; overflow: hidden; margin-top: 10px; background: #000; border: 1px solid var(--border); }
+        .post-gallery.one-image { grid-template-columns: 1fr; }
+        .post-gallery.two-images { grid-template-columns: 1fr 1fr; }
+        .gallery-item { width: 100%; aspect-ratio: 16 / 9; background: #050505; display: flex; align-items: center; justify-content: center; }
+        .gallery-item img { width: 100%; height: 100%; object-fit: contain; }
+        .reactions-container { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 15px; padding-top: 12px; border-top: 1px solid var(--border); }
+        .reaction-pill { display: inline-flex; align-items: center; gap: 6px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 4px 10px; font-size: 0.9rem; cursor: pointer; transition: 0.2s; color: #bbb; user-select: none; }
+        .reaction-pill:hover { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.2); }
+        .reaction-pill.active { background: rgba(225, 6, 0, 0.15); border-color: rgba(225, 6, 0, 0.5); color: #fff; }
+        .emoji-picker-wrapper { position: relative; }
+        .add-reaction-btn { background: transparent; border: 1px dashed rgba(255, 255, 255, 0.2); color: #888; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; font-size: 1rem; padding: 0; }
+        .add-reaction-btn:hover { background: rgba(255, 255, 255, 0.1); color: #fff; border-color: #fff; }
+        .emoji-picker-popup { display: none; position: absolute; bottom: 120%; left: 0; background: #1e2126; border: 1px solid #38444d; border-radius: 12px; padding: 10px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); z-index: 100; grid-template-columns: repeat(4, 1fr); gap: 5px; width: max-content; }
+        .emoji-picker-popup.show { display: grid; }
+        .emoji-option { font-size: 1.4rem; cursor: pointer; padding: 6px; text-align: center; border-radius: 8px; transition: 0.2s; user-select: none; }
+        .emoji-option:hover { background: rgba(255, 255, 255, 0.1); transform: scale(1.1); }
+        .comment-toggle-btn { margin-left: auto; background: none; border: none; color: #888; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 0.9rem; transition: 0.2s; }
+        .comment-toggle-btn:hover { color: #fff; }
+        .comments-wrapper { display: none; margin-top: 15px; padding-top: 15px; background: rgba(0, 0, 0, 0.3); padding: 15px; border-radius: 12px; margin: 15px -20px -20px -20px; }
+        .comment-item { display: flex; gap: 10px; margin-bottom: 15px; }
+        .comment-bubble { background: rgba(255, 255, 255, 0.05); padding: 10px 15px; border-radius: 12px; flex: 1; font-size: 0.9rem; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .hidden-comment { display: none; }
+        .load-more-btn { width: 100%; background: rgba(255, 255, 255, 0.1); border: none; color: white; padding: 10px; border-radius: 8px; cursor: pointer; margin-top: 5px; font-weight: 600; transition: 0.2s; }
+        .load-more-btn:hover { background: rgba(255, 255, 255, 0.2); }
+        
+        /* ÚJ: MODAL CSS (Pop-up Ablak) */
+        .user-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .user-modal-content { background: linear-gradient(145deg, #111, #1a1a1a); width: 320px; border-radius: 15px; border: 1px solid rgba(225,6,0,0.3); padding: 20px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.8); color: #fff; text-align: center; animation: popIn 0.3s ease; }
+        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .user-modal-close { position: absolute; top: 10px; right: 15px; background: none; border: none; color: #888; font-size: 1.5rem; cursor: pointer; }
+        .user-modal-close:hover { color: #e10600; }
+        .user-modal-header img { width: 90px; height: 90px; border-radius: 50%; border: 3px solid #e10600; object-fit: cover; margin-bottom: 10px; }
+        .user-modal-header h3 { margin: 0; font-size: 1.3rem; }
+        .modal-role { display: inline-block; font-size: 0.75rem; background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 10px; margin-top: 5px; color: #aaa; text-transform: uppercase; letter-spacing: 1px;}
+        .user-modal-body { margin: 20px 0; font-size: 0.9rem; color: #ddd; text-align: left; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; }
+        .user-modal-body p { margin: 5px 0; }
+        .user-modal-footer { display: flex; gap: 10px; justify-content: center; }
+        .user-modal-footer button { flex: 1; padding: 10px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; color: #fff; display: flex; align-items: center; justify-content: center; gap: 5px;}
+        .btn-add-friend { background: #333; } .btn-add-friend:hover { background: #444; }
+        .btn-send-msg { background: #e10600; } .btn-send-msg:hover { background: #ff1a1a; }
+        .clickable-user { cursor: pointer; transition: opacity 0.2s; }
+        .clickable-user:hover { opacity: 0.7; }
     </style>
 </head>
 
@@ -683,18 +275,20 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
             <div class="auth">
                 <div class="welcome" style="display: flex; align-items: center; gap: 10px;">
                     <?php if ($profile_image): ?>
-                        <img src="/f1fanclub/uploads/<?php echo htmlspecialchars($profile_image); ?>" class="avatar"
-                            alt="Profile"
+                        <img src="/f1fanclub/uploads/<?php echo htmlspecialchars($profile_image); ?>" class="avatar clickable-user"
+                            alt="Profile" onclick="openUserProfile('<?= htmlspecialchars(addslashes($username)); ?>')"
                             style="width:35px; height:35px; border-radius:50%; object-fit: cover; border-color: <?php echo htmlspecialchars($teamColor); ?>;">
                     <?php endif; ?>
                     <span class="welcome-text">
-                        Hello, <span
+                        Welcome, <span class="clickable-user" onclick="openUserProfile('<?= htmlspecialchars(addslashes($username)); ?>')"
                             style="color: <?php echo htmlspecialchars($teamColor); ?>; font-weight:bold;"><?php echo htmlspecialchars($username); ?></span>!
                     </span>
                 </div>
-                <div style="display:flex; gap: 8px;">
+                    <div style="display:flex; gap: 8px; align-items: center;">
+                    <a href="/f1fanclub/messages/messages.php" class="btn" style="padding: 8px 12px; font-size: 1.1rem;" title="Privát Üzenetek">
+                        <i class="fas fa-envelope"></i>
+                    </a>
                     <a href="/f1fanclub/logout/logout.php" class="btn">Log out</a>
-                    <a href="/f1fanclub/profile/profile.php" class="btn">Profile</a>
                 </div>
             </div>
         <?php else: ?>
@@ -742,19 +336,17 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
         <div id="feed">
             <?php if ($newsResult && $newsResult->num_rows > 0): ?>
                 <?php while ($post = $newsResult->fetch_assoc()):
+                    $safeAuthor = htmlspecialchars(addslashes($post['author']));
                     $authorImg = $post['author_image'] ?? 'default.jpg';
                     $authorTeamColor = getTeamColor($post['author_team']);
                     $timeAgo = date('M d, H:i', strtotime($post['created_at']));
                     $category = $post['category'] ?? 'Általános';
 
-                    // Képek
                     $imgSql = "SELECT image_path FROM news_images WHERE news_id = " . $post['id'];
                     $imgResult = $conn->query($imgSql);
                     $images = [];
-                    while ($imgRow = $imgResult->fetch_assoc())
-                        $images[] = $imgRow['image_path'];
+                    while ($imgRow = $imgResult->fetch_assoc()) $images[] = $imgRow['image_path'];
 
-                    // Reakciók lekérdezése
                     $reactSql = "SELECT emoji, COUNT(*) as count, SUM(IF(username = ?, 1, 0)) as user_reacted 
                              FROM news_emoji_reactions WHERE news_id = ? GROUP BY emoji";
                     $reactStmt = $conn->prepare($reactSql);
@@ -762,8 +354,7 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
                     $reactStmt->execute();
                     $reactRes = $reactStmt->get_result();
                     $reactions = [];
-                    while ($rRow = $reactRes->fetch_assoc())
-                        $reactions[] = $rRow;
+                    while ($rRow = $reactRes->fetch_assoc()) $reactions[] = $rRow;
                     $reactStmt->close();
                     ?>
 
@@ -771,11 +362,11 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
                         data-category="<?= htmlspecialchars($category); ?>">
 
                         <div class="post-header">
-                            <img src="/f1fanclub/uploads/<?= htmlspecialchars($authorImg); ?>" class="post-avatar"
-                                style="border-color: <?= $authorTeamColor ?>;">
+                            <img src="/f1fanclub/uploads/<?= htmlspecialchars($authorImg); ?>" class="post-avatar clickable-user"
+                                style="border-color: <?= $authorTeamColor ?>;" onclick="openUserProfile('<?= $safeAuthor ?>')">
                             <div style="flex-grow: 1;">
                                 <div>
-                                    <span class="author-name"><?= htmlspecialchars($post['author']); ?></span>
+                                    <span class="author-name clickable-user" onclick="openUserProfile('<?= $safeAuthor ?>')"><?= htmlspecialchars($post['author']); ?></span>
                                     <?php if ($post['author_team']): ?>
                                         <span style="color:<?= $authorTeamColor ?>; font-size:0.8rem;">•
                                             <?= htmlspecialchars($post['author_team']); ?></span>
@@ -861,7 +452,106 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
         </div>
     </main>
 
+    <div id="userProfileModal" class="user-modal-overlay" onclick="closeUserProfile(event)">
+        <div class="user-modal-content" onclick="event.stopPropagation()">
+            <button class="user-modal-close" onclick="closeUserProfile(event)">&times;</button>
+            <div class="user-modal-header">
+                <img id="modalProfileImg" src="" alt="Avatar">
+                <h3 id="modalUsername">Username</h3>
+                <span id="modalRole" class="modal-role">Role</span>
+            </div>
+            <div class="user-modal-body">
+                <p><i class="fas fa-flag-checkered" style="color:#888; width:20px;"></i> <strong>Csapat:</strong> <span id="modalTeam">Csapat</span></p>
+                <p><i class="far fa-calendar-alt" style="color:#888; width:20px;"></i> <strong>Regisztrált:</strong> <span id="modalRegDate">Dátum</span></p>
+            </div>
+            <div class="user-modal-footer">
+                <button id="modalFriendBtn" class="btn-add-friend" onclick="handleFriendAction()"><i class="fas fa-user-plus"></i> Barátnak jelöl</button>
+                <button class="btn-send-msg" onclick="window.location.href='/f1fanclub/messages/messages.php'"><i class="fas fa-comment"></i> Üzenet</button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // --- ÚJ: USER PROFILE POP-UP ÉS BARÁT JS ---
+        let currentModalUser = "";
+        let currentFriendStatus = "";
+
+        function openUserProfile(username) {
+            fetch('/f1fanclub/profile/user_profile_api.php?username=' + encodeURIComponent(username))
+            .then(r => r.json())
+            .then(data => {
+                if(data.success) {
+                    currentModalUser = data.user.username;
+                    currentFriendStatus = data.user.friendship_status;
+
+                    document.getElementById('modalProfileImg').src = data.user.profile_image;
+                    document.getElementById('modalProfileImg').style.borderColor = data.user.team_color;
+                    document.getElementById('modalUsername').innerText = data.user.username;
+                    document.getElementById('modalRole').innerText = data.user.role_name;
+                    document.getElementById('modalTeam').innerText = data.user.fav_team || 'Nincs megadva';
+                    document.getElementById('modalRegDate').innerText = data.user.reg_date;
+                    
+                    updateFriendButton(data.user.friendship_status);
+
+                    document.getElementById('userProfileModal').style.display = 'flex';
+                } else {
+                    alert("Hiba: " + data.error);
+                }
+            }).catch(err => console.error(err));
+        }
+
+        function closeUserProfile(e) {
+            if(e) e.stopPropagation();
+            document.getElementById('userProfileModal').style.display = 'none';
+        }
+
+        function updateFriendButton(status) {
+            const btn = document.getElementById('modalFriendBtn');
+            if(!btn) return;
+            btn.style.display = 'flex';
+            
+            if (status === 'self') {
+                btn.style.display = 'none'; // Magadat nem jelölheted barátnak
+            } else if (status === 'none') {
+                btn.innerHTML = '<i class="fas fa-user-plus"></i> Barátnak jelöl';
+                btn.style.background = '#333';
+            } else if (status === 'pending_sent') {
+                btn.innerHTML = '<i class="fas fa-clock"></i> Jelölés elküldve (Visszavon)';
+                btn.style.background = '#888';
+            } else if (status === 'pending_received') {
+                btn.innerHTML = '<i class="fas fa-check"></i> Jelölés elfogadása';
+                btn.style.background = '#28a745'; // Zöld
+            } else if (status === 'accepted') {
+                btn.innerHTML = '<i class="fas fa-user-minus"></i> Barát törlése';
+                btn.style.background = '#e10600'; // Piros
+            }
+        }
+
+        function handleFriendAction() {
+            let action = '';
+            if (currentFriendStatus === 'none') action = 'add';
+            else if (currentFriendStatus === 'pending_sent' || currentFriendStatus === 'accepted') action = 'remove';
+            else if (currentFriendStatus === 'pending_received') action = 'accept';
+
+            if(!action) return;
+
+            fetch('/f1fanclub/profile/friend_api.php', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ action: action, target_user: currentModalUser })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if(data.success) {
+                    openUserProfile(currentModalUser); // Frissíti a gombot
+                }
+            });
+        }
+
+        function makeSafeStr(str) {
+            return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+        }
+        
         // --- ÉRDEKLŐDÉS MÉRÉSE ---
         let viewTimers = {};
         const observer = new IntersectionObserver((entries) => {
@@ -886,7 +576,7 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
             fetch("/f1fanclub/news/track_interest.php", { method: "POST", body: fd });
         }
 
-        // --- ÚJ EMOJI RENDSZER ---
+        // --- EMOJI RENDSZER ---
         function toggleEmojiPicker(postId) {
             document.querySelectorAll('.emoji-picker-popup').forEach(p => {
                 if (p.id !== 'emoji-picker-' + postId) p.classList.remove('show');
@@ -903,7 +593,7 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
 
         function toggleEmoji(postId, emoji, category) {
             document.getElementById('emoji-picker-' + postId).classList.remove('show');
-            trackInterest(category, 'like'); // Adatbázis algoritmus frissítése
+            trackInterest(category, 'like');
 
             const fd = new URLSearchParams();
             fd.append("news_id", postId);
@@ -914,14 +604,11 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: fd.toString()
             })
-                .then(r => r.json())
-                .then(data => {
-                    if (data.success) {
-                        renderReactions(postId, data.reactions, category);
-                    } else {
-                        if (!<?= $isLoggedIn ? 'true' : 'false' ?>) alert("Jelentkezz be a reakciókhoz!");
-                    }
-                });
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) { renderReactions(postId, data.reactions, category); } 
+                else { if (!<?= $isLoggedIn ? 'true' : 'false' ?>) alert("Jelentkezz be a reakciókhoz!"); }
+            });
         }
 
         function renderReactions(postId, reactions, category) {
@@ -937,11 +624,9 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
                     <span class="count">${r.count}</span>
                  </div>`;
             });
-
             container.innerHTML = html + pickerWrapper + commentBtn;
         }
 
-        // Fájl kiválasztás előnézet
         const fileInput = document.getElementById('file-input');
         const previewContainer = document.getElementById('preview-container');
         if (fileInput) {
@@ -978,11 +663,12 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
                     data.comments.forEach((c, index) => {
                         const avatar = c.profile_image ? `/f1fanclub/uploads/${c.profile_image}` : 'https://via.placeholder.com/40';
                         const hiddenClass = index >= 3 ? 'hidden-comment' : '';
+                        // ITT BELETETTÜK A KATTINTHATÓ PROFILOKAT A KOMMENTEKBE IS!
                         html += `
             <div class="comment-item ${hiddenClass} comment-item-${postId}">
-                <img src="${avatar}" style="width:35px; height:35px; border-radius:50%; border: 2px solid ${c.team_color}">
+                <img src="${avatar}" class="clickable-user" onclick="openUserProfile('${makeSafeStr(c.username)}')" style="width:35px; height:35px; border-radius:50%; border: 2px solid ${c.team_color}; object-fit: cover;">
                 <div class="comment-bubble">
-                    <div style="font-weight:bold; font-size:0.85rem; color:${c.team_color}">${c.username}</div>
+                    <div style="font-weight:bold; font-size:0.85rem; color:${c.team_color}" class="clickable-user" onclick="openUserProfile('${makeSafeStr(c.username)}')">${c.username}</div>
                     <div style="font-size:0.9rem; margin-top:2px; color:#eee;">${escapeHtml(c.comment)}</div>
                     <div style="font-size:0.7rem; color:#888; margin-top:5px;">${c.date_formatted}</div>
                 </div>
@@ -1019,7 +705,6 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
         }
 
         function escapeHtml(text) { return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
-
     </script>
 </body>
 </html>

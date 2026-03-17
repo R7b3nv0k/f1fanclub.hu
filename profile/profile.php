@@ -720,6 +720,9 @@ $stmt->close();
                 </div>
 
                 <a href="/f1fanclub/index.php" class="back-btn"><i>←</i> Vissza a főoldalra</a>
+                <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+                    <a href="/f1fanclub/admin/admin.php" class="back-btn" style="border-color: #ff9800; color: #ff9800; margin-left: 15px;"><i>⚙️</i> Admin Panel</a>
+                <?php endif; ?>
             </div>
         </div>
 

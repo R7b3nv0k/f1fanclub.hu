@@ -1,20 +1,5 @@
-[20-Feb-2026 08:34:07 Europe/Budapest] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'bio' in 'SELECT' in /home/swmjndga/public_html/f1fanclub/profile/profile.php:93
-Stack trace:
-#0 /home/swmjndga/public_html/f1fanclub/profile/profile.php(93): mysqli->prepare('SELECT email, p...')
-#1 {main}
-  thrown in /home/swmjndga/public_html/f1fanclub/profile/profile.php on line 93
-[20-Feb-2026 08:37:42 Europe/Budapest] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'bio' in 'SELECT' in /home/swmjndga/public_html/f1fanclub/profile/profile.php:92
-Stack trace:
-#0 /home/swmjndga/public_html/f1fanclub/profile/profile.php(92): mysqli->prepare('SELECT email, p...')
-#1 {main}
-  thrown in /home/swmjndga/public_html/f1fanclub/profile/profile.php on line 92
-[20-Feb-2026 08:38:12 Europe/Budapest] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'bio' in 'SELECT' in /home/swmjndga/public_html/f1fanclub/profile/profile.php:92
-Stack trace:
-#0 /home/swmjndga/public_html/f1fanclub/profile/profile.php(92): mysqli->prepare('SELECT email, p...')
-#1 {main}
-  thrown in /home/swmjndga/public_html/f1fanclub/profile/profile.php on line 92
-[03-Mar-2026 11:02:21 Europe/Budapest] PHP Warning:  require(PHPMailer/Exception.php): Failed to open stream: No such file or directory in /home/swmjndga/public_html/f1fanclub/profile/forgot.php on line 11
-[03-Mar-2026 11:02:21 Europe/Budapest] PHP Fatal error:  Uncaught Error: Failed opening required 'PHPMailer/Exception.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home/swmjndga/public_html/f1fanclub/profile/forgot.php:11
+[14-Mar-2026 13:36:10 Europe/Budapest] PHP Warning:  require(PHPMailer/Exception.php): Failed to open stream: No such file or directory in /home/swmjndga/public_html/f1fanclub/profile/forgot.php on line 11
+[14-Mar-2026 13:36:10 Europe/Budapest] PHP Fatal error:  Uncaught Error: Failed opening required 'PHPMailer/Exception.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home/swmjndga/public_html/f1fanclub/profile/forgot.php:11
 Stack trace:
 #0 {main}
   thrown in /home/swmjndga/public_html/f1fanclub/profile/forgot.php on line 11

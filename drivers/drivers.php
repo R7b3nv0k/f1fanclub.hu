@@ -119,7 +119,7 @@ $teamCssMap = [
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;800&display=swap" rel="stylesheet">
 </head>
 
-<body>
+<body style="padding-top: 80px !important; margin: 0 !important; height: 100vh !important; overflow: hidden !important;">
 
   <header>
     <div class="left-header">
@@ -138,18 +138,19 @@ $teamCssMap = [
     </nav>
     <?php if ($isLoggedIn): ?>
       <div class="auth">
-        <div class="welcome">
-          <?php if ($profile_image): ?>
-            <img src="/f1fanclub/uploads/<?php echo htmlspecialchars($profile_image); ?>" class="avatar" alt="Profile"
-              style="width:30px; height:30px; border-radius:50%; vertical-align:middle; object-fit: cover;">
-          <?php endif; ?>
-          <span class="welcome-text">
-            Welcome, <span
-              style="color: <?php echo htmlspecialchars($teamColor); ?>;"><?php echo htmlspecialchars($username); ?></span>!
-          </span>
-        </div>
+        <a href="/f1fanclub/profile/profile.php" style="text-decoration: none;">
+          <div class="welcome">
+            <?php if ($profile_image): ?>
+              <img src="/f1fanclub/uploads/<?php echo htmlspecialchars($profile_image); ?>" class="avatar" alt="Profile"
+                style="width:30px; height:30px; border-radius:50%; vertical-align:middle; object-fit: cover;">
+            <?php endif; ?>
+            <span class="welcome-text">
+              Welcome, <span
+                style="color: <?php echo htmlspecialchars($teamColor); ?>;"><?php echo htmlspecialchars($username); ?></span>!
+            </span>
+          </div>
+        </a>
         <a href="/f1fanclub/logout/logout.php" class="btn">Log out</a>
-        <a href="/f1fanclub/profile/profile.php" class="btn">Profile</a>
       </div>
     <?php else: ?>
       <div class="auth">

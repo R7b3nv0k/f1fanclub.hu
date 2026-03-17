@@ -72,18 +72,19 @@ if ($isLoggedIn) {
 
         <?php if ($isLoggedIn): ?>
             <div class="auth">
-                <div class="welcome">
-                    <?php if ($profile_image): ?>
-                        <img src="/f1fanclub/uploads/<?php echo htmlspecialchars($profile_image); ?>" class="avatar" alt="Profile">
-                    <?php endif; ?>
-                    <span class="welcome-text">
-                        Welcome,
-                        <span style="color: <?php echo htmlspecialchars($teamColor); ?>;">
-                            <?php echo htmlspecialchars($username); ?>
-                        </span>!
-                    </span>
-                </div>
-                <a href="/f1fanclub/profile/profile.php" class="btn">Profile</a>
+                <a href="/f1fanclub/profile/profile.php" style="text-decoration: none;">
+                    <div class="welcome">
+                        <?php if ($profile_image): ?>
+                            <img src="/f1fanclub/uploads/<?php echo htmlspecialchars($profile_image); ?>" class="avatar" alt="Profile">
+                        <?php endif; ?>
+                        <span class="welcome-text">
+                            Welcome,
+                            <span style="color: <?php echo htmlspecialchars($teamColor); ?>;">
+                                <?php echo htmlspecialchars($username); ?>
+                            </span>!
+                        </span>
+                    </div>
+                </a>
                 <a href="/f1fanclub/logout/logout.php" class="btn">Log out</a>
             </div>
         <?php else: ?>

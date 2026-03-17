@@ -256,7 +256,6 @@ $liveStatus = ($resLive && $resLive->num_rows > 0) ? $resLive->fetch_assoc()['st
     <nav>
       <a href="/f1fanclub/index.php">Home</a>
       <a href="/f1fanclub/Championship/championship.php">Championship</a>
-      <a href="/f1fanclub/idomero/idomero.php">Qualifying</a>
       <a href="/f1fanclub/teams/teams.php">Teams</a>
       <a href="/f1fanclub/drivers/drivers.php">Drivers</a>
       <a href="/f1fanclub/news/feed.php">Paddock</a>
@@ -264,21 +263,19 @@ $liveStatus = ($resLive && $resLive->num_rows > 0) ? $resLive->fetch_assoc()['st
 
     <?php if ($isLoggedIn): ?>
       <div class="auth">
-        <div class="welcome">
-          <?php if ($profile_image): ?>
-            <img src="/f1fanclub/uploads/<?php echo htmlspecialchars($profile_image); ?>" class="avatar" alt="Profile">
-          <?php endif; ?>
-          <span class="welcome-text">
-            Welcome,
-            <span style="color: <?php echo htmlspecialchars($teamColor); ?>;">
-              <?php echo htmlspecialchars($username); ?>
-            </span>!
-          </span>
-        </div>
-        <?php if ($userRole === 'admin'): ?>
-          <a href="/f1fanclub/admin/admin.php" class="btn">Admin</a>
-        <?php endif; ?>
-        <a href="/f1fanclub/profile/profile.php" class="btn">Profile</a>
+        <a href="/f1fanclub/profile/profile.php" style="text-decoration: none;">
+          <div class="welcome">
+            <?php if ($profile_image): ?>
+              <img src="/f1fanclub/uploads/<?php echo htmlspecialchars($profile_image); ?>" class="avatar" alt="Profile">
+            <?php endif; ?>
+            <span class="welcome-text">
+              Welcome,
+              <span style="color: <?php echo htmlspecialchars($teamColor); ?>;">
+                <?php echo htmlspecialchars($username); ?>
+              </span>!
+            </span>
+          </div>
+        </a>
         <a href="/f1fanclub/logout/logout.php" class="btn">Log out</a>
       </div>
     <?php else: ?>
@@ -421,7 +418,7 @@ $liveStatus = ($resLive && $resLive->num_rows > 0) ? $resLive->fetch_assoc()['st
         <h3>Navigáció</h3>
         <a href="/f1fanclub/index.php">Főoldal</a>
         <a href="/f1fanclub/news/feed.php">Paddock (Feed)</a>
-        <a href="/f1fanclub/about.php">Rólunk & Működés</a>
+        <a href="/f1fanclub/about/about.php">Rólunk & Működés</a>
         <a href="/f1fanclub/teams/teams.php">Csapatok</a>
       </div>
 

@@ -51,16 +51,12 @@ if ($isLoggedIn) {
     <style>
         body { background-color: #050505; background-image: radial-gradient(circle at 50% 0%, #1a0505 0%, #050505 60%); background-attachment: fixed; font-family: 'Montserrat', sans-serif; color: #fff; }
         
-        /* Fő elrendezés: Bal oldalt verseny, jobb oldalt chat */
         .live-wrapper { display: flex; gap: 20px; max-width: 1700px; width: 98%; margin: 30px auto; align-items: flex-start; }
-        .telemetry-panel { flex: 3; min-width: 0; } /* Bal oldal */
+        .telemetry-panel { flex: 3; min-width: 0; } 
         
-        /* CHAT STÍLUSOK */
         .chat-panel { flex: 1; background: #0a0a0a; border: 1px solid #333; border-radius: 12px; height: 85vh; display: flex; flex-direction: column; position: sticky; top: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); overflow: hidden; }
         .chat-header { background: #111; padding: 15px 20px; font-weight: 900; text-transform: uppercase; color: #fff; border-bottom: 2px solid #e10600; display: flex; align-items: center; gap: 10px; }
         .chat-messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 15px; }
-        
-        /* Gördítősáv a chathez */
         .chat-messages::-webkit-scrollbar { width: 6px; }
         .chat-messages::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
 
@@ -79,7 +75,6 @@ if ($isLoggedIn) {
         .chat-guest-msg { padding: 20px; text-align: center; color: #888; font-size: 0.9rem; background: #111; border-top: 1px solid #333; }
         .chat-guest-msg a { color: #e10600; text-decoration: underline; }
 
-        /* Visszamaradt telemetry stílusok */
         .race-header { display: flex; justify-content: space-between; align-items: center; background: rgba(15, 15, 20, 0.8); backdrop-filter: blur(10px); padding: 25px 30px; border-radius: 12px; border-bottom: 4px solid #e10600; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .race-header h1 { margin: 0; font-size: 2.2rem; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; }
         .lap-counter { font-size: 2.8rem; font-weight: 900; color: #fff; font-family: 'Roboto Mono', monospace; line-height: 1; }
@@ -125,11 +120,25 @@ if ($isLoggedIn) {
         .standings-table tr:hover { background: #161616; }
         .champ-gold { color: #d4af37; font-weight: 900; }
         
-        /* Reszponzív tabletre */
-        @media(max-width: 1200px) {
-            .live-wrapper { flex-direction: column; }
-            .chat-panel { width: 100%; height: 500px; }
-        }
+        @media(max-width: 1200px) { .live-wrapper { flex-direction: column; } .chat-panel { width: 100%; height: 500px; } }
+
+        /* ÚJ: MODAL CSS (Pop-up Ablak) */
+        .user-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .user-modal-content { background: linear-gradient(145deg, #111, #1a1a1a); width: 320px; border-radius: 15px; border: 1px solid rgba(225,6,0,0.3); padding: 20px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.8); color: #fff; text-align: center; animation: popIn 0.3s ease; }
+        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .user-modal-close { position: absolute; top: 10px; right: 15px; background: none; border: none; color: #888; font-size: 1.5rem; cursor: pointer; }
+        .user-modal-close:hover { color: #e10600; }
+        .user-modal-header img { width: 90px; height: 90px; border-radius: 50%; border: 3px solid #e10600; object-fit: cover; margin-bottom: 10px; }
+        .user-modal-header h3 { margin: 0; font-size: 1.3rem; }
+        .modal-role { display: inline-block; font-size: 0.75rem; background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 10px; margin-top: 5px; color: #aaa; text-transform: uppercase; letter-spacing: 1px;}
+        .user-modal-body { margin: 20px 0; font-size: 0.9rem; color: #ddd; text-align: left; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; }
+        .user-modal-body p { margin: 5px 0; }
+        .user-modal-footer { display: flex; gap: 10px; justify-content: center; }
+        .user-modal-footer button { flex: 1; padding: 10px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; color: #fff; display: flex; align-items: center; justify-content: center; gap: 5px;}
+        .btn-add-friend { background: #333; } .btn-add-friend:hover { background: #444; }
+        .btn-send-msg { background: #e10600; } .btn-send-msg:hover { background: #ff1a1a; }
+        .clickable-user { cursor: pointer; transition: opacity 0.2s; }
+        .clickable-user:hover { opacity: 0.7; }
     </style>
 </head>
 <body>
@@ -208,27 +217,71 @@ if ($isLoggedIn) {
     </div>
 </div>
 
+<div id="userProfileModal" class="user-modal-overlay" onclick="closeUserProfile(event)">
+    <div class="user-modal-content" onclick="event.stopPropagation()">
+        <button class="user-modal-close" onclick="closeUserProfile(event)">&times;</button>
+        <div class="user-modal-header">
+            <img id="modalProfileImg" src="" alt="Avatar">
+            <h3 id="modalUsername">Username</h3>
+            <span id="modalRole" class="modal-role">Role</span>
+        </div>
+        <div class="user-modal-body">
+            <p><i class="fas fa-flag-checkered" style="color:#888; width:20px;"></i> <strong>Csapat:</strong> <span id="modalTeam">Csapat</span></p>
+            <p><i class="far fa-calendar-alt" style="color:#888; width:20px;"></i> <strong>Regisztrált:</strong> <span id="modalRegDate">Dátum</span></p>
+        </div>
+        <div class="user-modal-footer">
+            <button class="btn-add-friend" onclick="alert('Barátjelölés funkció hamarosan...')"><i class="fas fa-user-plus"></i> Barátnak jelöl</button>
+            <button class="btn-send-msg" onclick="alert('Privát üzenet funkció a következő frissítésben érkezik!')"><i class="fas fa-comment"></i> Üzenet</button>
+        </div>
+    </div>
+</div>
+
 <script>
     const rowHeight = 80; 
     let isFetching = false;
-    let chatMessageCount = 0; // Figyeljük, van-e új üzenet, hogy le tudjunk pörgetni
+    let chatMessageCount = 0; 
+
+    // --- ÚJ: USER PROFILE POP-UP JS ---
+    function openUserProfile(username) {
+        fetch('/f1fanclub/profile/user_profile_api.php?username=' + encodeURIComponent(username))
+        .then(r => r.json())
+        .then(data => {
+            if(data.success) {
+                document.getElementById('modalProfileImg').src = data.user.profile_image;
+                document.getElementById('modalProfileImg').style.borderColor = data.user.team_color;
+                document.getElementById('modalUsername').innerText = data.user.username;
+                document.getElementById('modalRole').innerText = data.user.role_name;
+                document.getElementById('modalTeam').innerText = data.user.fav_team || 'Nincs megadva';
+                document.getElementById('modalRegDate').innerText = data.user.reg_date;
+                document.getElementById('userProfileModal').style.display = 'flex';
+            } else {
+                alert("Hiba: " + data.error);
+            }
+        }).catch(err => console.error(err));
+    }
+
+    function closeUserProfile(e) {
+        if(e) e.stopPropagation();
+        document.getElementById('userProfileModal').style.display = 'none';
+    }
+
+    function makeSafeStr(str) {
+        return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    }
 
     // --- TELEMETRIA JS ---
     async function fetchData() {
         if (isFetching) return;
         isFetching = true;
-        
         try {
             const response = await fetch('race_api.php?action=update');
             const text = await response.text(); 
-            
             let data;
             try { data = JSON.parse(text); } 
             catch(e) { document.getElementById('loadingMsg').innerHTML = '<span style="color:#e10600;">Hiba a szerver kommunikációban!</span>'; isFetching = false; return; }
 
             if (data && data.race) {
                 renderRace(data);
-
                 if (data.race.status === 'running') {
                     let timeout = data.race.safety_car == "1" ? 15000 : 10000;
                     setTimeout(fetchData, timeout);
@@ -245,11 +298,7 @@ if ($isLoggedIn) {
                     setTimeout(fetchData, 5000);
                 }
             }
-        } catch (error) {
-            console.error("Fetch Hiba:", error);
-        } finally {
-            isFetching = false;
-        }
+        } catch (error) { console.error("Fetch Hiba:", error); } finally { isFetching = false; }
     }
 
     function renderRace(data) {
@@ -295,11 +344,8 @@ if ($isLoggedIn) {
                     gap = '<span style="color:#ffcc00;">IN PIT</span>';
                     statusHtml = '<span class="status-pit">PIT</span>';
                 } else {
-                    if (isSC) {
-                        gap = driver.position === 1 ? 'SC' : '<span class="gap-sc">SC QUEUE</span>';
-                    } else {
-                        gap = driver.position === 1 ? 'Leader' : '+' + (driver.position * 1.5 + Math.random()).toFixed(1) + 's';
-                    }
+                    if (isSC) { gap = driver.position === 1 ? 'SC' : '<span class="gap-sc">SC QUEUE</span>'; } 
+                    else { gap = driver.position === 1 ? 'Leader' : '+' + (driver.position * 1.5 + Math.random()).toFixed(1) + 's'; }
                 }
             }
 
@@ -324,25 +370,17 @@ if ($isLoggedIn) {
 
             let rawDriverImg = driver.driver_image ? driver.driver_image.trim() : '';
             let imgPath = '../drivers/default.png';
-            if (rawDriverImg !== '') {
-                imgPath = rawDriverImg.includes('/') ? `../${rawDriverImg}` : `../drivers/${rawDriverImg}`;
-            }
-
+            if (rawDriverImg !== '') { imgPath = rawDriverImg.includes('/') ? `../${rawDriverImg}` : `../drivers/${rawDriverImg}`; }
             let rawLogo = driver.logo ? driver.logo.trim() : '';
             let logoPath = '';
-            if (rawLogo !== '') {
-                logoPath = rawLogo.includes('/') ? `../${rawLogo}` : `../logos/${rawLogo}`;
-            }
+            if (rawLogo !== '') { logoPath = rawLogo.includes('/') ? `../${rawLogo}` : `../logos/${rawLogo}`; }
 
             row.innerHTML = `
                 <div class="pos-num">${posDisplay}</div>
                 <div class="driver-info">
-                    <div class="driver-pic-box">
-                        <img src="${imgPath}" class="driver-portrait" onerror="this.style.opacity=0;">
-                    </div>
+                    <div class="driver-pic-box"><img src="${imgPath}" class="driver-portrait" onerror="this.style.opacity=0;"></div>
                     <div style="display:flex; flex-direction:column; justify-content:center;">
-                        <span class="driver-name">${driver.name}</span>
-                        <span class="driver-abbr">${driver.abbreviation}</span>
+                        <span class="driver-name">${driver.name}</span><span class="driver-abbr">${driver.abbreviation}</span>
                     </div>
                 </div>
                 <div class="driver-info">
@@ -353,8 +391,7 @@ if ($isLoggedIn) {
                     <div class="tyre-badge ${tyreClass}">${tyreLetter}</div>
                     <div class="wear-bar-bg" title="Kopás: ${driver.tyre_wear}%"><div class="wear-bar-fill ${wearColorClass}" style="width: ${driver.tyre_wear}%"></div></div>
                 </div>
-                <div class="gap-text">${gap}</div>
-                <div>${statusHtml}</div>
+                <div class="gap-text">${gap}</div><div>${statusHtml}</div>
             `;
         });
     }
@@ -375,19 +412,20 @@ if ($isLoggedIn) {
     // --- CHAT JS ---
     async function loadChat() {
         try {
-            const res = await fetch('chat_api.php');
+            const res = await fetch('chat_api.php?_t=' + new Date().getTime());
             const msgs = await res.json();
             const box = document.getElementById('chatMessagesBox');
             
             if (msgs.length > chatMessageCount) {
                 box.innerHTML = '';
                 msgs.forEach(m => {
+                    // ITT BELETETTÜK A KATTINTHATÓ PROFILOKAT A CHATBE IS!
                     box.innerHTML += `
                         <div class="chat-msg">
-                            <img src="${m.profile_image}" onerror="this.src='../drivers/default.png'" style="border-color: ${m.color};">
+                            <img src="${m.profile_image}" class="clickable-user" onclick="openUserProfile('${makeSafeStr(m.username)}')" onerror="this.src='../drivers/default.png'" style="border-color: ${m.color}; width:35px; height:35px; border-radius:50%; object-fit: cover; border: 2px solid transparent;">
                             <div class="chat-msg-body">
                                 <div class="chat-user-info">
-                                    <span class="chat-user-name" style="color:${m.color}">${m.username}</span>
+                                    <span class="chat-user-name clickable-user" onclick="openUserProfile('${makeSafeStr(m.username)}')" style="color:${m.color}; cursor:pointer;">${m.username}</span>
                                     <span class="chat-time">${m.time}</span>
                                 </div>
                                 <div style="word-wrap: break-word;">${m.message}</div>
@@ -395,7 +433,7 @@ if ($isLoggedIn) {
                         </div>
                     `;
                 });
-                box.scrollTop = box.scrollHeight; // Legörgetés az aljára
+                box.scrollTop = box.scrollHeight; 
                 chatMessageCount = msgs.length;
             }
         } catch(e) { console.log("Chat error:", e); }
@@ -413,44 +451,12 @@ if ($isLoggedIn) {
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ message: msg })
         });
-        loadChat(); // Azonnali frissítés
-    }
-    // --- CHAT JS ---
-    async function loadChat() {
-        try {
-            // A getTime() megakadályozza, hogy a böngésző "beragassza" az előző chatet (Cache buster)
-            const res = await fetch('chat_api.php?_t=' + new Date().getTime());
-            const msgs = await res.json();
-            const box = document.getElementById('chatMessagesBox');
-            
-            if (msgs.length > chatMessageCount) {
-                box.innerHTML = '';
-                msgs.forEach(m => {
-                    box.innerHTML += `
-                        <div class="chat-msg">
-                            <img src="${m.profile_image}" onerror="this.src='../drivers/default.png'" style="border-color: ${m.color};">
-                            <div class="chat-msg-body">
-                                <div class="chat-user-info">
-                                    <span class="chat-user-name" style="color:${m.color}">${m.username}</span>
-                                    <span class="chat-time">${m.time}</span>
-                                </div>
-                                <div style="word-wrap: break-word;">${m.message}</div>
-                            </div>
-                        </div>
-                    `;
-                });
-                box.scrollTop = box.scrollHeight; // Legörgetés az aljára
-                chatMessageCount = msgs.length;
-            }
-        } catch(e) { console.log("Chat error:", e); }
+        loadChat(); 
     }
 
-    // Indítás
     fetchData();
     loadChat();
-    setInterval(loadChat, 3000); // Chat frissítése 3 másodpercenként
-    
-    
+    setInterval(loadChat, 3000); 
 </script>
 </body>
 </html>

@@ -15,7 +15,14 @@ if ($conn->connect_error) { die(json_encode(['success' => false, 'error' => 'DB 
 $username = $_SESSION['username'] ?? null;
 if (!$username) { die(json_encode(['success' => false, 'error' => 'Not logged in'])); }
 
+// Mivel van POST (üzenetküldés) és GET (lekérdezés) is, mindkettőből olvassuk ki az action-t
 $action = $_GET['action'] ?? '';
+if (empty($action)) {
+    $postData = json_decode(file_get_contents('php://input'), true);
+    if ($postData && isset($postData['action'])) {
+        $action = $postData['action'];
+    }
+}
 
 function getTeamColor($team) {
     switch ($team) {
@@ -26,27 +33,43 @@ function getTeamColor($team) {
     }
 }
 
-// 1. Barátok (Beszélgetőpartnerek) lekérése
+// 1. Kapcsolatok (barátok/partnerek) lekérése - UTOLSÓ ÜZENET SZERINT RENDEZVE (ID alapján!)
 if ($action === 'get_friends') {
-    // Lekérjük az elfogadott barátságokat
-    $sql = "SELECT 
-                IF(f.sender = ?, f.receiver, f.sender) as friend_name,
-                u.profile_image, u.fav_team
-            FROM friendships f
-            JOIN users u ON u.username = IF(f.sender = ?, f.receiver, f.sender)
-            WHERE (f.sender = ? OR f.receiver = ?) AND f.status = 'accepted'";
+    // Sokkal biztonságosabb SQL: Kigyűjti az egyedi partnereket és a legmagasabb üzenet ID-t
+    $sql = "
+        SELECT 
+            p.friend_name,
+            u.profile_image,
+            u.fav_team,
+            p.last_msg_id
+        FROM (
+            SELECT 
+                CASE WHEN sender = ? THEN receiver ELSE sender END AS friend_name,
+                MAX(id) as last_msg_id
+            FROM private_messages
+            WHERE sender = ? OR receiver = ?
+            GROUP BY CASE WHEN sender = ? THEN receiver ELSE sender END
+        ) p
+        JOIN users u ON u.username = p.friend_name
+        ORDER BY p.last_msg_id DESC
+    ";
     
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ssss", $username, $username, $username, $username);
     $stmt->execute();
     $res = $stmt->get_result();
-    
+
     $friends = [];
-    while ($row = $res->fetch_assoc()) {
-        $row['profile_image'] = $row['profile_image'] ? '../uploads/' . $row['profile_image'] : '../drivers/default.png';
-        $row['color'] = getTeamColor($row['fav_team']);
-        $friends[] = $row;
+    if ($res) {
+        while ($row = $res->fetch_assoc()) {
+            $friends[] = [
+                'friend_name' => $row['friend_name'],
+                'profile_image' => $row['profile_image'] ? '../uploads/' . $row['profile_image'] : '../drivers/default.png',
+                'color' => getTeamColor($row['fav_team'])
+            ];
+        }
     }
+    
     echo json_encode(['success' => true, 'friends' => $friends]);
     exit;
 }
@@ -81,6 +104,7 @@ if ($action === 'get_messages') {
 
 // 3. Üzenet küldése
 if ($action === 'send') {
+    // Az action-t már fentebb kinyertük, most csak a maradékot szedjük ki
     $data = json_decode(file_get_contents('php://input'), true);
     $receiver = trim($data['receiver'] ?? '');
     $msg = trim($data['message'] ?? '');
@@ -91,8 +115,39 @@ if ($action === 'send') {
         $stmt->execute();
         echo json_encode(['success' => true]);
     } else {
-        echo json_encode(['success' => false]);
+        echo json_encode(['success' => false, 'error' => 'Üres üzenet vagy címzett']);
     }
     exit;
 }
+
+// 4. Felhasználó kereső
+if ($action === 'search_users') {
+    $term = $_GET['term'] ?? '';
+    
+    if (strlen($term) < 3) {
+        echo json_encode(['success' => true, 'users' => []]);
+        exit;
+    }
+    
+    $termStr = "%" . $term . "%";
+    $sql = "SELECT username, profile_image, fav_team FROM users WHERE username LIKE ? LIMIT 10";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $termStr);
+    $stmt->execute();
+    $res = $stmt->get_result();
+
+    $users = [];
+    while ($row = $res->fetch_assoc()) {
+        $users[] = [
+            'username' => $row['username'],
+            'profile_image' => $row['profile_image'] ? '../uploads/' . $row['profile_image'] : '../drivers/default.png',
+            'color' => getTeamColor($row['fav_team'])
+        ];
+    }
+    echo json_encode(['success' => true, 'users' => $users]);
+    exit;
+}
+
+// Ha semmilyen érvényes action nem jött:
+echo json_encode(['success' => false, 'error' => 'Invalid action']);
 ?>

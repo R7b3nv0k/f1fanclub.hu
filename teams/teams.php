@@ -409,7 +409,7 @@ if ($isLoggedIn) {
         <!-- ========== RED BULL ========== -->
         <div class="team-card" data-team="redbull" id="RBR" data-team-id="red_bull">
           <div class="team-image-container">
-            <img src="kép/RED_BULL_CAR.png" alt="Red Bull Racing" class="team-image">
+            <img src="red bull-logo-Photoroom.png" alt="Red Bull Racing" class="team-image">
             <div class="team-name-logo">Red Bull Racing</div>
             <div class="team-glow"></div>
           </div>
@@ -428,7 +428,8 @@ if ($isLoggedIn) {
         <!-- ========== FERRARI ========== -->
         <div class="team-card" data-team="ferrari" id="FER" data-team-id="ferrari">
           <div class="team-image-container">
-            <img src="kép/FERRARI_CAR.png" alt="Ferrari" class="team-image">
+            <img src="ferrari-logo-removebg-preview.png
+" alt="Ferrari" class="team-image">
             <div class="team-name-logo">Ferrari</div>
             <div class="team-glow"></div>
           </div>
@@ -447,7 +448,7 @@ if ($isLoggedIn) {
         <!-- ========== MERCEDES ========== -->
         <div class="team-card" data-team="mercedes" id="MER" data-team-id="mercedes">
           <div class="team-image-container">
-            <img src="kép/MERCEDES_CAR.png" alt="Mercedes" class="team-image">
+            <img src="mercedes-logo.png" alt="Mercedes" class="team-image">
             <div class="team-name-logo">Mercedes</div>
             <div class="team-glow"></div>
           </div>
@@ -466,7 +467,7 @@ if ($isLoggedIn) {
         <!-- ========== McLAREN ========== -->
         <div class="team-card" data-team="mclaren" id="MCL" data-team-id="mclaren">
           <div class="team-image-container">
-            <img src="kép/MCLAREN_CAR.png" alt="McLaren" class="team-image">
+            <img src="mclaren-logo.png" alt="McLaren" class="team-image">
             <div class="team-name-logo">McLaren</div>
             <div class="team-glow"></div>
           </div>
@@ -485,7 +486,7 @@ if ($isLoggedIn) {
         <!-- ========== ASTON MARTIN ========== -->
         <div class="team-card" data-team="astonmartin" id="AST" data-team-id="aston_martin">
           <div class="team-image-container">
-            <img src="kép/ASTON_MARTIN_CAR.png" alt="Aston Martin" class="team-image">
+            <img src="Aston-Martin-Logo.png" alt="Aston Martin" class="team-image">
             <div class="team-name-logo">Aston Martin</div>
             <div class="team-glow"></div>
           </div>
@@ -504,7 +505,7 @@ if ($isLoggedIn) {
         <!-- ========== ALPINE ========== -->
         <div class="team-card" data-team="alpine" id="ALP" data-team-id="alpine">
           <div class="team-image-container">
-            <img src="kép/ALPINE_CAR.png" alt="Alpine" class="team-image">
+            <img src="alpine-logo-Photoroom.png" alt="Alpine" class="team-image">
             <div class="team-name-logo">Alpine</div>
             <div class="team-glow"></div>
           </div>
@@ -523,7 +524,7 @@ if ($isLoggedIn) {
         <!-- ========== WILLIAMS ========== -->
         <div class="team-card" data-team="williams" id="WIL" data-team-id="williams">
           <div class="team-image-container">
-            <img src="kép/WILLIAMS_CAR.png" alt="Williams" class="team-image">
+            <img src="williams-logo-Photoroom.png" alt="Williams" class="team-image">
             <div class="team-name-logo">Williams</div>
             <div class="team-glow"></div>
           </div>
@@ -542,7 +543,7 @@ if ($isLoggedIn) {
         <!-- ========== RACING BULLS ========== -->
         <div class="team-card" data-team="racingbulls" id="RB" data-team-id="racing_bulls">
           <div class="team-image-container">
-            <img src="kép/RACING_BULLS_CAR.png" alt="Racing Bulls" class="team-image">
+            <img src="racing_bulls-logo.png" alt="Racing Bulls" class="team-image">
             <div class="team-name-logo">Racing Bulls</div>
             <div class="team-glow"></div>
           </div>
@@ -561,7 +562,7 @@ if ($isLoggedIn) {
         <!-- ========== HAAS ========== -->
         <div class="team-card" data-team="haas" id="HAA" data-team-id="haas">
           <div class="team-image-container">
-            <img src="kép/HAAS_CAR.png" alt="Haas" class="team-image">
+            <img src="haas-logo.png" alt="Haas" class="team-image">
             <div class="team-name-logo">Haas</div>
             <div class="team-glow"></div>
           </div>
@@ -580,7 +581,7 @@ if ($isLoggedIn) {
         <!-- ========== AUDI ========== -->
         <div class="team-card" data-team="audi" id="AUD" data-team-id="audi">
           <div class="team-image-container">
-            <img src="kép/AUDI_CAR.png" alt="Audi" class="team-image">
+            <img src="audi-white.png" alt="Audi" class="team-image">
             <div class="team-name-logo">Audi</div>
             <div class="team-glow"></div>
           </div>
@@ -599,7 +600,7 @@ if ($isLoggedIn) {
         <!-- ========== CADILLAC ========== -->
         <div class="team-card" data-team="cadillac" id="CAD" data-team-id="cadillac">
           <div class="team-image-container">
-            <img src="kép/CADILLAC_CAR.png" alt="Cadillac" class="team-image">
+            <img src="cadillac-black-logo.png" alt="Cadillac" class="team-image">
             <div class="team-name-logo">Cadillac</div>
             <div class="team-glow"></div>
           </div>

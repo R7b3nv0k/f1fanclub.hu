@@ -1,17 +1,15 @@
-/* /f1fanclub/css/messages.css */
+/* /f1fanclub/css/messages.css - TELJES, TISZTA DIZÁJN */
 
 .messenger-wrapper {
+    flex-grow: 1; 
     display: flex;
-    height: calc(100vh - 80px); /* A fejléc (80px) alatti teljes helyet kitölti */
     background: #0f0f15;
     overflow: hidden;
-    width: 100%; /* ÚJ: 100%-os szélesség */
-    max-width: none; /* ÚJ: Levesszük a korlátot */
-    margin: 0; /* ÚJ: Nincs margó */
-    border: none; /* ÚJ: Levesszük az oldalsó kereteket, mert faltól falig ér */
+    width: 100%; 
+    border-top: 1px solid #222;
 }
 
-/* BAL OLDAL - BARÁTOK LISTÁJA (Sidebar) */
+/* --- BAL OLDAL (Sidebar) --- */
 .msg-sidebar {
     width: 320px;
     background: #15151c;
@@ -24,6 +22,9 @@
     padding: 20px;
     background: #111118;
     border-bottom: 1px solid #2a2a35;
+    flex-shrink: 0;
+    position: relative; 
+    display: block;
 }
 
 .search-bar {
@@ -36,12 +37,46 @@
     font-family: 'Poppins', sans-serif;
     outline: none;
     transition: 0.3s;
+    box-sizing: border-box;
 }
 
 .search-bar:focus {
-    border-color: #e10600;
+    border-color: #e10600; 
 }
 
+/* Kereső legördülő menü */
+.search-results {
+    position: absolute;
+    top: calc(100% + 5px); 
+    left: 20px;
+    right: 20px;
+    background: #1a1a24;
+    border: 1px solid #e10600;
+    border-radius: 8px;
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 1000; 
+    display: none; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+}
+
+.search-results::-webkit-scrollbar { width: 5px; }
+.search-results::-webkit-scrollbar-thumb { background: #e10600; border-radius: 5px; }
+
+.search-result-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #2a2a35;
+    transition: 0.2s;
+}
+
+.search-result-item:hover { background: rgba(225, 6, 0, 0.15); }
+.search-result-item img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid transparent; }
+
+/* Barátlista */
 .friend-list {
     flex: 1;
     overflow-y: auto;
@@ -62,246 +97,51 @@
     margin-bottom: 5px;
 }
 
-.friend-item:hover, .friend-item.active {
-    background: rgba(225, 6, 0, 0.1);
-}
+.friend-item:hover, .friend-item.active { background: rgba(255, 255, 255, 0.05); }
+.friend-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid transparent; }
+.friend-info { flex: 1; }
+.friend-name { color: #fff; font-weight: 600; font-size: 0.95rem; }
 
-.friend-avatar {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid transparent;
-}
-
-.friend-info {
-    flex: 1;
-}
-
-.friend-name {
-    color: #fff;
-    font-weight: 600;
-    font-size: 0.95rem;
-}
-
-/* JOBB OLDAL - CHAT ABLAK */
-.chat-area {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    background: #0a0a0f;
-}
-
-.chat-header {
-    padding: 20px;
-    background: #111118;
-    border-bottom: 1px solid #2a2a35;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.chat-header h2 {
-    margin: 0;
-    font-size: 1.2rem;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.chat-box {
-    flex: 1;
-    padding: 20px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
+/* --- JOBB OLDAL (Chat) --- */
+.chat-area { flex: 1; display: flex; flex-direction: column; background: #0a0a0f; min-height: 0; }
+.chat-header { padding: 20px; background: #111118; border-bottom: 1px solid #2a2a35; display: flex; align-items: center; gap: 15px; flex-shrink: 0; }
+.chat-header h2 { margin: 0; font-size: 1.2rem; color: #fff; display: flex; align-items: center; gap: 10px; }
+.chat-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
 .chat-box::-webkit-scrollbar { width: 8px; }
 .chat-box::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
+.empty-chat { margin: auto; text-align: center; color: #666; }
+.empty-chat i { font-size: 3rem; margin-bottom: 15px; color: #333; }
 
-.empty-chat {
-    margin: auto;
-    text-align: center;
-    color: #666;
-}
+.message-row { display: flex; flex-direction: column; max-width: 70%; }
+.message-row.me { align-self: flex-end; align-items: flex-end; }
+.message-row.them { align-self: flex-start; align-items: flex-start; }
+.message-bubble { padding: 12px 18px; border-radius: 15px; font-size: 0.95rem; line-height: 1.4; word-wrap: break-word; }
+.message-row.me .message-bubble { background: linear-gradient(135deg, #e10600, #ff4b2b); color: #fff; border-bottom-right-radius: 4px; }
+.message-row.them .message-bubble { background: #202028; color: #eee; border-bottom-left-radius: 4px; border: 1px solid #333; }
+.message-time { font-size: 0.7rem; color: #888; margin-top: 5px; }
 
-.empty-chat i {
-    font-size: 3rem;
-    margin-bottom: 15px;
-    color: #333;
-}
+/* Input terület */
+.chat-input-area { padding: 25px 30px; background: #111118; border-top: 1px solid #2a2a35; display: flex; gap: 20px; align-items: center; flex-shrink: 0; }
+.chat-input-container { flex: 1; display: flex; align-items: center; background: #202028; border-radius: 12px; padding: 8px 15px; transition: 0.3s; border: 1px solid transparent; }
+.chat-input-container:focus-within { border-color: #3a3a45; background: #252530; }
+.chat-input-container input { flex: 1; background: transparent; border: none; color: #fff; padding: 10px 15px; font-family: inherit; font-size: 1.05rem; outline: none; }
+.icon-btn { background: transparent; border: none; color: #888; font-size: 1.5rem; cursor: pointer; padding: 5px 10px; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+.icon-btn:hover { color: #ddd; transform: scale(1.1); }
+.send-btn { background: #e10600; color: #fff; border: none; width: 55px; height: 55px; border-radius: 50%; cursor: pointer; font-size: 1.3rem; display: flex; align-items: center; justify-content: center; transition: 0.2s; flex-shrink: 0; }
+.send-btn:hover { background: #ff1a1a; transform: scale(1.05); }
 
-.message-row {
-    display: flex;
-    flex-direction: column;
-    max-width: 70%;
-}
-
-.message-row.me {
-    align-self: flex-end;
-    align-items: flex-end;
-}
-
-.message-row.them {
-    align-self: flex-start;
-    align-items: flex-start;
-}
-
-.message-bubble {
-    padding: 12px 18px;
-    border-radius: 15px;
-    font-size: 0.95rem;
-    line-height: 1.4;
-    word-wrap: break-word;
-}
-
-.message-row.me .message-bubble {
-    background: linear-gradient(135deg, #e10600, #ff4b2b);
-    color: #fff;
-    border-bottom-right-radius: 4px;
-}
-
-.message-row.them .message-bubble {
-    background: #202028;
-    color: #eee;
-    border-bottom-left-radius: 4px;
-    border: 1px solid #333;
-}
-
-.message-time {
-    font-size: 0.7rem;
-    color: #888;
-    margin-top: 5px;
-}
-
-/* ÜZENET KÜLDŐ SÁV */
-.chat-input-area {
-    padding: 20px;
-    background: #111118;
-    border-top: 1px solid #2a2a35;
-    display: flex;
-    gap: 15px;
-}
-
-.chat-input-area input {
-    flex: 1;
-    background: #202028;
-    border: 1px solid #333;
-    color: #fff;
-    padding: 15px 20px;
-    border-radius: 25px;
-    font-family: inherit;
-    font-size: 1rem;
-    outline: none;
-    transition: 0.3s;
-}
-
-.chat-input-area input:focus {
-    border-color: #e10600;
-}
-
-.chat-input-area button {
-    background: #e10600;
-    color: #fff;
-    border: none;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 1.2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: 0.2s;
-}
-
-.chat-input-area button:hover {
-    background: #ff1a1a;
-    transform: scale(1.05);
-}
-/* ÜZENET KÜLDŐ SÁV (Discord stílus) */
-.chat-input-area {
-    padding: 25px 30px; /* Vastagabb térköz a doboz körül */
-    background: #111118;
-    border-top: 1px solid #2a2a35;
-    display: flex;
-    gap: 20px;
-    align-items: center;
-}
-
-.chat-input-container {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    background: #202028;
-    border-radius: 12px; /* Enyhébb lekerekítés, mint a Discordnál */
-    padding: 8px 15px;
-    transition: 0.3s;
-    border: 1px solid transparent;
-}
-
-.chat-input-container:focus-within {
-    border-color: #3a3a45;
-    background: #252530;
-}
-
-.chat-input-container input {
-    flex: 1;
-    background: transparent;
-    border: none;
-    color: #fff;
-    padding: 10px 15px;
-    font-family: inherit;
-    font-size: 1.05rem;
-    outline: none;
-}
-
-.chat-input-container input::placeholder {
-    color: #777;
-}
-
-/* Belső ikon gombok (+ és Emoji) */
-.icon-btn {
-    background: transparent;
-    border: none;
-    color: #888;
-    font-size: 1.5rem;
-    cursor: pointer;
-    padding: 5px 10px;
-    transition: 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.icon-btn:hover {
-    color: #ddd;
-    transform: scale(1.1);
-}
-
-/* Fő küldés gomb */
-.send-btn {
-    background: #e10600;
-    color: #fff;
-    border: none;
-    width: 55px; /* Kicsit nagyobb, feltűnőbb gomb */
-    height: 55px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 1.3rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: 0.2s;
-    flex-shrink: 0;
-    box-shadow: 0 4px 15px rgba(225, 6, 0, 0.3);
-}
-
-.send-btn:hover {
-    background: #ff1a1a;
-    transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(225, 6, 0, 0.5);
-}
+/* --- ÚJ: POP-UP ABLAK CSS --- */
+.user-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+.user-modal-content { background: linear-gradient(145deg, #111, #1a1a1a); width: 320px; border-radius: 15px; border: 1px solid rgba(225,6,0,0.3); padding: 20px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.8); color: #fff; text-align: center; animation: popIn 0.3s ease; }
+@keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.user-modal-close { position: absolute; top: 10px; right: 15px; background: none; border: none; color: #888; font-size: 1.5rem; cursor: pointer; }
+.user-modal-close:hover { color: #e10600; }
+.user-modal-header img { width: 90px; height: 90px; border-radius: 50%; border: 3px solid #e10600; object-fit: cover; margin-bottom: 10px; }
+.user-modal-header h3 { margin: 0; font-size: 1.3rem; }
+.modal-role { display: inline-block; font-size: 0.75rem; background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 10px; margin-top: 5px; color: #aaa; text-transform: uppercase; letter-spacing: 1px;}
+.user-modal-body { margin: 20px 0; font-size: 0.9rem; color: #ddd; text-align: left; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; }
+.user-modal-body p { margin: 5px 0; }
+.user-modal-footer { display: flex; gap: 10px; justify-content: center; }
+.user-modal-footer button { flex: 1; padding: 10px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; color: #fff; display: flex; align-items: center; justify-content: center; gap: 5px;}
+.btn-add-friend { background: #333; } .btn-add-friend:hover { background: #444; }
+.btn-send-msg { background: #e10600; } .btn-send-msg:hover { background: #ff1a1a; }

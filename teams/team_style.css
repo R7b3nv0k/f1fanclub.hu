@@ -243,36 +243,93 @@ body.BODY_PADDING_FIX {
     padding: 0;
   }
   
-  /* TEAM CAR IMAGE */
+  /* TEAM CAR IMAGE - MAKE LOGOS FIT CONSISTENTLY - CENTERED */
   .team-image {
     position: absolute;
-    bottom: 0;
+    top: 50%;
     left: 50%;
-    transform: translateX(-50%);
-    height: 70%;
-    width: auto;
+    transform: translate(-50%, -50%);
+    height: auto;
+    max-height: 65%;
+    width: 80%;
+    max-width: 200px;
     object-fit: contain;
-    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-    filter: grayscale(30%) brightness(0.6);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    filter: grayscale(30%) brightness(0.8);
     z-index: 2;
     margin: 0;
     padding: 0;
   }
   
-  /* TEAM NAME LOGO */
+  /* HOVER EFFECT - SUBTLE ZOOM (NO PULL DOWN) */
+  .team-card:hover .team-image {
+    filter: grayscale(0%) brightness(1.1);
+    transform: translate(-50%, -50%) scale(1.08);
+    max-height: 70%;
+  }
+  
+  /* For dark logos like Cadillac, make them brighter */
+  .team-card[data-team="cadillac"] .team-image {
+    filter: grayscale(30%) brightness(1.2);
+  }
+  
+  .team-card[data-team="cadillac"]:hover .team-image {
+    filter: grayscale(0%) brightness(1.4);
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+  
+  /* For white logos that need to be visible */
+  .team-card[data-team="redbull"] .team-image,
+  .team-card[data-team="mercedes"] .team-image,
+  .team-card[data-team="audi"] .team-image,
+  .team-card[data-team="williams"] .team-image,
+  .team-card[data-team="alpine"] .team-image {
+    filter: grayscale(30%) brightness(0.9);
+  }
+  
+  .team-card[data-team="redbull"]:hover .team-image,
+  .team-card[data-team="mercedes"]:hover .team-image,
+  .team-card[data-team="audi"]:hover .team-image,
+  .team-card[data-team="williams"]:hover .team-image,
+  .team-card[data-team="alpine"]:hover .team-image {
+    filter: grayscale(0%) brightness(1.2);
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+  
+  /* TEAM NAME LOGO - SINGLE LINE */
   .team-name-logo {
     position: absolute;
     top: 30px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-weight: bold;
     color: rgba(255, 255, 255, 0.8);
     z-index: 3;
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     opacity: 0.6;
     transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    white-space: nowrap;
+    text-align: center;
+  }
+  
+  /* For smaller screens or longer team names, adjust font size */
+  @media (max-width: 768px) {
+    .team-name-logo {
+        font-size: 1rem;
+        white-space: normal;
+        max-width: 90%;
+        line-height: 1.2;
+    }
+  }
+  
+  /* Hover effect to keep single line */
+  .team-card:hover .team-name-logo {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.15);
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+    white-space: nowrap;
   }
   
   /* TEAM COLOR GRADIENTS - ALL TEAMS */
@@ -456,7 +513,7 @@ body.BODY_PADDING_FIX {
     font-size: 1.2rem;
   }
   
-  /* HOVER EFFECTS */
+  /* HOVER EFFECTS - MAINTAIN CARD SCALE */
   .team-card:hover {
     transform: scale(0.95);
     filter: grayscale(0%) brightness(1);
@@ -464,15 +521,11 @@ body.BODY_PADDING_FIX {
     z-index: 100;
   }
   
-  .team-card:hover .team-image {
-    filter: grayscale(0%) brightness(1.1);
-    transform: translateX(-50%) scale(1.05);
-  }
-  
   .team-card:hover .team-name-logo {
     opacity: 1;
     transform: translateX(-50%) scale(1.15);
     text-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+    white-space: nowrap;
   }
   
   .team-card:hover::before {
@@ -1008,13 +1061,15 @@ body.BODY_PADDING_FIX {
   
   .team-card.selected .team-image {
     filter: grayscale(0%) brightness(1.1) !important;
-    transform: translateX(-50%) scale(1.05) !important;
+    transform: translate(-50%, -50%) scale(1.08) !important;
+    max-height: 70% !important;
   }
   
   .team-card.selected .team-name-logo {
     opacity: 1 !important;
     transform: translateX(-50%) scale(1.15) !important;
     text-shadow: 0 0 15px rgba(255, 255, 255, 0.7) !important;
+    white-space: nowrap !important;
   }
   
   .team-card.selected::before {

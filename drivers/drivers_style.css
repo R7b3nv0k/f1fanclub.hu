@@ -80,7 +80,7 @@ body {
     margin: 0;
 }
 
-/* DRIVER CARD - PERFECT WIDTH CONTROL */
+/* ===== DRIVER CARD ANIMATION - HIP LEVEL DEFAULT, SLIGHT ZOOM ON HOVER ===== */
 .driver-card {
     position: relative;
     height: 85vh;
@@ -98,7 +98,6 @@ body {
     border: none;
 }
 
-/* DRIVER IMAGE CONTAINER */
 .driver-image-container {
     position: relative;
     width: 100%;
@@ -113,13 +112,15 @@ body {
 
 .driver-image {
     position: absolute;
-    bottom: -5%;
+    bottom: 0;
     left: 50%;
     transform: translateX(-50%);
-    height: 90%;
-    width: auto;
+    width: 100%;
+    height: auto;
+    max-height: 85%;
     object-fit: contain;
-    transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    object-position: center bottom;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     filter: grayscale(30%) brightness(0.6);
     z-index: 2;
     margin: 0;
@@ -127,12 +128,89 @@ body {
     pointer-events: none;
 }
 
-.driver-card:hover .driver-image {
-    height: 150% !important;
-    bottom: -60% !important;
-    filter: grayscale(0%) brightness(1.1);
-    transform: translateX(-50%) scale(1.05);
+/* HOVER - SLIGHT ZOOM */
+.driver-card:hover {
+    transform: scale(0.95);
+    filter: grayscale(0%) brightness(1);
+    width: 300px;
+    z-index: 100;
 }
+
+.driver-card:hover .driver-image {
+    transform: translateX(-50%) scale(1.08) !important;
+    filter: grayscale(0%) brightness(1.1) !important;
+    max-height: 90% !important;
+    object-position: center bottom !important;
+}
+
+.driver-card:hover .team-logo {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.15);
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+}
+
+.driver-card:hover::before {
+    opacity: 0.8;
+}
+
+.driver-card:hover .driver-info {
+    transform: translateY(0);
+}
+
+/* SELECTED STATE - SAME AS HOVER */
+.driver-card.selected {
+    transform: scale(0.95) !important;
+    filter: grayscale(0%) brightness(1) !important;
+    width: 300px !important;
+    z-index: 100 !important;
+}
+
+.driver-card.selected .driver-image {
+    transform: translateX(-50%) scale(1.08) !important;
+    filter: grayscale(0%) brightness(1.1) !important;
+    max-height: 90% !important;
+    object-position: center bottom !important;
+}
+
+.driver-card.selected .team-logo {
+    opacity: 1 !important;
+    transform: translateX(-50%) scale(1.15) !important;
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.7) !important;
+}
+
+.driver-card.selected::before {
+    opacity: 0.8 !important;
+}
+
+.driver-card.selected .driver-info {
+    transform: translateY(0) !important;
+}
+
+.driver-card.selected::after {
+    content: "";
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border: 2px solid rgba(225, 6, 0, 0.6);
+    border-radius: 4px;
+    z-index: 5;
+    pointer-events: none;
+    animation: selectedBorderGlow 2s infinite alternate;
+}
+
+@keyframes selectedBorderGlow {
+    0% {
+        border-color: rgba(225, 6, 0, 0.4);
+        box-shadow: 0 0 10px rgba(225, 6, 0, 0.2);
+    }
+    100% {
+        border-color: rgba(225, 6, 0, 0.8);
+        box-shadow: 0 0 20px rgba(225, 6, 0, 0.4);
+    }
+}
+/* ===== END OF DRIVER CARD ANIMATION ===== */
 
 /* TEAM LOGO */
 .team-logo {
@@ -331,37 +409,10 @@ body {
     font-size: 1.2rem;
 }
 
-/* HOVER EFFECTS */
-.driver-card:hover {
-    transform: scale(0.95);
-    filter: grayscale(0%) brightness(1);
-    width: 300px;
-    z-index: 100;
-}
-
-.driver-card:hover .driver-image {
-    filter: grayscale(0%) brightness(1.1);
-    transform: translateX(-50%) scale(1.05);
-}
-
-.driver-card:hover .team-logo {
-    opacity: 1;
-    transform: translateX(-50%) scale(1.15);
-    text-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
-}
-
-.driver-card:hover::before {
-    opacity: 0.8;
-}
-
-.driver-card:hover .driver-info {
-    transform: translateY(0);
-}
-
 /* F1 SCROLL BUTTONS */
 .scroll-button {
-    position: absolute;
-    top: 50%;
+    position: fixed;
+    top: calc(50% + 40px);
     transform: translateY(-50%);
     width: 60px;
     height: 100px;
@@ -492,10 +543,10 @@ body {
 /* STATISTICS PANEL */
 .statistics-panel {
     position: fixed;
-    top: 0;
+    top: 80px;
     right: -500px;
     width: 480px;
-    height: 100vh;
+    height: calc(100vh - 80px);
     background: linear-gradient(180deg, 
                 rgba(10, 10, 10, 0.98) 0%, 
                 rgba(5, 5, 5, 0.98) 100%);
@@ -503,7 +554,7 @@ body {
     border-left: 3px solid #e10600;
     z-index: 10000;
     transition: right 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-    overflow-y: auto;
+    overflow-y: hidden;
     overflow-x: hidden;
     box-shadow: -10px 0 50px rgba(0, 0, 0, 0.8),
                 -5px 0 30px rgba(225, 6, 0, 0.3);
@@ -745,12 +796,12 @@ body {
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+    min-height: 0;
 }
 
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(3, 1fr);
     gap: 12px;
     flex: 1;
     min-height: 0;
@@ -854,93 +905,29 @@ body {
 }
 
 /* Custom scrollbar */
-.statistics-panel::-webkit-scrollbar {
+.statistics-panel::-webkit-scrollbar,
+.statistics-content::-webkit-scrollbar {
     width: 6px;
 }
 
-.statistics-panel::-webkit-scrollbar-track {
+.statistics-panel::-webkit-scrollbar-track,
+.statistics-content::-webkit-scrollbar-track {
     background: rgba(15, 15, 15, 0.3);
 }
 
-.statistics-panel::-webkit-scrollbar-thumb {
+.statistics-panel::-webkit-scrollbar-thumb,
+.statistics-content::-webkit-scrollbar-thumb {
     background: linear-gradient(to bottom, 
                 #e10600, 
                 #ff1a00);
     border-radius: 3px;
 }
 
-.statistics-panel::-webkit-scrollbar-thumb:hover {
+.statistics-panel::-webkit-scrollbar-thumb:hover,
+.statistics-content::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(to bottom, 
                 #ff1a00, 
                 #ff3333);
-}
-
-/* SELECTED DRIVER HIGHLIGHT */
-.driver-card.selected {
-    transform: scale(0.95) !important;
-    filter: grayscale(0%) brightness(1) !important;
-    width: 300px !important;
-    z-index: 100 !important;
-}
-
-.driver-card.selected .driver-image {
-    filter: grayscale(0%) brightness(1.1) !important;
-    transform: translateX(-50%) scale(1.05) !important;
-}
-
-.driver-card.selected .team-logo {
-    opacity: 1 !important;
-    transform: translateX(-50%) scale(1.15) !important;
-    text-shadow: 0 0 15px rgba(255, 255, 255, 0.7) !important;
-}
-
-.driver-card.selected::before {
-    opacity: 0.8 !important;
-}
-
-.driver-card.selected .driver-info {
-    transform: translateY(0) !important;
-}
-
-.driver-card.selected::after {
-    content: "";
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    border: 2px solid rgba(225, 6, 0, 0.6);
-    border-radius: 4px;
-    z-index: 5;
-    pointer-events: none;
-    animation: selectedBorderGlow 2s infinite alternate;
-}
-
-@keyframes selectedBorderGlow {
-    0% {
-        border-color: rgba(225, 6, 0, 0.4);
-        box-shadow: 0 0 10px rgba(225, 6, 0, 0.2);
-    }
-    100% {
-        border-color: rgba(225, 6, 0, 0.8);
-        box-shadow: 0 0 20px rgba(225, 6, 0, 0.4);
-    }
-}
-
-.driver-card.selected .driver-glow {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(
-        ellipse at center,
-        rgba(225, 6, 0, 0.15) 0%,
-        transparent 70%
-    );
-    z-index: 4;
-    opacity: 0.5;
-    pointer-events: none;
 }
 
 /* Team-specific gradients for selected state */
@@ -1066,4 +1053,15 @@ body {
     filter: grayscale(60%) brightness(0.4) !important;
     opacity: 0.7;
     pointer-events: none;
+}
+
+/* Fix for auth buttons - rounded corners */
+.auth .btn,
+.welcome,
+.btn {
+    border-radius: 30px !important;
+}
+
+.welcome .avatar {
+    border-radius: 50% !important;
 }

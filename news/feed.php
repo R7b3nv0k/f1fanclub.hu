@@ -175,80 +175,654 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
     <meta charset="UTF-8">
     <title>Paddock Feed – F1 Fan Club</title>
     <link rel="stylesheet" href="/f1fanclub/css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --card-bg: rgba(20, 20, 20, 0.85); --card-bg-hover: rgba(30, 30, 30, 0.9); --input-bg: rgba(0, 0, 0, 0.5);
-            --text-main: #ffffff; --text-muted: #8899a6; --accent: #e10600; --border: rgba(255, 255, 255, 0.1);
+            --primary: #e10600;
+            --primary-dark: #b00500;
+            --primary-glow: rgba(225, 6, 0, 0.4);
+            --dark-bg: #0a0a0a;
+            --card-bg: rgba(15, 15, 20, 0.95);
+            --card-hover: rgba(25, 25, 35, 0.98);
+            --text-main: #ffffff;
+            --text-muted: #8a8a8a;
         }
-        .feed-container { max-width: 750px; margin: 40px auto; padding: 0 15px; text-align: left; }
-        .create-post-card, .feed-item { background: var(--card-bg); border-radius: 12px; padding: 20px; margin-bottom: 25px; border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5); backdrop-filter: blur(10px); transition: background 0.3s, border-color 0.3s, transform 0.2s; }
-        .create-post-card { display: flex; gap: 15px; position: relative; }
-        .feed-item:hover { background: var(--card-bg-hover); border-color: rgba(225, 6, 0, 0.4); }
-        .post-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid transparent; flex-shrink: 0; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); }
-        .post-form { width: 100%; }
-        .category-select { width: 100%; background: var(--input-bg); border: 1px solid var(--border); color: var(--text-muted); font-size: 0.9rem; font-family: inherit; border-radius: 8px; padding: 8px 12px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; }
-        .category-select:focus { border-color: var(--accent); outline: none; }
-        .post-textarea { width: 100%; background: var(--input-bg); border: 1px solid var(--border); color: white; font-size: 1.1rem; resize: none; outline: none; min-height: 80px; font-family: inherit; border-radius: 8px; padding: 12px; margin-bottom: 12px; transition: 0.2s; box-sizing: border-box; }
-        .post-textarea:focus { background: rgba(0, 0, 0, 0.8); border-color: var(--accent); box-shadow: 0 0 10px rgba(225, 6, 0, 0.2); }
-        .post-actions { display: flex; justify-content: space-between; align-items: center; padding-top: 5px; border-top: 1px solid var(--border); margin-top: 5px; }
-        .upload-icon { color: var(--accent); font-size: 1.4rem; cursor: pointer; padding: 8px; border-radius: 50%; transition: 0.2s; position: relative; }
-        .upload-icon:hover { background: rgba(225, 6, 0, 0.15); transform: scale(1.1); }
-        #file-input { display: none; }
-        #preview-container { display: flex; gap: 10px; margin-bottom: 10px; }
-        .preview-thumb { width: 60px; height: 60px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border); }
-        .btn-tweet { background: linear-gradient(135deg, #e10600, #ff4b2b); color: white; border: none; padding: 10px 24px; border-radius: 99px; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 15px rgba(225, 6, 0, 0.4); }
-        .btn-tweet:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(225, 6, 0, 0.6); filter: brightness(1.1); }
-        .post-header { display: flex; gap: 12px; margin-bottom: 12px; align-items: center; }
-        .author-name { font-weight: 700; font-size: 1.05rem; color: #fff; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); }
-        .post-meta { color: var(--text-muted); font-size: 0.85rem; }
-        .post-category-badge { background: rgba(225, 6, 0, 0.2); color: #e10600; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; margin-left: 10px; border: 1px solid rgba(225, 6, 0, 0.4); }
-        .post-content { font-size: 1rem; line-height: 1.6; margin-bottom: 15px; white-space: pre-wrap; color: #eee; }
-        .admin-delete-btn { background: rgba(225, 6, 0, 0.1); border: 1px solid rgba(225, 6, 0, 0.4); color: #ff4b2b; cursor: pointer; padding: 6px 10px; border-radius: 8px; font-size: 1rem; transition: 0.2s; }
-        .admin-delete-btn:hover { background: #e10600; color: white; box-shadow: 0 0 10px rgba(225, 6, 0, 0.5); }
-        .post-gallery { display: grid; gap: 2px; border-radius: 12px; overflow: hidden; margin-top: 10px; background: #000; border: 1px solid var(--border); }
-        .post-gallery.one-image { grid-template-columns: 1fr; }
-        .post-gallery.two-images { grid-template-columns: 1fr 1fr; }
-        .gallery-item { width: 100%; aspect-ratio: 16 / 9; background: #050505; display: flex; align-items: center; justify-content: center; }
-        .gallery-item img { width: 100%; height: 100%; object-fit: contain; }
-        .reactions-container { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 15px; padding-top: 12px; border-top: 1px solid var(--border); }
-        .reaction-pill { display: inline-flex; align-items: center; gap: 6px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 4px 10px; font-size: 0.9rem; cursor: pointer; transition: 0.2s; color: #bbb; user-select: none; }
-        .reaction-pill:hover { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.2); }
-        .reaction-pill.active { background: rgba(225, 6, 0, 0.15); border-color: rgba(225, 6, 0, 0.5); color: #fff; }
-        .emoji-picker-wrapper { position: relative; }
-        .add-reaction-btn { background: transparent; border: 1px dashed rgba(255, 255, 255, 0.2); color: #888; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; font-size: 1rem; padding: 0; }
-        .add-reaction-btn:hover { background: rgba(255, 255, 255, 0.1); color: #fff; border-color: #fff; }
-        .emoji-picker-popup { display: none; position: absolute; bottom: 120%; left: 0; background: #1e2126; border: 1px solid #38444d; border-radius: 12px; padding: 10px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); z-index: 100; grid-template-columns: repeat(4, 1fr); gap: 5px; width: max-content; }
-        .emoji-picker-popup.show { display: grid; }
-        .emoji-option { font-size: 1.4rem; cursor: pointer; padding: 6px; text-align: center; border-radius: 8px; transition: 0.2s; user-select: none; }
-        .emoji-option:hover { background: rgba(255, 255, 255, 0.1); transform: scale(1.1); }
-        .comment-toggle-btn { margin-left: auto; background: none; border: none; color: #888; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 0.9rem; transition: 0.2s; }
-        .comment-toggle-btn:hover { color: #fff; }
-        .comments-wrapper { display: none; margin-top: 15px; padding-top: 15px; background: rgba(0, 0, 0, 0.3); padding: 15px; border-radius: 12px; margin: 15px -20px -20px -20px; }
-        .comment-item { display: flex; gap: 10px; margin-bottom: 15px; }
-        .comment-bubble { background: rgba(255, 255, 255, 0.05); padding: 10px 15px; border-radius: 12px; flex: 1; font-size: 0.9rem; border: 1px solid rgba(255, 255, 255, 0.05); }
-        .hidden-comment { display: none; }
-        .load-more-btn { width: 100%; background: rgba(255, 255, 255, 0.1); border: none; color: white; padding: 10px; border-radius: 8px; cursor: pointer; margin-top: 5px; font-weight: 600; transition: 0.2s; }
-        .load-more-btn:hover { background: rgba(255, 255, 255, 0.2); }
         
-        /* ÚJ: MODAL CSS (Pop-up Ablak) */
-        .user-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-        .user-modal-content { background: linear-gradient(145deg, #111, #1a1a1a); width: 320px; border-radius: 15px; border: 1px solid rgba(225,6,0,0.3); padding: 20px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.8); color: #fff; text-align: center; animation: popIn 0.3s ease; }
-        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .user-modal-close { position: absolute; top: 10px; right: 15px; background: none; border: none; color: #888; font-size: 1.5rem; cursor: pointer; }
-        .user-modal-close:hover { color: #e10600; }
-        .user-modal-header img { width: 90px; height: 90px; border-radius: 50%; border: 3px solid #e10600; object-fit: cover; margin-bottom: 10px; }
-        .user-modal-header h3 { margin: 0; font-size: 1.3rem; }
-        .modal-role { display: inline-block; font-size: 0.75rem; background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 10px; margin-top: 5px; color: #aaa; text-transform: uppercase; letter-spacing: 1px;}
-        .user-modal-body { margin: 20px 0; font-size: 0.9rem; color: #ddd; text-align: left; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; }
-        .user-modal-body p { margin: 5px 0; }
-        .user-modal-footer { display: flex; gap: 10px; justify-content: center; }
-        .user-modal-footer button { flex: 1; padding: 10px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; color: #fff; display: flex; align-items: center; justify-content: center; gap: 5px;}
-        .btn-add-friend { background: #333; } .btn-add-friend:hover { background: #444; }
-        .btn-send-msg { background: #e10600; } .btn-send-msg:hover { background: #ff1a1a; }
-        .clickable-user { cursor: pointer; transition: opacity 0.2s; }
-        .clickable-user:hover { opacity: 0.7; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #0f0f15 100%);
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .feed-container {
+            max-width: 750px;
+            margin: 100px auto 60px;
+            padding: 0 20px;
+        }
+        
+        .create-post-card {
+            background: linear-gradient(145deg, rgba(20, 20, 30, 0.95), rgba(10, 10, 15, 0.98));
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(225, 6, 0, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            display: flex;
+            gap: 15px;
+        }
+        
+        .create-post-card:hover {
+            border-color: rgba(225, 6, 0, 0.6);
+            box-shadow: 0 12px 40px rgba(225, 6, 0, 0.2);
+        }
+        
+        .post-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            flex-shrink: 0;
+        }
+        
+        .post-form {
+            flex: 1;
+        }
+        
+        .category-select {
+            width: 100%;
+            background: linear-gradient(135deg, #1a1a2a, #0f0f1a);
+            border: 1px solid var(--primary);
+            color: var(--text-main);
+            font-size: 0.85rem;
+            font-family: 'Inter', sans-serif;
+            border-radius: 40px;
+            padding: 10px 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 20px;
+        }
+        
+        .category-select option {
+            background: #1a1a2a;
+            color: white;
+        }
+        
+        .category-select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 2px var(--primary-glow);
+        }
+        
+        .post-textarea {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: white;
+            font-size: 1rem;
+            resize: none;
+            outline: none;
+            min-height: 80px;
+            font-family: 'Inter', sans-serif;
+            border-radius: 20px;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            transition: all 0.2s;
+        }
+        
+        .post-textarea:focus {
+            background: rgba(0, 0, 0, 0.7);
+            border-color: var(--primary);
+        }
+        
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .upload-icon {
+            color: var(--primary);
+            font-size: 1.4rem;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.2s;
+            background: rgba(225, 6, 0, 0.1);
+        }
+        
+        .upload-icon:hover {
+            background: rgba(225, 6, 0, 0.25);
+            transform: scale(1.1);
+        }
+        
+        /* BUTTON STYLES - SAME AS REGISTER PAGE */
+        .btn-tweet {
+            background: #333;
+            color: #aaa;
+            cursor: not-allowed;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            padding: 12px 28px;
+            border: 2px solid #555;
+            border-radius: 50px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            opacity: 0.7;
+        }
+        
+        .btn-tweet.valid {
+            background: linear-gradient(145deg, var(--primary), #ff4b2b);
+            color: white;
+            cursor: pointer;
+            border: 2px solid var(--primary);
+            box-shadow: 0 10px 25px rgba(225, 6, 0, 0.4);
+            opacity: 1;
+        }
+        
+        .btn-tweet.valid:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(225, 6, 0, 0.6);
+        }
+        
+        .btn-tweet.valid:active {
+            transform: translateY(0);
+        }
+        
+        /* Speed lines effect on button */
+        .btn-tweet::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg,
+                transparent 30%,
+                rgba(255, 255, 255, 0.2) 50%,
+                transparent 70%);
+            transform: rotate(45deg) translateY(100%);
+            transition: transform 0.8s ease;
+            z-index: 2;
+            pointer-events: none;
+        }
+        
+        .btn-tweet.valid:hover::before {
+            transform: rotate(45deg) translateY(-100%);
+        }
+        
+        .feed-item {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feed-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), #ff6b4a, var(--primary));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .feed-item:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .feed-item:hover {
+            background: var(--card-hover);
+            border-color: rgba(225, 6, 0, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .post-header {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            align-items: center;
+        }
+        
+        .author-name {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #fff;
+        }
+        
+        .post-meta {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            margin-top: 4px;
+        }
+        
+        .post-category-badge {
+            background: rgba(225, 6, 0, 0.2);
+            color: var(--primary);
+            padding: 2px 10px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            border: 1px solid rgba(225, 6, 0, 0.3);
+            margin-left: 8px;
+        }
+        
+        .post-content {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+            color: #e8e8e8;
+        }
+        
+        .post-gallery {
+            display: grid;
+            gap: 2px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 12px;
+            background: #000;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .post-gallery.one-image {
+            grid-template-columns: 1fr;
+        }
+        
+        .post-gallery.two-images {
+            grid-template-columns: 1fr 1fr;
+        }
+        
+        .gallery-item {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: #050505;
+            overflow: hidden;
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+        
+        .gallery-item img:hover {
+            transform: scale(1.05);
+        }
+        
+        .reactions-container {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .reaction-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 40px;
+            padding: 5px 12px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #bbb;
+        }
+        
+        .reaction-pill:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        .reaction-pill.active {
+            background: rgba(225, 6, 0, 0.2);
+            border-color: var(--primary);
+            color: #fff;
+        }
+        
+        .emoji-picker-wrapper {
+            position: relative;
+        }
+        
+        .add-reaction-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+            color: #888;
+        }
+        
+        .add-reaction-btn:hover {
+            background: rgba(225, 6, 0, 0.2);
+            border-color: var(--primary);
+            color: #fff;
+            transform: rotate(90deg);
+        }
+        
+        .emoji-picker-popup {
+            display: none;
+            position: absolute;
+            bottom: 120%;
+            left: 0;
+            background: #1e2126;
+            border: 1px solid var(--primary);
+            border-radius: 12px;
+            padding: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            z-index: 100;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+            width: max-content;
+        }
+        
+        .emoji-picker-popup.show {
+            display: grid;
+        }
+        
+        .emoji-option {
+            font-size: 1.3rem;
+            cursor: pointer;
+            padding: 6px;
+            text-align: center;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        
+        .emoji-option:hover {
+            background: rgba(225, 6, 0, 0.2);
+            transform: scale(1.1);
+        }
+        
+        .comment-toggle-btn {
+            margin-left: auto;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            padding: 6px 12px;
+            border-radius: 40px;
+            transition: all 0.2s;
+        }
+        
+        .comment-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+        }
+        
+        .comments-wrapper {
+            display: none;
+            margin-top: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            margin: 15px -20px -20px -20px;
+            padding: 15px 20px;
+        }
+        
+        .comment-item {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .comment-bubble {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px 15px;
+            border-radius: 16px;
+            flex: 1;
+            font-size: 0.85rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .hidden-comment {
+            display: none;
+        }
+        
+        .load-more-btn {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 10px;
+            border-radius: 40px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        
+        .load-more-btn:hover {
+            background: rgba(225, 6, 0, 0.2);
+            border-color: var(--primary);
+        }
+        
+        .admin-delete-btn {
+            background: rgba(225, 6, 0, 0.15);
+            border: 1px solid rgba(225, 6, 0, 0.3);
+            color: #ff6b4a;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        
+        .admin-delete-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .user-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .user-modal-content {
+            background: linear-gradient(145deg, #111, #1a1a1a);
+            width: 320px;
+            border-radius: 24px;
+            border: 1px solid var(--primary);
+            padding: 20px;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            animation: popIn 0.3s ease;
+            text-align: center;
+        }
+        
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        .user-modal-close {
+            position: absolute;
+            top: 12px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 1.3rem;
+            cursor: pointer;
+        }
+        
+        .user-modal-close:hover {
+            color: var(--primary);
+        }
+        
+        .user-modal-header img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid var(--primary);
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
+        
+        .modal-role {
+            display: inline-block;
+            font-size: 0.7rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 10px;
+            border-radius: 20px;
+            margin-top: 5px;
+            color: #aaa;
+        }
+        
+        .user-modal-body {
+            margin: 15px 0;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px;
+            border-radius: 16px;
+            text-align: left;
+        }
+        
+        .user-modal-footer {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .user-modal-footer button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        
+        .btn-add-friend {
+            background: #333;
+            color: white;
+        }
+        
+        .btn-add-friend:hover {
+            background: #444;
+        }
+        
+        .btn-send-msg {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-send-msg:hover {
+            background: var(--primary-dark);
+        }
+        
+        .clickable-user {
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        
+        .clickable-user:hover {
+            opacity: 0.8;
+        }
+        
+        #preview-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .preview-thumb {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid var(--primary);
+        }
+        
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 3px;
+        }
+        
+        @media (max-width: 768px) {
+            .feed-container {
+                margin: 80px auto 40px;
+                padding: 0 15px;
+            }
+            
+            .create-post-card {
+                padding: 15px;
+            }
+            
+            .post-avatar {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .btn-tweet {
+                padding: 8px 20px;
+                font-size: 0.75rem;
+                letter-spacing: 2px;
+            }
+        }
     </style>
 </head>
 
@@ -284,7 +858,7 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
                             style="color: <?php echo htmlspecialchars($teamColor); ?>; font-weight:bold;"><?php echo htmlspecialchars($username); ?></span>!
                     </span>
                 </div>
-                    <div style="display:flex; gap: 8px; align-items: center;">
+                <div style="display:flex; gap: 8px; align-items: center;">
                     <a href="/f1fanclub/messages/messages.php" class="btn" style="padding: 8px 12px; font-size: 1.1rem;" title="Privát Üzenetek">
                         <i class="fas fa-envelope"></i>
                     </a>
@@ -303,12 +877,13 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
 
         <?php if ($isLoggedIn): ?>
             <div class="create-post-card">
-                <img src="/f1fanclub/uploads/<?= htmlspecialchars($profile_image); ?>" class="post-avatar"
+                <img src="/f1fanclub/uploads/<?= htmlspecialchars($profile_image); ?>" class="post-avatar clickable-user"
+                    onclick="openUserProfile('<?= htmlspecialchars(addslashes($username)); ?>')"
                     style="border-color: <?= $teamColor ?>;">
                 <div class="post-form">
-                    <form action="" method="POST" enctype="multipart/form-data">
-                        <select name="post_category" class="category-select" required>
-                            <option value="Általános">Válassz kategóriát (Általános)</option>
+                    <form action="" method="POST" enctype="multipart/form-data" id="postForm">
+                        <select name="post_category" class="category-select" id="postCategory" required>
+                            <option value="">-- Válassz kategóriát --</option>
                             <option value="Race Weekend">🏁 Race Weekend</option>
                             <option value="Drivers">🏎️ Pilóták</option>
                             <option value="Ferrari">🐎 Ferrari</option>
@@ -317,16 +892,19 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
                             <option value="McLaren">🟠 McLaren</option>
                             <option value="Aston Martin">🟢 Aston Martin</option>
                             <option value="Tech">⚙️ Technika & Fejlesztések</option>
+                            <option value="Általános">📢 Általános</option>
                         </select>
 
-                        <textarea name="new_post_content" class="post-textarea"
-                            placeholder="Mi történik a pályán, <?= htmlspecialchars($username); ?>?"></textarea>
+                        <textarea name="new_post_content" class="post-textarea" id="postContent"
+                            placeholder="Mi történik a paddockban, <?= htmlspecialchars($username); ?>?"></textarea>
                         <div id="preview-container"></div>
                         <div class="post-actions">
-                            <input type="file" name="post_images[]" id="file-input" multiple accept="image/*" max="2">
-                            <span class="upload-icon" title="Kép feltöltése (Max 2)"
-                                onclick="document.getElementById('file-input').click()">📷</span>
-                            <button type="submit" class="btn-tweet">Post</button>
+                            <div>
+                                <input type="file" name="post_images[]" id="file-input" multiple accept="image/*" max="2" style="display: none;">
+                                <span class="upload-icon" title="Kép feltöltése (Max 2)"
+                                    onclick="document.getElementById('file-input').click()"><i class="fas fa-image"></i></span>
+                            </div>
+                            <button type="submit" class="btn-tweet" id="postButton" disabled><i class="fas fa-feather-alt"></i> Posztolás</button>
                         </div>
                     </form>
                 </div>
@@ -368,7 +946,7 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
                                 <div>
                                     <span class="author-name clickable-user" onclick="openUserProfile('<?= $safeAuthor ?>')"><?= htmlspecialchars($post['author']); ?></span>
                                     <?php if ($post['author_team']): ?>
-                                        <span style="color:<?= $authorTeamColor ?>; font-size:0.8rem;">•
+                                        <span style="color:<?= $authorTeamColor ?>; font-size:0.75rem;">•
                                             <?= htmlspecialchars($post['author_team']); ?></span>
                                     <?php endif; ?>
                                     <?php if ($category !== 'Általános'): ?>
@@ -384,7 +962,7 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
                                         onsubmit="return confirm('Biztosan törölni szeretnéd ezt a posztot?');"
                                         onclick="event.stopPropagation();">
                                         <input type="hidden" name="delete_post_id" value="<?= $post['id']; ?>">
-                                        <button type="submit" class="admin-delete-btn" title="Poszt törlése">🗑️</button>
+                                        <button type="submit" class="admin-delete-btn" title="Poszt törlése"><i class="fas fa-trash-alt"></i></button>
                                     </form>
                                 </div>
                             <?php endif; ?>
@@ -415,7 +993,7 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
                             <?php endforeach; ?>
 
                             <div class="emoji-picker-wrapper">
-                                <button class="add-reaction-btn" onclick="toggleEmojiPicker(<?= $post['id']; ?>)">+</button>
+                                <button class="add-reaction-btn" onclick="toggleEmojiPicker(<?= $post['id']; ?>)"><i class="fas fa-smile"></i></button>
                                 <div class="emoji-picker-popup" id="emoji-picker-<?= $post['id']; ?>">
                                     <?php foreach ($available_emojis as $em): ?>
                                         <div class="emoji-option"
@@ -426,7 +1004,7 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
                             </div>
 
                             <button class="comment-toggle-btn" onclick="toggleComments(<?= $post['id']; ?>)">
-                                💬 <span id="comment-count-display-<?= $post['id']; ?>"><?= $post['comment_count']; ?></span>
+                                <i class="far fa-comment"></i> <span id="comment-count-display-<?= $post['id']; ?>"><?= $post['comment_count']; ?></span>
                             </button>
                         </div>
 
@@ -434,12 +1012,14 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
                             onclick="event.stopPropagation();">
                             <div id="comments-list-<?= $post['id']; ?>"></div>
                             <?php if ($isLoggedIn): ?>
-                                <div style="display:flex; gap:10px; margin-top:10px;">
-                                    <input type="text" id="comment-input-<?= $post['id']; ?>" class="post-textarea"
-                                        style="min-height:40px; margin-bottom:0; border-radius:20px; padding:10px 15px; font-size:0.9rem;"
-                                        placeholder="Szólj hozzá...">
+                                <div class="comment-input-group" style="display:flex; gap:10px; margin-top:10px;">
+                                    <input type="text" id="comment-input-<?= $post['id']; ?>" class="comment-input"
+                                        style="flex:1; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:40px; padding:10px 15px; color:white; font-size:0.9rem; outline:none;"
+                                        placeholder="Válasz írása...">
                                     <button onclick="postComment(<?= $post['id']; ?>)"
-                                        style="background:var(--accent); border:none; border-radius:50%; width:40px; height:40px; color:white; cursor:pointer; flex-shrink:0;">➤</button>
+                                        style="background:var(--primary); border:none; border-radius:50%; width:40px; height:40px; color:white; cursor:pointer; flex-shrink:0; transition:0.2s;">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
                                 </div>
                             <?php endif; ?>
                         </div>
@@ -447,7 +1027,10 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
                     </article>
                 <?php endwhile; ?>
             <?php else: ?>
-                <p style="text-align:center; color:#999; padding: 20px;">Még nincsenek posztok. Légy te az első!</p>
+                <div style="text-align:center; padding: 60px 20px; background: rgba(255,255,255,0.05); border-radius: 24px;">
+                    <i class="fas fa-flag-checkered" style="font-size: 48px; color: var(--primary); margin-bottom: 20px; display: block;"></i>
+                    <p style="color: #aaa;">Még nincsenek posztok. Légy te az első!</p>
+                </div>
             <?php endif; ?>
         </div>
     </main>
@@ -461,8 +1044,8 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
                 <span id="modalRole" class="modal-role">Role</span>
             </div>
             <div class="user-modal-body">
-                <p><i class="fas fa-flag-checkered" style="color:#888; width:20px;"></i> <strong>Csapat:</strong> <span id="modalTeam">Csapat</span></p>
-                <p><i class="far fa-calendar-alt" style="color:#888; width:20px;"></i> <strong>Regisztrált:</strong> <span id="modalRegDate">Dátum</span></p>
+                <p><i class="fas fa-flag-checkered"></i> <strong>Csapat:</strong> <span id="modalTeam">Csapat</span></p>
+                <p><i class="far fa-calendar-alt"></i> <strong>Regisztrált:</strong> <span id="modalRegDate">Dátum</span></p>
             </div>
             <div class="user-modal-footer">
                 <button id="modalFriendBtn" class="btn-add-friend" onclick="handleFriendAction()"><i class="fas fa-user-plus"></i> Barátnak jelöl</button>
@@ -472,7 +1055,34 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
     </div>
 
     <script>
-        // --- ÚJ: USER PROFILE POP-UP ÉS BARÁT JS ---
+        // POST BUTTON VALIDATION - ENABLE ONLY WHEN BOTH category is selected AND text is entered
+        const postButton = document.getElementById('postButton');
+        const postCategory = document.getElementById('postCategory');
+        const postContent = document.getElementById('postContent');
+        
+        function validatePostButton() {
+            if (postButton) {
+                const hasCategory = postCategory && postCategory.value !== '';
+                const hasContent = postContent && postContent.value.trim() !== '';
+                // ENABLE ONLY WHEN BOTH category is selected AND text is entered
+                if (hasCategory && hasContent) {
+                    postButton.classList.add('valid');
+                    postButton.disabled = false;
+                } else {
+                    postButton.classList.remove('valid');
+                    postButton.disabled = true;
+                }
+            }
+        }
+        
+        if (postCategory) {
+            postCategory.addEventListener('change', validatePostButton);
+        }
+        if (postContent) {
+            postContent.addEventListener('input', validatePostButton);
+        }
+        
+        // USER PROFILE POP-UP
         let currentModalUser = "";
         let currentFriendStatus = "";
 
@@ -511,19 +1121,19 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
             btn.style.display = 'flex';
             
             if (status === 'self') {
-                btn.style.display = 'none'; // Magadat nem jelölheted barátnak
+                btn.style.display = 'none';
             } else if (status === 'none') {
                 btn.innerHTML = '<i class="fas fa-user-plus"></i> Barátnak jelöl';
                 btn.style.background = '#333';
             } else if (status === 'pending_sent') {
-                btn.innerHTML = '<i class="fas fa-clock"></i> Jelölés elküldve (Visszavon)';
+                btn.innerHTML = '<i class="fas fa-clock"></i> Jelölés elküldve';
                 btn.style.background = '#888';
             } else if (status === 'pending_received') {
                 btn.innerHTML = '<i class="fas fa-check"></i> Jelölés elfogadása';
-                btn.style.background = '#28a745'; // Zöld
+                btn.style.background = '#28a745';
             } else if (status === 'accepted') {
                 btn.innerHTML = '<i class="fas fa-user-minus"></i> Barát törlése';
-                btn.style.background = '#e10600'; // Piros
+                btn.style.background = '#e10600';
             }
         }
 
@@ -543,7 +1153,7 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
             .then(r => r.json())
             .then(data => {
                 if(data.success) {
-                    openUserProfile(currentModalUser); // Frissíti a gombot
+                    openUserProfile(currentModalUser);
                 }
             });
         }
@@ -552,7 +1162,7 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
             return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
         }
         
-        // --- ÉRDEKLŐDÉS MÉRÉSE ---
+        // INTEREST TRACKING
         let viewTimers = {};
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -576,7 +1186,7 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
             fetch("/f1fanclub/news/track_interest.php", { method: "POST", body: fd });
         }
 
-        // --- EMOJI RENDSZER ---
+        // EMOJI SYSTEM
         function toggleEmojiPicker(postId) {
             document.querySelectorAll('.emoji-picker-popup').forEach(p => {
                 if (p.id !== 'emoji-picker-' + postId) p.classList.remove('show');
@@ -644,7 +1254,7 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
             });
         }
 
-        // --- KOMMENTEK ---
+        // COMMENTS
         function toggleComments(postId) {
             const wrapper = document.getElementById(`comments-wrapper-${postId}`);
             if (wrapper.style.display === "none" || wrapper.style.display === "") {
@@ -663,16 +1273,15 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
                     data.comments.forEach((c, index) => {
                         const avatar = c.profile_image ? `/f1fanclub/uploads/${c.profile_image}` : 'https://via.placeholder.com/40';
                         const hiddenClass = index >= 3 ? 'hidden-comment' : '';
-                        // ITT BELETETTÜK A KATTINTHATÓ PROFILOKAT A KOMMENTEKBE IS!
                         html += `
-            <div class="comment-item ${hiddenClass} comment-item-${postId}">
-                <img src="${avatar}" class="clickable-user" onclick="openUserProfile('${makeSafeStr(c.username)}')" style="width:35px; height:35px; border-radius:50%; border: 2px solid ${c.team_color}; object-fit: cover;">
-                <div class="comment-bubble">
-                    <div style="font-weight:bold; font-size:0.85rem; color:${c.team_color}" class="clickable-user" onclick="openUserProfile('${makeSafeStr(c.username)}')">${c.username}</div>
-                    <div style="font-size:0.9rem; margin-top:2px; color:#eee;">${escapeHtml(c.comment)}</div>
-                    <div style="font-size:0.7rem; color:#888; margin-top:5px;">${c.date_formatted}</div>
-                </div>
-            </div>`;
+                        <div class="comment-item ${hiddenClass} comment-item-${postId}">
+                            <img src="${avatar}" class="clickable-user" onclick="openUserProfile('${makeSafeStr(c.username)}')" style="width:35px; height:35px; border-radius:50%; border: 2px solid ${c.team_color}; object-fit: cover;">
+                            <div class="comment-bubble">
+                                <div style="font-weight:bold; font-size:0.85rem; color:${c.team_color}" class="clickable-user" onclick="openUserProfile('${makeSafeStr(c.username)}')">${c.username}</div>
+                                <div style="font-size:0.9rem; margin-top:2px; color:#eee;">${escapeHtml(c.comment)}</div>
+                                <div style="font-size:0.7rem; color:#888; margin-top:5px;">${c.date_formatted}</div>
+                            </div>
+                        </div>`;
                     });
                     if (data.comments.length > 3) {
                         const remaining = data.comments.length - 3;

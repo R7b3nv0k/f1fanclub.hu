@@ -103,7 +103,7 @@ $teamCssMap = [
   'Alpine' => 'alpine',
   'Williams' => 'williams',
   'RB' => 'racingbulls',
-  'Audi' => 'audi', // Ideiglenesen a CSS-ed miatt
+  'Audi' => 'audi',
   'Haas' => 'haas',
   'Cadillac' => 'cadillac'
 ];
@@ -117,9 +117,191 @@ $teamCssMap = [
   <link rel="stylesheet" href="/f1fanclub/css/style.css">
   <link rel="stylesheet" href="drivers_style.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;800&display=swap" rel="stylesheet">
+  <style>
+    /* =========================================
+       FIX FOR STATISTICS PANEL HEIGHT AND TABS
+       ========================================= */
+    
+    /* Override global body padding for drivers page */
+    body {
+        padding-top: 80px !important;
+        margin: 0 !important;
+        height: 100vh !important;
+        overflow: hidden !important;
+    }
+    
+    #drivers {
+        width: 100%;
+        height: calc(100vh - 80px) !important;
+        max-height: calc(100vh - 80px) !important;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        margin: 0;
+        padding: 0;
+        overflow: hidden !important;
+    }
+    
+    .drivers-container {
+        width: 100%;
+        height: 100% !important;
+        max-height: 100% !important;
+        overflow-x: auto;
+        overflow-y: hidden;
+        background: #0a0a0a;
+        position: relative;
+        display: flex;
+        align-items: flex-end;
+        margin: 0;
+        padding: 0;
+        flex: 1 !important;
+    }
+    
+    .drivers-wrapper {
+        display: flex;
+        height: 100% !important;
+        align-items: flex-end;
+        padding-left: 50px;
+        padding-right: 50px;
+        gap: 0;
+        width: max-content;
+        margin: 0;
+    }
+    
+    /* Fix statistics panel height to account for header */
+    .statistics-panel {
+        position: fixed;
+        top: 80px !important;
+        right: -500px;
+        width: 480px;
+        height: calc(100vh - 80px) !important;
+        max-height: calc(100vh - 80px) !important;
+        background: linear-gradient(180deg, 
+                    rgba(10, 10, 10, 0.98) 0%, 
+                    rgba(5, 5, 5, 0.98) 100%);
+        backdrop-filter: blur(20px);
+        border-left: 3px solid #e10600;
+        z-index: 10000;
+        transition: right 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        overflow-y: hidden;
+        overflow-x: hidden;
+        box-shadow: -10px 0 50px rgba(0, 0, 0, 0.8),
+                    -5px 0 30px rgba(225, 6, 0, 0.3);
+        display: flex;
+        flex-direction: column;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .statistics-panel.active {
+        right: 0;
+    }
+    
+    /* Fix statistics header */
+    .statistics-header {
+        padding: 25px 25px 15px;
+        background: linear-gradient(180deg, 
+                    rgba(20, 20, 20, 0.95) 0%, 
+                    rgba(15, 15, 15, 0.9) 100%);
+        border-bottom: 1px solid rgba(225, 6, 0, 0.4);
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        position: relative;
+        flex-shrink: 0;
+        min-height: 120px;
+    }
+    
+    /* Fix stats toggle */
+    .stats-toggle {
+        display: flex;
+        padding: 12px 25px;
+        background: rgba(15, 15, 15, 0.9);
+        border-bottom: 1px solid rgba(225, 6, 0, 0.2);
+        gap: 8px;
+        flex-shrink: 0;
+    }
+    
+    /* Fix statistics content scrolling */
+    .statistics-content {
+        padding: 20px 25px;
+        flex: 1;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+    }
+    
+    /* Fix stats grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        flex: 1;
+        min-height: 0;
+    }
+    
+    /* Fix stat items */
+    .stat-item {
+        background: linear-gradient(145deg, 
+                    rgba(20, 20, 20, 0.9) 0%, 
+                    rgba(25, 25, 25, 0.9) 100%);
+        padding: 18px 12px;
+        border: 1px solid rgba(225, 6, 0, 0.2);
+        border-radius: 6px !important;
+        transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+        min-height: 100px;
+    }
+    
+    /* Fix for driver container when panel is active */
+    .drivers-container.panel-active {
+        width: calc(100% - 480px) !important;
+        transition: width 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    
+    /* Fix for scroll buttons when panel is active */
+    .scroll-button.right.panel-active {
+        right: 480px !important;
+    }
+    
+    /* Fix scroll buttons position */
+    .scroll-button {
+        position: fixed;
+        top: calc(50% + 40px);
+        transform: translateY(-50%);
+        z-index: 1000;
+    }
+    
+    /* Fix for auth buttons - rounded corners */
+    .auth .btn,
+    .welcome,
+    .btn {
+        border-radius: 30px !important;
+    }
+    
+    .welcome .avatar {
+        border-radius: 50% !important;
+    }
+    
+    /* Driver card adjustments */
+    .driver-card {
+        height: 85vh;
+        max-height: 85vh;
+    }
+    
+    .driver-image {
+        max-height: 90%;
+    }
+  </style>
 </head>
 
-<body style="padding-top: 80px !important; margin: 0 !important; height: 100vh !important; overflow: hidden !important;">
+<body>
 
   <header>
     <div class="left-header">
@@ -252,16 +434,15 @@ $teamCssMap = [
         <?php while ($driver = $result->fetch_assoc()):
 
           // Adatok előkészítése a HTML-hez és a JS-hez
-          $keyId = $driver['abbreviation']; // Ezt használjuk egyedi azonosítónak (pl. VER, HAM)
+          $keyId = $driver['abbreviation'];
           $teamName = $driver['team_name'] ?? 'Unknown Team';
           $cssClass = $teamCssMap[$teamName] ?? 'redbull';
           $flag = $flagMap[$driver['nationality']] ?? '🏁';
 
-          // Kép elérési út javítása (A DB-ben 'drivers/...' van, de lehet, hogy neked a 'kép/' mappa kell)
-          // Itt használjuk a loading="lazy" taget, hogy rohadt gyors legyen az oldal!
+          // Kép elérési út javítása
           $imgSrc = $driver['image'];
           if (strpos($imgSrc, 'kép/') === false && strpos($imgSrc, 'drivers/') === 0) {
-            $imgSrc = 'kép/' . str_replace('drivers/', '', $imgSrc); // Fallback konverzió ha kell
+            $imgSrc = 'kép/' . str_replace('drivers/', '', $imgSrc);
           }
 
           // Feltöltjük a PHP tömböt a JS számára
@@ -300,7 +481,7 @@ $teamCssMap = [
             <div class="driver-info">
               <div class="nametag" id="<?= $keyId ?>_nametag">
                 <h2 class="driver-name"><?= htmlspecialchars($driver['name']) ?></h2>
-                <p class="driver-team"><?= strtoupper(htmlspecialchars($teamName)) ?></p>
+                <div class="driver-team-line" style="color: <?= getTeamColor($teamName) ?>;"><?= strtoupper(htmlspecialchars($teamName)) ?></div>
                 <div class="driver-nationality">
                   <span class="flag"><?= $flag ?></span>
                   <?= strtoupper(htmlspecialchars($driver['nationality'])) ?>

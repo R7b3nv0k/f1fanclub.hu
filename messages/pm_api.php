@@ -29,7 +29,7 @@ function getTeamColor($team) {
         case 'Red Bull': return '#1E41FF'; case 'Ferrari': return '#DC0000'; case 'Mercedes': return '#00D2BE';
         case 'McLaren': return '#FF8700'; case 'Aston Martin': return '#006F62'; case 'Alpine': return '#0090FF';
         case 'Williams': return '#00A0DE'; case 'RB': return '#2b2bff'; case 'Audi': return '#e3000f';
-        case 'Haas F1 Team': return '#B6BABD'; case 'Cadillac': return '#1b1b1b'; default: return '#777777';
+        case 'Haas F1 Team': return '#B6BABD'; case 'Cadillac': return '#B6BABD'; default: return '#777777';
     }
 }
 

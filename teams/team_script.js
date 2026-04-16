@@ -74,8 +74,8 @@ document.addEventListener('DOMContentLoaded', function() {
             name: "RED BULL RACING",
             base: "MILTON KEYNES",
             country: "UNITED KINGDOM",
-            flag: "🇬🇧",
-            image: "kép/RED_BULL_CAR.png",
+            flag: "ðŸ‡¬ðŸ‡§",
+            image: "kÃ©p/RED_BULL_CAR.png",
             current: {
                 position: "1st",
                 points: "654",
@@ -98,8 +98,8 @@ document.addEventListener('DOMContentLoaded', function() {
             name: "SCUDERIA FERRARI",
             base: "MARANELLO",
             country: "ITALY",
-            flag: "🇮🇹",
-            image: "kép/FERRARI_CAR.png",
+            flag: "ðŸ‡®ðŸ‡¹",
+            image: "kÃ©p/FERRARI_CAR.png",
             current: {
                 position: "2nd",
                 points: "452",
@@ -122,8 +122,8 @@ document.addEventListener('DOMContentLoaded', function() {
             name: "MERCEDES-AMG",
             base: "BRACKLEY",
             country: "UNITED KINGDOM",
-            flag: "🇬🇧",
-            image: "kép/MERCEDES_CAR.png",
+            flag: "ðŸ‡¬ðŸ‡§",
+            image: "kÃ©p/MERCEDES_CAR.png",
             current: {
                 position: "3rd",
                 points: "354",
@@ -146,8 +146,8 @@ document.addEventListener('DOMContentLoaded', function() {
             name: "McLAREN F1 TEAM",
             base: "WOKING",
             country: "UNITED KINGDOM",
-            flag: "🇬🇧",
-            image: "kép/MCLAREN_CAR.png",
+            flag: "ðŸ‡¬ðŸ‡§",
+            image: "kÃ©p/MCLAREN_CAR.png",
             current: {
                 position: "4th",
                 points: "302",
@@ -170,8 +170,8 @@ document.addEventListener('DOMContentLoaded', function() {
             name: "ASTON MARTIN",
             base: "SILVERSTONE",
             country: "UNITED KINGDOM",
-            flag: "🇬🇧",
-            image: "kép/ASTON_MARTIN_CAR.png",
+            flag: "ðŸ‡¬ðŸ‡§",
+            image: "kÃ©p/ASTON_MARTIN_CAR.png",
             current: {
                 position: "5th",
                 points: "156",
@@ -194,8 +194,8 @@ document.addEventListener('DOMContentLoaded', function() {
             name: "ALPINE F1 TEAM",
             base: "ENSTONE",
             country: "UNITED KINGDOM",
-            flag: "🇬🇧",
-            image: "kép/ALPINE_CAR.png",
+            flag: "ðŸ‡¬ðŸ‡§",
+            image: "kÃ©p/ALPINE_CAR.png",
             current: {
                 position: "6th",
                 points: "98",
@@ -218,8 +218,8 @@ document.addEventListener('DOMContentLoaded', function() {
             name: "WILLIAMS RACING",
             base: "GROVE",
             country: "UNITED KINGDOM",
-            flag: "🇬🇧",
-            image: "kép/WILLIAMS_CAR.png",
+            flag: "ðŸ‡¬ðŸ‡§",
+            image: "kÃ©p/WILLIAMS_CAR.png",
             current: {
                 position: "7th",
                 points: "67",
@@ -242,8 +242,8 @@ document.addEventListener('DOMContentLoaded', function() {
             name: "RACING BULLS",
             base: "FAENZA",
             country: "ITALY",
-            flag: "🇮🇹",
-            image: "kép/RACING_BULLS_CAR.png",
+            flag: "ðŸ‡®ðŸ‡¹",
+            image: "kÃ©p/RACING_BULLS_CAR.png",
             current: {
                 position: "8th",
                 points: "45",
@@ -266,8 +266,8 @@ document.addEventListener('DOMContentLoaded', function() {
             name: "MONEYGRAM HAAS",
             base: "KANNAPOLIS",
             country: "UNITED STATES",
-            flag: "🇺🇸",
-            image: "kép/HAAS_CAR.png",
+            flag: "ðŸ‡ºðŸ‡¸",
+            image: "kÃ©p/HAAS_CAR.png",
             current: {
                 position: "9th",
                 points: "34",
@@ -290,8 +290,8 @@ document.addEventListener('DOMContentLoaded', function() {
             name: "AUDI F1 TEAM",
             base: "HINWIL",
             country: "SWITZERLAND",
-            flag: "🇨🇭",
-            image: "kép/AUDI_CAR.png",
+            flag: "ðŸ‡¨ðŸ‡­",
+            image: "kÃ©p/AUDI_CAR.png",
             current: {
                 position: "10th",
                 points: "12",
@@ -314,8 +314,8 @@ document.addEventListener('DOMContentLoaded', function() {
             name: "CADILLAC RACING",
             base: "CHARLOTTE",
             country: "UNITED STATES",
-            flag: "🇺🇸",
-            image: "kép/CADILLAC_CAR.png",
+            flag: "ðŸ‡ºðŸ‡¸",
+            image: "kÃ©p/CADILLAC_CAR.png",
             current: {
                 position: "11th",
                 points: "0",
@@ -498,4 +498,49 @@ document.addEventListener('DOMContentLoaded', function() {
             teamsContainer.style.width = `calc(100% - ${panelWidth}px)`;
         }
     });
+    function updateStatsPanel(teamCard) {
+    // Csapat adatok lekérése a kártyáról
+    const teamLogo = getTeamLogoFilename(teamCard);
+    const teamNameElem = teamCard.querySelector('.team-name');
+    const teamPrincipalElem = teamCard.querySelector('.team-principal');
+    const teamDetailsElem = teamCard.querySelector('.team-details');
+    
+    // Csapat adatok kinyerése
+    let fullTeamName = teamNameElem ? teamNameElem.textContent : 'CSAPAT NÉV';
+    let teamBase = teamPrincipalElem ? teamPrincipalElem.textContent : 'SZÉKHELY';
+    let flagText = '';
+    let countryText = '';
+    
+    if (teamDetailsElem) {
+        // A zászló emoji lekérése - pontosabb módszer
+        const flagSpan = teamDetailsElem.querySelector('.flag');
+        if (flagSpan) {
+            flagText = flagSpan.textContent.trim();
+        }
+        // Az ország szöveg lekérése - a zászló utáni szöveg
+        const detailsText = teamDetailsElem.cloneNode(true);
+        const flagSpanClone = detailsText.querySelector('.flag');
+        if (flagSpanClone) {
+            flagSpanClone.remove();
+        }
+        countryText = detailsText.textContent.trim();
+    }
+    
+    // Alap csapat adatok frissítése
+    if (statsTeamName) statsTeamName.textContent = fullTeamName;
+    if (statsTeamBase) statsTeamBase.textContent = teamBase;
+    if (statsFlag) statsFlag.textContent = flagText || '🏁';
+    if (statsCountry) statsCountry.textContent = countryText || 'ORSZÁG';
+    
+    // Csapat logó frissítése
+    if (statsTeamImage) {
+        if (teamLogo) {
+            statsTeamImage.src = teamLogo;
+            statsTeamImage.alt = `${fullTeamName} logó`;
+            statsTeamImage.style.display = 'block';
+        } else {
+            statsTeamImage.style.display = 'none';
+        }
+    }
+}
 });

@@ -20,7 +20,7 @@ function getTeamColor($team) {
         case 'Red Bull': return '#1E41FF'; case 'Ferrari': return '#DC0000'; case 'Mercedes': return '#00D2BE';
         case 'McLaren': return '#FF8700'; case 'Aston Martin': return '#006F62'; case 'Alpine': return '#0090FF';
         case 'Williams': return '#00A0DE'; case 'RB': return '#2b2bff'; case 'Audi': return '#e3000f';
-        case 'Haas F1 Team': return '#B6BABD'; case 'Cadillac': return '#1b1b1b'; default: return '#777777';
+        case 'Haas F1 Team': return '#B6BABD'; case 'Cadillac': return '#B6BABD'; default: return '#777777';
     }
 }
 
@@ -173,36 +173,255 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
 <html lang="hu">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Paddock Feed – F1 Fan Club</title>
-    <link rel="stylesheet" href="/f1fanclub/css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary: #e10600;
-            --primary-dark: #b00500;
-            --primary-glow: rgba(225, 6, 0, 0.4);
-            --dark-bg: #0a0a0a;
-            --card-bg: rgba(15, 15, 20, 0.95);
-            --card-hover: rgba(25, 25, 35, 0.98);
-            --text-main: #ffffff;
-            --text-muted: #8a8a8a;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #0a0a0a; color: white; font-family: 'Poppins', sans-serif; min-height: 100vh; position: relative; overflow-x: hidden; margin: 0; padding: 0; }
+        body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 20% 50%, rgba(225, 6, 0, 0.05) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(225, 6, 0, 0.05) 0%, transparent 50%); pointer-events: none; z-index: -1; }
+        .bg-lines { position: fixed; width: 200%; height: 200%; background: repeating-linear-gradient(60deg, rgba(225, 6, 0, 0.03) 0px, rgba(225, 6, 0, 0.03) 2px, transparent 2px, transparent 10px); animation: slide 10s linear infinite; opacity: 0.3; z-index: -1; top: 0; left: 0; }
+        @keyframes slide { from { transform: translateX(0); } to { transform: translateX(-200px); } }
+        
+        header { background-color: #0a0a0a; border-bottom: 2px solid rgba(225, 6, 0, 0.3); padding: 0 40px; height: 80px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+        .left-header { display: flex; align-items: center; }
+        .logo-title { display: flex; align-items: center; gap: 12px; font-size: 1.5rem; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
+        .logo-title img { width: 40px; height: auto; filter: brightness(0) invert(1); }
+        .logo-title span { display: block; margin-top: 4px; }
+
+        /* Hamburger menu button */
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 10px;
+            z-index: 1001;
+            transition: color 0.3s ease;
+        }
+
+        .hamburger:hover {
+            color: #e10600;
+        }
+
+        nav { display: flex; gap: 5px; margin: 0 20px; }
+        nav a { font-weight: 600; font-size: 0.9rem; text-transform: uppercase; padding: 8px 16px; border-radius: 4px; color: #ffffff !important; text-decoration: none; position: relative; transition: all 0.2s ease; letter-spacing: 0.5px; opacity: 0.9; }
+        nav a:hover { color: #e10600 !important; opacity: 1; background: rgba(225, 6, 0, 0.1); }
+        nav a.active { color: #e10600 !important; opacity: 1; font-weight: 700; background: rgba(225, 6, 0, 0.15); }
+        nav a[style*="color"] { color: #ffffff !important; }
+        nav a[style*="color"]:hover, nav a[style*="color"].active { color: #e10600 !important; }
+
+        /* DROPDOWN MENU STYLES */
+        .dropdown-container {
+            position: relative;
+            display: inline-block;
         }
         
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        .welcome {
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
         
-        body {
-            background: linear-gradient(135deg, #0a0a0a 0%, #0f0f15 100%);
-            font-family: 'Inter', sans-serif;
+        .welcome:hover {
+            background: rgba(225, 6, 0, 0.15);
+            border-color: #e10600;
         }
         
+        .dropdown-menu-modern {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: linear-gradient(145deg, #111111, #1a1a1f);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: 1px solid rgba(225, 6, 0, 0.4);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+            min-width: 240px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-8px);
+            transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            z-index: 1050;
+        }
+        
+        .dropdown-container.open .dropdown-menu-modern {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .dropdown-menu-modern a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: #eee;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .dropdown-menu-modern a:last-child {
+            border-bottom: none;
+        }
+        
+        .dropdown-menu-modern a:hover {
+            background: rgba(225, 6, 0, 0.2);
+            color: white;
+            padding-left: 24px;
+        }
+        
+        .dropdown-menu-modern i {
+            width: 24px;
+            color: #e10600;
+            font-size: 1.1rem;
+        }
+        
+        .dropdown-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 6px 0;
+        }
+        
+        .dropdown-arrow-icon {
+            margin-left: 6px;
+            font-size: 0.7rem;
+            transition: transform 0.2s;
+            color: #e10600;
+        }
+        
+        .dropdown-container.open .dropdown-arrow-icon {
+            transform: rotate(180deg);
+        }
+        
+        .admin-badge {
+            position: absolute;
+            right: 15px;
+            background: #e10600;
+            color: white;
+            font-size: 0.65rem;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .auth .btn { display: inline-block; padding: 8px 20px; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; color: #fff; background-color: transparent; border: 1px solid rgba(225, 6, 0, 0.5); border-radius: 30px; cursor: pointer; transition: all 0.3s ease; text-align: center; text-decoration: none; letter-spacing: 0.5px; }
+        .auth .btn:hover { background-color: #e10600; border-color: #e10600; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(225, 6, 0, 0.4); color: #fff; }
+        .auth .btn:first-child { background-color: rgba(225, 6, 0, 0.15); border-color: #e10600; }
+        .auth .btn:first-child:hover { background-color: #e10600; }
+        .auth .btn:not(:last-child) { border-color: rgba(255, 255, 255, 0.2); }
+        .auth .btn:not(:last-child):hover { border-color: #e10600; background-color: #e10600; }
+        .auth .btn:last-child { border-color: rgba(225, 6, 0, 0.5); }
+        .auth .btn:last-child:hover { background-color: #e10600; }
+
+        /* Desktop navigation - always visible */
+        @media (min-width: 993px) {
+            nav {
+                display: flex !important;
+            }
+        }
+
+        /* Mobile navigation - hamburger mode */
+        @media (max-width: 992px) {
+            .hamburger {
+                display: block;
+            }
+            
+            /* Hide the entire logo on mobile */
+            .left-header {
+                display: none;
+            }
+            
+            nav {
+                display: none;
+                position: absolute;
+                top: 80px;
+                left: 0;
+                right: 0;
+                background: #0a0a0a;
+                border-bottom: 2px solid #e10600;
+                flex-direction: column;
+                gap: 0;
+                margin: 0;
+                z-index: 1000;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            }
+            
+            nav.open {
+                display: flex;
+            }
+            
+            nav a {
+                padding: 15px 20px;
+                margin: 0;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+                text-align: center;
+                font-size: 1rem;
+            }
+            
+            nav a:last-child {
+                border-bottom: none;
+            }
+            
+            header {
+                position: sticky;
+                top: 0;
+                flex-wrap: nowrap;
+                justify-content: flex-start;
+                gap: 15px;
+                padding: 0 20px;
+            }
+            
+            .hamburger {
+                margin-right: auto;
+            }
+            
+            .auth {
+                margin-left: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .auth {
+                flex-wrap: wrap;
+                justify-content: flex-end;
+            }
+            .welcome {
+                width: 100%;
+                justify-content: center;
+                margin-right: 0;
+                margin-bottom: 5px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .hamburger {
+                font-size: 24px;
+                padding: 8px;
+            }
+            header {
+                padding: 0 15px;
+            }
+            .auth .btn {
+                padding: 6px 12px;
+                font-size: 0.7rem;
+            }
+            nav a {
+                padding: 12px 15px;
+                font-size: 0.85rem;
+            }
+        }
+
+        /* Feed specific styles */
         .feed-container {
             max-width: 750px;
-            margin: 100px auto 60px;
+            margin: 30px auto 60px;
             padding: 0 20px;
         }
         
@@ -234,17 +453,15 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
             flex-shrink: 0;
         }
         
-        .post-form {
-            flex: 1;
-        }
+        .post-form { flex: 1; }
         
         .category-select {
             width: 100%;
             background: linear-gradient(135deg, #1a1a2a, #0f0f1a);
-            border: 1px solid var(--primary);
-            color: var(--text-main);
+            border: 1px solid #e10600;
+            color: #ffffff;
             font-size: 0.85rem;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Poppins', sans-serif;
             border-radius: 40px;
             padding: 10px 16px;
             margin-bottom: 12px;
@@ -257,16 +474,8 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
             background-size: 20px;
         }
         
-        .category-select option {
-            background: #1a1a2a;
-            color: white;
-        }
-        
-        .category-select:focus {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: 0 0 0 2px var(--primary-glow);
-        }
+        .category-select option { background: #1a1a2a; color: white; }
+        .category-select:focus { border-color: #e10600; outline: none; box-shadow: 0 0 0 2px rgba(225, 6, 0, 0.4); }
         
         .post-textarea {
             width: 100%;
@@ -277,7 +486,7 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
             resize: none;
             outline: none;
             min-height: 80px;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Poppins', sans-serif;
             border-radius: 20px;
             padding: 12px 16px;
             margin-bottom: 12px;
@@ -286,7 +495,7 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
         
         .post-textarea:focus {
             background: rgba(0, 0, 0, 0.7);
-            border-color: var(--primary);
+            border-color: #e10600;
         }
         
         .post-actions {
@@ -298,7 +507,7 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
         }
         
         .upload-icon {
-            color: var(--primary);
+            color: #e10600;
             font-size: 1.4rem;
             cursor: pointer;
             padding: 8px;
@@ -312,7 +521,6 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
             transform: scale(1.1);
         }
         
-        /* BUTTON STYLES - SAME AS REGISTER PAGE */
         .btn-tweet {
             background: #333;
             color: #aaa;
@@ -332,10 +540,10 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
         }
         
         .btn-tweet.valid {
-            background: linear-gradient(145deg, var(--primary), #ff4b2b);
+            background: linear-gradient(145deg, #e10600, #ff4b2b);
             color: white;
             cursor: pointer;
-            border: 2px solid var(--primary);
+            border: 2px solid #e10600;
             box-shadow: 0 10px 25px rgba(225, 6, 0, 0.4);
             opacity: 1;
         }
@@ -345,11 +553,8 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
             box-shadow: 0 20px 40px rgba(225, 6, 0, 0.6);
         }
         
-        .btn-tweet.valid:active {
-            transform: translateY(0);
-        }
+        .btn-tweet.valid:active { transform: translateY(0); }
         
-        /* Speed lines effect on button */
         .btn-tweet::before {
             content: "";
             position: absolute;
@@ -372,7 +577,7 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
         }
         
         .feed-item {
-            background: var(--card-bg);
+            background: rgba(15, 15, 20, 0.95);
             border-radius: 20px;
             padding: 20px;
             margin-bottom: 20px;
@@ -390,17 +595,14 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
             left: 0;
             right: 0;
             height: 3px;
-            background: linear-gradient(90deg, var(--primary), #ff6b4a, var(--primary));
+            background: linear-gradient(90deg, #e10600, #ff6b4a, #e10600);
             transform: scaleX(0);
             transition: transform 0.3s ease;
         }
         
-        .feed-item:hover::before {
-            transform: scaleX(1);
-        }
-        
+        .feed-item:hover::before { transform: scaleX(1); }
         .feed-item:hover {
-            background: var(--card-hover);
+            background: rgba(25, 25, 35, 0.98);
             border-color: rgba(225, 6, 0, 0.3);
             transform: translateY(-2px);
         }
@@ -412,21 +614,11 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
             align-items: center;
         }
         
-        .author-name {
-            font-weight: 700;
-            font-size: 1rem;
-            color: #fff;
-        }
-        
-        .post-meta {
-            color: var(--text-muted);
-            font-size: 0.75rem;
-            margin-top: 4px;
-        }
-        
+        .author-name { font-weight: 700; font-size: 1rem; color: #fff; }
+        .post-meta { color: #8a8a8a; font-size: 0.75rem; margin-top: 4px; }
         .post-category-badge {
             background: rgba(225, 6, 0, 0.2);
-            color: var(--primary);
+            color: #e10600;
             padding: 2px 10px;
             border-radius: 40px;
             font-size: 0.7rem;
@@ -452,13 +644,8 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        .post-gallery.one-image {
-            grid-template-columns: 1fr;
-        }
-        
-        .post-gallery.two-images {
-            grid-template-columns: 1fr 1fr;
-        }
+        .post-gallery.one-image { grid-template-columns: 1fr; }
+        .post-gallery.two-images { grid-template-columns: 1fr 1fr; }
         
         .gallery-item {
             width: 100%;
@@ -474,9 +661,7 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
             transition: transform 0.3s ease;
         }
         
-        .gallery-item img:hover {
-            transform: scale(1.05);
-        }
+        .gallery-item img:hover { transform: scale(1.05); }
         
         .reactions-container {
             display: flex;
@@ -509,13 +694,11 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
         
         .reaction-pill.active {
             background: rgba(225, 6, 0, 0.2);
-            border-color: var(--primary);
+            border-color: #e10600;
             color: #fff;
         }
         
-        .emoji-picker-wrapper {
-            position: relative;
-        }
+        .emoji-picker-wrapper { position: relative; }
         
         .add-reaction-btn {
             background: rgba(255, 255, 255, 0.05);
@@ -534,7 +717,7 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
         
         .add-reaction-btn:hover {
             background: rgba(225, 6, 0, 0.2);
-            border-color: var(--primary);
+            border-color: #e10600;
             color: #fff;
             transform: rotate(90deg);
         }
@@ -545,7 +728,7 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
             bottom: 120%;
             left: 0;
             background: #1e2126;
-            border: 1px solid var(--primary);
+            border: 1px solid #e10600;
             border-radius: 12px;
             padding: 10px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
@@ -555,9 +738,7 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
             width: max-content;
         }
         
-        .emoji-picker-popup.show {
-            display: grid;
-        }
+        .emoji-picker-popup.show { display: grid; }
         
         .emoji-option {
             font-size: 1.3rem;
@@ -577,7 +758,7 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
             margin-left: auto;
             background: none;
             border: none;
-            color: var(--text-muted);
+            color: #8a8a8a;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -617,9 +798,7 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
         
-        .hidden-comment {
-            display: none;
-        }
+        .hidden-comment { display: none; }
         
         .load-more-btn {
             width: 100%;
@@ -636,7 +815,7 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
         
         .load-more-btn:hover {
             background: rgba(225, 6, 0, 0.2);
-            border-color: var(--primary);
+            border-color: #e10600;
         }
         
         .admin-delete-btn {
@@ -651,7 +830,7 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
         }
         
         .admin-delete-btn:hover {
-            background: var(--primary);
+            background: #e10600;
             color: white;
         }
         
@@ -673,7 +852,7 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
             background: linear-gradient(145deg, #111, #1a1a1a);
             width: 320px;
             border-radius: 24px;
-            border: 1px solid var(--primary);
+            border: 1px solid #e10600;
             padding: 20px;
             position: relative;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
@@ -697,15 +876,13 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
             cursor: pointer;
         }
         
-        .user-modal-close:hover {
-            color: var(--primary);
-        }
+        .user-modal-close:hover { color: #e10600; }
         
         .user-modal-header img {
             width: 80px;
             height: 80px;
             border-radius: 50%;
-            border: 3px solid var(--primary);
+            border: 3px solid #e10600;
             object-fit: cover;
             margin-bottom: 10px;
         }
@@ -728,10 +905,7 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
             text-align: left;
         }
         
-        .user-modal-footer {
-            display: flex;
-            gap: 10px;
-        }
+        .user-modal-footer { display: flex; gap: 10px; }
         
         .user-modal-footer button {
             flex: 1;
@@ -747,32 +921,17 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
             gap: 6px;
         }
         
-        .btn-add-friend {
-            background: #333;
-            color: white;
-        }
-        
-        .btn-add-friend:hover {
-            background: #444;
-        }
-        
-        .btn-send-msg {
-            background: var(--primary);
-            color: white;
-        }
-        
-        .btn-send-msg:hover {
-            background: var(--primary-dark);
-        }
+        .btn-add-friend { background: #333; color: white; }
+        .btn-add-friend:hover { background: #444; }
+        .btn-send-msg { background: #e10600; color: white; }
+        .btn-send-msg:hover { background: #b00500; }
         
         .clickable-user {
             cursor: pointer;
             transition: opacity 0.2s;
         }
         
-        .clickable-user:hover {
-            opacity: 0.8;
-        }
+        .clickable-user:hover { opacity: 0.8; }
         
         #preview-container {
             display: flex;
@@ -786,89 +945,133 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
             height: 60px;
             object-fit: cover;
             border-radius: 8px;
-            border: 2px solid var(--primary);
+            border: 2px solid #e10600;
         }
         
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: #1a1a1a;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 3px;
-        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #1a1a1a; }
+        ::-webkit-scrollbar-thumb { background: #e10600; border-radius: 3px; }
         
         @media (max-width: 768px) {
-            .feed-container {
-                margin: 80px auto 40px;
-                padding: 0 15px;
-            }
-            
-            .create-post-card {
-                padding: 15px;
-            }
-            
-            .post-avatar {
-                width: 40px;
-                height: 40px;
-            }
-            
-            .btn-tweet {
-                padding: 8px 20px;
-                font-size: 0.75rem;
-                letter-spacing: 2px;
-            }
+            .feed-container { margin: 20px auto 40px; padding: 0 15px; }
+            .create-post-card { padding: 15px; }
+            .post-avatar { width: 40px; height: 40px; }
+            .btn-tweet { padding: 8px 20px; font-size: 0.75rem; letter-spacing: 2px; }
         }
+        /* AUTH / WELCOME SECTION */
+.auth {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.welcome {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    margin-right: 10px;
+    padding: 5px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 30px;
+    border: 1px solid rgba(225, 6, 0, 0.2);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.welcome:hover {
+    background: rgba(225, 6, 0, 0.15);
+    border-color: #e10600;
+}
+
+.welcome img.avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #e10600;
+    transition: transform 0.3s;
+}
+
+.welcome img.avatar:hover {
+    transform: scale(1.1);
+}
+
+.welcome-text {
+    color: #ccc;
+}
+
+.welcome-text span {
+    font-weight: 700;
+}
     </style>
 </head>
 
 <body>
+    <div class="bg-lines"></div>
 
     <header>
         <div class="left-header">
-            <h1 class="logo-title">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg" class="f1-logo" alt="F1 Logo"
-                    style="height: 40px; vertical-align: middle;">
-                <span>Paddock</span>
-            </h1>
+            <div class="logo-title">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg" alt="F1 Logo">
+                <span>Fan Club</span>
+            </div>
         </div>
 
-        <nav style="margin: 20px 0;">
-            <a href="/f1fanclub/index.php" style="color:white; margin:0 10px;">Home</a>
-            <a href="/f1fanclub/Championship/championship.php" style="color:white; margin:0 10px;">Championship</a>
-            <a href="/f1fanclub/teams/teams.php" style="color:white; margin:0 10px;">Teams</a>
-            <a href="/f1fanclub/drivers/drivers.php" style="color:white; margin:0 10px;">Drivers</a>
-            <a href="/f1fanclub/news/feed.php" style="color:#e10600; margin:0 10px; font-weight:bold;">Paddock</a>
+        <button class="hamburger" id="hamburgerBtn">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <nav id="mainNav">
+            <a href="/f1fanclub/index.php">Kezdőlap</a>
+            <a href="/f1fanclub/Championship/championship.php">Bajnokság</a>
+            <a href="/f1fanclub/teams/teams.php">Csapatok</a>
+            <a href="/f1fanclub/drivers/drivers.php">Versenyzők</a>
+            <a href="/f1fanclub/news/feed.php" class="active">Paddock</a>
+            <a href="/f1fanclub/pitwall/pitwall.php"><i class="fas fa-trophy" style="margin-right: 5px;"></i> A Fal</a>
         </nav>
 
+        <!-- DROPDOWN MENU -->
         <?php if ($isLoggedIn): ?>
-            <div class="auth">
-                <div class="welcome" style="display: flex; align-items: center; gap: 10px;">
-                    <?php if ($profile_image): ?>
-                        <img src="/f1fanclub/uploads/<?php echo htmlspecialchars($profile_image); ?>" class="avatar clickable-user"
-                            alt="Profile" onclick="openUserProfile('<?= htmlspecialchars(addslashes($username)); ?>')"
-                            style="width:35px; height:35px; border-radius:50%; object-fit: cover; border-color: <?php echo htmlspecialchars($teamColor); ?>;">
-                    <?php endif; ?>
-                    <span class="welcome-text">
-                        Welcome, <span class="clickable-user" onclick="openUserProfile('<?= htmlspecialchars(addslashes($username)); ?>')"
-                            style="color: <?php echo htmlspecialchars($teamColor); ?>; font-weight:bold;"><?php echo htmlspecialchars($username); ?></span>!
-                    </span>
+            <div class="dropdown-container" id="userDropdownContainer">
+                <div class="auth">
+                    <div class="welcome" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <?php if ($profile_image): ?>
+                            <img src="/f1fanclub/uploads/<?php echo htmlspecialchars($profile_image); ?>" class="avatar"
+                                alt="Profilkép" style="width:35px; height:35px; border-radius:50%; object-fit: cover; border-color: <?php echo htmlspecialchars($teamColor); ?>;">
+                        <?php endif; ?>
+                        <span class="welcome-text">
+                            <span style="color: <?php echo htmlspecialchars($teamColor); ?>; font-weight:bold;">
+                                <?php echo htmlspecialchars($username); ?>
+                            </span>
+                        </span>
+                        <i class="fas fa-chevron-down dropdown-arrow-icon"></i>
+                    </div>
                 </div>
-                <div style="display:flex; gap: 8px; align-items: center;">
-                    <a href="/f1fanclub/messages/messages.php" class="btn" style="padding: 8px 12px; font-size: 1.1rem;" title="Privát Üzenetek">
-                        <i class="fas fa-envelope"></i>
+                
+                <div class="dropdown-menu-modern">
+                    <a href="/f1fanclub/profile/profile.php">
+                        <i class="fas fa-user-circle"></i> Profilom
                     </a>
-                    <a href="/f1fanclub/logout/logout.php" class="btn">Log out</a>
+                    <a href="/f1fanclub/messages/messages.php">
+                        <i class="fas fa-envelope"></i> Üzenetek
+                    </a>
+                    <?php if ($isAdmin): ?>
+                        <a href="/f1fanclub/admin/admin.php" style="position: relative;">
+                            <i class="fas fa-shield-alt"></i> Admin Panel
+                            <span class="admin-badge">ADMIN</span>
+                        </a>
+                    <?php endif; ?>
+                    <div class="dropdown-divider"></div>
+                    <a href="/f1fanclub/logout/logout.php">
+                        <i class="fas fa-sign-out-alt"></i> Kijelentkezés
+                    </a>
                 </div>
             </div>
         <?php else: ?>
             <div class="auth">
-                <a href="/f1fanclub/register/register.html" class="btn">Register</a>
-                <a href="/f1fanclub/login/login.html" class="btn">Login</a>
+                <a href="/f1fanclub/register/register.html" class="btn">Regisztráció</a>
+                <a href="/f1fanclub/login/login.html" class="btn">Bejelentkezés</a>
             </div>
         <?php endif; ?>
     </header>
@@ -884,7 +1087,7 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
                     <form action="" method="POST" enctype="multipart/form-data" id="postForm">
                         <select name="post_category" class="category-select" id="postCategory" required>
                             <option value="">-- Válassz kategóriát --</option>
-                            <option value="Race Weekend">🏁 Race Weekend</option>
+                            <option value="Race Weekend">🏁 Versenyhétvége</option>
                             <option value="Drivers">🏎️ Pilóták</option>
                             <option value="Ferrari">🐎 Ferrari</option>
                             <option value="Red Bull">🐂 Red Bull</option>
@@ -976,7 +1179,7 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
                             <div class="post-gallery <?= count($images) == 1 ? 'one-image' : 'two-images' ?>">
                                 <?php foreach ($images as $img): ?>
                                     <div class="gallery-item"><img src="/f1fanclub/uploads/<?= htmlspecialchars($img); ?>"
-                                            loading="lazy" alt="Post image"></div>
+                                            loading="lazy" alt="Poszt kép"></div>
                                 <?php endforeach; ?>
                             </div>
                         <?php endif; ?>
@@ -1017,7 +1220,7 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
                                         style="flex:1; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:40px; padding:10px 15px; color:white; font-size:0.9rem; outline:none;"
                                         placeholder="Válasz írása...">
                                     <button onclick="postComment(<?= $post['id']; ?>)"
-                                        style="background:var(--primary); border:none; border-radius:50%; width:40px; height:40px; color:white; cursor:pointer; flex-shrink:0; transition:0.2s;">
+                                        style="background:#e10600; border:none; border-radius:50%; width:40px; height:40px; color:white; cursor:pointer; flex-shrink:0; transition:0.2s;">
                                         <i class="fas fa-paper-plane"></i>
                                     </button>
                                 </div>
@@ -1028,7 +1231,7 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
                 <?php endwhile; ?>
             <?php else: ?>
                 <div style="text-align:center; padding: 60px 20px; background: rgba(255,255,255,0.05); border-radius: 24px;">
-                    <i class="fas fa-flag-checkered" style="font-size: 48px; color: var(--primary); margin-bottom: 20px; display: block;"></i>
+                    <i class="fas fa-flag-checkered" style="font-size: 48px; color: #e10600; margin-bottom: 20px; display: block;"></i>
                     <p style="color: #aaa;">Még nincsenek posztok. Légy te az első!</p>
                 </div>
             <?php endif; ?>
@@ -1040,22 +1243,22 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
             <button class="user-modal-close" onclick="closeUserProfile(event)">&times;</button>
             <div class="user-modal-header">
                 <img id="modalProfileImg" src="" alt="Avatar">
-                <h3 id="modalUsername">Username</h3>
-                <span id="modalRole" class="modal-role">Role</span>
+                <h3 id="modalUsername">Felhasználónév</h3>
+                <span id="modalRole" class="modal-role">Szerepkör</span>
             </div>
             <div class="user-modal-body">
                 <p><i class="fas fa-flag-checkered"></i> <strong>Csapat:</strong> <span id="modalTeam">Csapat</span></p>
                 <p><i class="far fa-calendar-alt"></i> <strong>Regisztrált:</strong> <span id="modalRegDate">Dátum</span></p>
             </div>
             <div class="user-modal-footer">
-                <button id="modalFriendBtn" class="btn-add-friend" onclick="handleFriendAction()"><i class="fas fa-user-plus"></i> Barátnak jelöl</button>
-                <button class="btn-send-msg" onclick="window.location.href='/f1fanclub/messages/messages.php'"><i class="fas fa-comment"></i> Üzenet</button>
+                <button id="modalFriendBtn" class="btn-add-friend" onclick="handleFriendAction()"><i class="fas fa-user-plus"></i> Barátnak jelölés</button>
+                <button class="btn-send-msg" onclick="window.location.href='/f1fanclub/messages/messages.php'"><i class="fas fa-comment"></i> Üzenet küldése</button>
             </div>
         </div>
     </div>
 
     <script>
-        // POST BUTTON VALIDATION - ENABLE ONLY WHEN BOTH category is selected AND text is entered
+        // POST BUTTON VALIDATION
         const postButton = document.getElementById('postButton');
         const postCategory = document.getElementById('postCategory');
         const postContent = document.getElementById('postContent');
@@ -1064,7 +1267,6 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
             if (postButton) {
                 const hasCategory = postCategory && postCategory.value !== '';
                 const hasContent = postContent && postContent.value.trim() !== '';
-                // ENABLE ONLY WHEN BOTH category is selected AND text is entered
                 if (hasCategory && hasContent) {
                     postButton.classList.add('valid');
                     postButton.disabled = false;
@@ -1081,6 +1283,52 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
         if (postContent) {
             postContent.addEventListener('input', validatePostButton);
         }
+        
+        // HAMBURGER MENU TOGGLE
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const mainNav = document.getElementById('mainNav');
+        
+        if (hamburgerBtn && mainNav) {
+            hamburgerBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                mainNav.classList.toggle('open');
+            });
+            
+            document.addEventListener('click', function(event) {
+                if (mainNav.classList.contains('open') && 
+                    !mainNav.contains(event.target) && 
+                    !hamburgerBtn.contains(event.target)) {
+                    mainNav.classList.remove('open');
+                }
+            });
+            
+            const navLinks = mainNav.querySelectorAll('a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    mainNav.classList.remove('open');
+                });
+            });
+        }
+        
+        // DROPDOWN MENU TOGGLE
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdownContainer = document.getElementById('userDropdownContainer');
+            if (dropdownContainer) {
+                const welcomeDiv = dropdownContainer.querySelector('.welcome');
+                if (welcomeDiv) {
+                    welcomeDiv.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        dropdownContainer.classList.toggle('open');
+                    });
+                }
+                
+                document.addEventListener('click', function(e) {
+                    if (!dropdownContainer.contains(e.target)) {
+                        dropdownContainer.classList.remove('open');
+                    }
+                });
+            }
+        });
         
         // USER PROFILE POP-UP
         let currentModalUser = "";
@@ -1123,7 +1371,7 @@ $available_emojis = ['👍', '👎', '❤️', '🔥', '🏎️', '🏁', '😂'
             if (status === 'self') {
                 btn.style.display = 'none';
             } else if (status === 'none') {
-                btn.innerHTML = '<i class="fas fa-user-plus"></i> Barátnak jelöl';
+                btn.innerHTML = '<i class="fas fa-user-plus"></i> Barátnak jelölés';
                 btn.style.background = '#333';
             } else if (status === 'pending_sent') {
                 btn.innerHTML = '<i class="fas fa-clock"></i> Jelölés elküldve';

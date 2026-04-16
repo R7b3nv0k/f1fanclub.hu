@@ -408,10 +408,10 @@ body.BODY_PADDING_FIX {
   /* Cadillac gradient */
   .team-card[data-team="cadillac"]::before {
     background: linear-gradient(to top, 
-        rgba(70, 29, 124, 0.8) 0%,
-        rgba(70, 29, 124, 0.6) 30%,
-        rgba(70, 29, 124, 0.3) 60%,
-        rgba(70, 29, 124, 0.1) 85%,
+        rgba(182, 186, 189, 0.8) 0%,
+        rgba(182, 186, 189, 0.6) 30%,
+        rgba(182, 186, 189, 0.3) 60%,
+        rgba(182, 186, 189, 0.1) 85%,
         transparent 100%);
   }
   
@@ -1214,10 +1214,10 @@ body.BODY_PADDING_FIX {
   
   .team-card.selected[data-team="cadillac"]::before {
     background: linear-gradient(to top, 
-        rgba(70, 29, 124, 0.8) 0%,
-        rgba(70, 29, 124, 0.6) 30%,
-        rgba(70, 29, 124, 0.3) 60%,
-        rgba(70, 29, 124, 0.1) 85%,
+        rgba(182, 186, 189, 0.8) 0%,
+        rgba(182, 186, 189, 0.6) 30%,
+        rgba(182, 186, 189, 0.3) 60%,
+        rgba(182, 186, 189, 0.1) 85%,
         transparent 100%) !important;
   }
   

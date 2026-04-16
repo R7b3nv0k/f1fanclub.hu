@@ -32,16 +32,17 @@ function getTeamColor($team)
         case 'Audi': return '#e3000f';
         case 'Haas F1 Team': return '#B6BABD';
         case 'Cadillac': return '#1b1b1b';
-        default: return '#e10600'; // Alapértelmezett piros
+        default: return '#e10600';
     }
 }
 
 $profile_image = null;
 $fav_team = null;
 $teamColor = '#ffffff';
+$isAdmin = false;
 
 if ($isLoggedIn) {
-    $stmt = $conn->prepare("SELECT profile_image, fav_team FROM users WHERE username=?");
+    $stmt = $conn->prepare("SELECT profile_image, fav_team, role FROM users WHERE username=?");
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $row = $stmt->get_result()->fetch_assoc();
@@ -49,6 +50,7 @@ if ($isLoggedIn) {
     $profile_image = $row['profile_image'] ?? null;
     $fav_team = $row['fav_team'] ?? null;
     $teamColor = getTeamColor($fav_team);
+    $isAdmin = !empty($row['role']) && $row['role'] === 'admin';
     $stmt->close();
 }
 
@@ -68,7 +70,7 @@ if ($resultAdmins && $resultAdmins->num_rows > 0) {
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Rólunk & Működés - F1 Fan Club</title>
     <link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -98,16 +100,236 @@ if ($resultAdmins && $resultAdmins->num_rows > 0) {
         .logo-title { display: flex; align-items: center; gap: 12px; font-size: 1.5rem; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
         .logo-title img { width: 40px; height: auto; filter: brightness(0) invert(1); }
         .logo-title span { display: block; margin-top: 4px; }
+
+        /* Hamburger menu button */
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 10px;
+            z-index: 1001;
+            transition: color 0.3s ease;
+        }
+
+        .hamburger:hover {
+            color: #e10600;
+        }
         
         nav { display: flex; gap: 5px; margin: 0 20px; }
         nav a { font-weight: 600; font-size: 0.9rem; text-transform: uppercase; padding: 8px 16px; border-radius: 4px; color: #ffffff !important; text-decoration: none; transition: all 0.2s ease; letter-spacing: 0.5px; opacity: 0.9; }
         nav a:hover, nav a.active { color: #e10600 !important; opacity: 1; background: rgba(225, 6, 0, 0.1); }
 
         .auth { display: flex; align-items: center; gap: 10px; }
-        .welcome { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; margin-right: 10px; padding: 5px 12px; background: rgba(255, 255, 255, 0.05); border-radius: 30px; border: 1px solid rgba(225, 6, 0, 0.2); }
-        .welcome img.avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid #e10600; }
+        
+        /* Dropdown styles */
+        .dropdown-container { position: relative; display: inline-block; }
+        .welcome { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; margin-right: 10px; padding: 5px 12px; background: rgba(255, 255, 255, 0.05); border-radius: 30px; border: 1px solid rgba(225, 6, 0, 0.2); cursor: pointer; transition: all 0.2s ease; }
+        .welcome:hover { background: rgba(225, 6, 0, 0.15); border-color: #e10600; }
+        .welcome img.avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid #e10600; transition: transform 0.3s; }
+        .welcome img.avatar:hover { transform: scale(1.1); }
+        .welcome-text { color: #ccc; }
+        .dropdown-arrow-icon { margin-left: 6px; font-size: 0.7rem; transition: transform 0.2s; color: #e10600; }
+        .dropdown-container.open .dropdown-arrow-icon { transform: rotate(180deg); }
+        
+        .dropdown-menu-modern {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: linear-gradient(145deg, #111111, #1a1a1f);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: 1px solid rgba(225, 6, 0, 0.4);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+            min-width: 240px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-8px);
+            transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            z-index: 1050;
+        }
+        .dropdown-container.open .dropdown-menu-modern {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .dropdown-menu-modern a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: #eee;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .dropdown-menu-modern a:last-child { border-bottom: none; }
+        .dropdown-menu-modern a:hover {
+            background: rgba(225, 6, 0, 0.2);
+            color: white;
+            padding-left: 24px;
+        }
+        .dropdown-menu-modern i { width: 24px; color: #e10600; font-size: 1.1rem; }
+        .dropdown-divider { height: 1px; background: rgba(255, 255, 255, 0.1); margin: 6px 0; }
+        .admin-badge {
+            position: absolute;
+            right: 15px;
+            background: #e10600;
+            color: white;
+            font-size: 0.65rem;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        .clickable-user { cursor: pointer; transition: opacity 0.2s; }
+        .clickable-user:hover { opacity: 0.8; }
+        
         .auth .btn { display: inline-block; padding: 8px 20px; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; color: #fff; background-color: transparent; border: 1px solid rgba(225, 6, 0, 0.5); border-radius: 30px; cursor: pointer; transition: all 0.3s ease; text-decoration: none; }
         .auth .btn:hover { background-color: #e10600; border-color: #e10600; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(225, 6, 0, 0.4); }
+
+        /* Desktop navigation - always visible */
+        @media (min-width: 993px) {
+            nav {
+                display: flex !important;
+            }
+        }
+
+        /* Mobile navigation - hamburger mode */
+        @media (max-width: 992px) {
+            .hamburger {
+                display: block;
+            }
+            
+            /* Hide the logo on mobile */
+            .logo-title {
+                display: none;
+            }
+            
+            nav {
+                display: none;
+                position: absolute;
+                top: 80px;
+                left: 0;
+                right: 0;
+                background: #0a0a0a;
+                border-bottom: 2px solid #e10600;
+                flex-direction: column;
+                gap: 0;
+                margin: 0;
+                z-index: 1000;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            }
+            
+            nav.open {
+                display: flex;
+            }
+            
+            nav a {
+                padding: 15px 20px;
+                margin: 0;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+                text-align: center;
+                font-size: 1rem;
+            }
+            
+            nav a:last-child {
+                border-bottom: none;
+            }
+            
+            header {
+                position: sticky;
+                top: 0;
+                flex-wrap: nowrap;
+                justify-content: flex-start;
+                gap: 15px;
+                padding: 0 20px;
+            }
+            
+            .hamburger {
+                margin-right: auto;
+            }
+            
+            .auth {
+                margin-left: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .auth {
+                flex-wrap: wrap;
+                justify-content: flex-end;
+            }
+            .welcome {
+                width: 100%;
+                justify-content: center;
+                margin-right: 0;
+                margin-bottom: 5px;
+            }
+            .container {
+                padding: 0 15px;
+                margin: 30px auto;
+            }
+            .about-card {
+                padding: 25px 20px;
+            }
+            .large-card h3 {
+                font-size: 1.2rem;
+            }
+            .large-card p {
+                font-size: 0.9rem;
+            }
+            .admin-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .admin-img {
+                width: 100px;
+                height: 100px;
+            }
+            .admin-name {
+                font-size: 1.1rem;
+            }
+            .admin-desc {
+                font-size: 0.85rem;
+            }
+            .section-title {
+                font-size: 1.6rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .hamburger {
+                font-size: 24px;
+                padding: 8px;
+            }
+            header {
+                padding: 0 15px;
+            }
+            .auth .btn {
+                padding: 6px 12px;
+                font-size: 0.7rem;
+            }
+            nav a {
+                padding: 12px 15px;
+                font-size: 0.85rem;
+            }
+            .section-title {
+                font-size: 1.3rem;
+            }
+            .large-card h3 {
+                font-size: 1rem;
+            }
+            .large-card h3 i {
+                font-size: 1.2rem;
+            }
+            .large-card p {
+                font-size: 0.85rem;
+            }
+        }
         
         /* === RÓLUNK OLDAL KINÉZET === */
         .container { max-width: 1200px; margin: 50px auto; padding: 0 20px; }
@@ -195,8 +417,24 @@ if ($resultAdmins && $resultAdmins->num_rows > 0) {
         .social-icon:hover { fill: #e10600; transform: scale(1.1); }
         .copyright { text-align: center; color: #555; font-size: 0.8rem; border-top: 1px solid #222; padding-top: 20px; margin-top: 20px; }
 
-        @media (max-width: 992px) { header { flex-wrap: wrap; height: auto; padding: 15px 20px; gap: 15px; } nav { order: 3; width: 100%; justify-content: center; } .auth { margin-left: auto; } }
-        @media (max-width: 768px) { .admin-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 992px) { 
+            .footer-container {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 20px;
+            }
+        }
+        @media (max-width: 768px) { 
+            .footer-container {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            .footer-logo {
+                justify-content: center;
+            }
+            .social-links {
+                justify-content: center;
+            }
+        }
     </style>
 </head>
 
@@ -209,38 +447,62 @@ if ($resultAdmins && $resultAdmins->num_rows > 0) {
             <span>Fan Club</span>
         </div>
 
-        <nav>
-            <a href="/f1fanclub/index.php">Home</a>
-            <a href="/f1fanclub/Championship/championship.php">Championship</a>
-            <a href="/f1fanclub/teams/teams.php">Teams</a>
-            <a href="/f1fanclub/drivers/drivers.php">Drivers</a>
+        <button class="hamburger" id="hamburgerBtn">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <nav id="mainNav">
+            <a href="/f1fanclub/index.php">Kezdőlap</a>
+            <a href="/f1fanclub/Championship/championship.php">Bajnokság</a>
+            <a href="/f1fanclub/teams/teams.php">Csapatok</a>
+            <a href="/f1fanclub/drivers/drivers.php">Versenyzők</a>
             <a href="/f1fanclub/news/feed.php">Paddock</a>
+            <a href="/f1fanclub/pitwall/pitwall.php"><i class="fas fa-trophy" style="margin-right: 5px;"></i> A Fal</a>
         </nav>
 
-    <?php if ($isLoggedIn): ?>
-      <div class="auth">
-        <a href="/f1fanclub/profile/profile.php" style="text-decoration: none;">
-          <div class="welcome">
-            <?php if ($profile_image): ?>
-              <img src="/f1fanclub/uploads/<?php echo htmlspecialchars($profile_image); ?>" class="avatar" alt="Profile">
-            <?php endif; ?>
-            <span class="welcome-text">
-              Welcome,
-              <span style="color: <?php echo htmlspecialchars($teamColor); ?>;">
-                <?php echo htmlspecialchars($username); ?>
-              </span>!
-            </span>
+        <?php if ($isLoggedIn): ?>
+          <div class="dropdown-container" id="userDropdownContainer">
+            <div class="auth">
+              <div class="welcome" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                <?php if ($profile_image): ?>
+                  <img src="/f1fanclub/uploads/<?php echo htmlspecialchars($profile_image); ?>" class="avatar clickable-user" alt="Profilkép"
+                    style="width:35px; height:35px; border-radius:50%; object-fit: cover; border-color: <?php echo htmlspecialchars($teamColor); ?>;"
+                    onclick="openUserProfile('<?php echo htmlspecialchars(addslashes($username)); ?>')">
+                <?php endif; ?>
+                <span class="welcome-text">
+                  <span class="clickable-user" onclick="openUserProfile('<?php echo htmlspecialchars(addslashes($username)); ?>')"
+                    style="color: <?php echo htmlspecialchars($teamColor); ?>; font-weight:bold;"><?php echo htmlspecialchars($username); ?></span>
+                </span>
+                <i class="fas fa-chevron-down dropdown-arrow-icon"></i>
+              </div>
+            </div>
+            
+            <div class="dropdown-menu-modern">
+              <a href="/f1fanclub/profile/profile.php">
+                <i class="fas fa-user-circle"></i> Profilom
+              </a>
+              <a href="/f1fanclub/messages/messages.php">
+                <i class="fas fa-envelope"></i> Üzenetek
+              </a>
+              <?php if ($isAdmin): ?>
+                <a href="/f1fanclub/admin/admin.php" style="position: relative;">
+                  <i class="fas fa-shield-alt"></i> Admin Panel
+                  <span class="admin-badge">ADMIN</span>
+                </a>
+              <?php endif; ?>
+              <div class="dropdown-divider"></div>
+              <a href="/f1fanclub/logout/logout.php">
+                <i class="fas fa-sign-out-alt"></i> Kijelentkezés
+              </a>
+            </div>
           </div>
-        </a>
-        <a href="/f1fanclub/logout/logout.php" class="btn">Log out</a>
-      </div>
-    <?php else: ?>
-      <div class="auth">
-        <a href="/f1fanclub/register/register.html" class="btn">Register</a>
-        <a href="/f1fanclub/login/login.html" class="btn">Login</a>
-      </div>
-    <?php endif; ?>
-  </header>
+        <?php else: ?>
+          <div class="auth">
+            <a href="/f1fanclub/register/register.html" class="btn">Regisztráció</a>
+            <a href="/f1fanclub/login/login.html" class="btn">Bejelentkezés</a>
+          </div>
+        <?php endif; ?>
+    </header>
 
     <main class="container">
         <div class="section-header">
@@ -266,12 +528,10 @@ if ($resultAdmins && $resultAdmins->num_rows > 0) {
 
         <div class="admin-grid">
             <?php foreach ($adminUsers as $admin): 
-                // Kép, csapat, és szín beállítása az admin adatbázis adataiból
                 $admImg = !empty($admin['profile_image']) ? "/f1fanclub/uploads/" . htmlspecialchars($admin['profile_image']) : "/f1fanclub/drivers/default.png";
                 $admTeam = !empty($admin['fav_team']) ? htmlspecialchars($admin['fav_team']) : "Formula 1";
                 $admColor = getTeamColor($admTeam);
                 
-                // Személyre szabott szövegek a felhasználónevek alapján
                 $roleTitle = "Adminisztrátor";
                 $desc = "";
 
@@ -320,6 +580,7 @@ if ($resultAdmins && $resultAdmins->num_rows > 0) {
                 <a href="/f1fanclub/news/feed.php">Paddock (Feed)</a>
                 <a href="/f1fanclub/about.php">Rólunk & Működés</a>
                 <a href="/f1fanclub/teams/teams.php">Csapatok</a>
+                <a href="/f1fanclub/drivers/drivers.php">Versenyzők</a>
             </div>
 
             <div class="footer-section">
@@ -337,5 +598,274 @@ if ($resultAdmins && $resultAdmins->num_rows > 0) {
         </div>
     </footer>
 
+    <script>
+        // =========================================
+        // DROPDOWN MENU FUNCTIONALITY
+        // =========================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdownContainer = document.getElementById('userDropdownContainer');
+            if (dropdownContainer) {
+                const welcomeDiv = dropdownContainer.querySelector('.welcome');
+                if (welcomeDiv) {
+                    welcomeDiv.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        dropdownContainer.classList.toggle('open');
+                    });
+                }
+                
+                document.addEventListener('click', function(e) {
+                    if (!dropdownContainer.contains(e.target)) {
+                        dropdownContainer.classList.remove('open');
+                    }
+                });
+            }
+        });
+
+        // =========================================
+        // HAMBURGER MENU TOGGLE
+        // =========================================
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const mainNav = document.getElementById('mainNav');
+        
+        if (hamburgerBtn && mainNav) {
+            hamburgerBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                mainNav.classList.toggle('open');
+            });
+            
+            // Close menu when clicking outside
+            document.addEventListener('click', function(event) {
+                if (mainNav.classList.contains('open') && 
+                    !mainNav.contains(event.target) && 
+                    !hamburgerBtn.contains(event.target)) {
+                    mainNav.classList.remove('open');
+                }
+            });
+            
+            // Close menu when a nav link is clicked
+            const navLinks = mainNav.querySelectorAll('a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    mainNav.classList.remove('open');
+                });
+            });
+        }
+
+        // =========================================
+        // USER PROFILE MODAL FUNCTIONS
+        // =========================================
+        let currentModalUser = "";
+        let currentFriendStatus = "";
+
+        function openUserProfile(username) {
+            fetch('/f1fanclub/profile/user_profile_api.php?username=' + encodeURIComponent(username))
+            .then(r => r.json())
+            .then(data => {
+                if(data.success) {
+                    currentModalUser = data.user.username;
+                    currentFriendStatus = data.user.friendship_status;
+
+                    let modal = document.getElementById('userProfileModal');
+                    if (!modal) {
+                        modal = document.createElement('div');
+                        modal.id = 'userProfileModal';
+                        modal.className = 'user-modal-overlay';
+                        modal.onclick = closeUserProfile;
+                        modal.innerHTML = `
+                            <div class="user-modal-content" onclick="event.stopPropagation()">
+                                <button class="user-modal-close" onclick="closeUserProfile(event)">&times;</button>
+                                <div class="user-modal-header">
+                                    <img id="modalProfileImg" src="" alt="Avatar">
+                                    <h3 id="modalUsername">Felhasználónév</h3>
+                                    <span id="modalRole" class="modal-role">Szerepkör</span>
+                                </div>
+                                <div class="user-modal-body">
+                                    <p><i class="fas fa-flag-checkered"></i> <strong>Csapat:</strong> <span id="modalTeam">Csapat</span></p>
+                                    <p><i class="far fa-calendar-alt"></i> <strong>Regisztrált:</strong> <span id="modalRegDate">Dátum</span></p>
+                                </div>
+                                <div class="user-modal-footer">
+                                    <button id="modalFriendBtn" class="btn-add-friend" onclick="handleFriendAction()">
+                                        <i class="fas fa-user-plus"></i> Barátnak jelölés
+                                    </button>
+                                    <button class="btn-send-msg" onclick="window.location.href='/f1fanclub/messages/messages.php'">
+                                        <i class="fas fa-comment"></i> Üzenet küldése
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                        document.body.appendChild(modal);
+                    }
+
+                    const modalImg = document.getElementById('modalProfileImg');
+                    if (modalImg) {
+                        modalImg.src = data.user.profile_image;
+                        modalImg.style.borderColor = data.user.team_color;
+                    }
+                    document.getElementById('modalUsername').innerText = data.user.username;
+                    document.getElementById('modalRole').innerText = data.user.role_name;
+                    document.getElementById('modalTeam').innerText = data.user.fav_team || 'Nincs megadva';
+                    document.getElementById('modalRegDate').innerText = data.user.reg_date;
+                    
+                    updateFriendButton(data.user.friendship_status);
+                    document.getElementById('userProfileModal').style.display = 'flex';
+                } else {
+                    alert("Hiba: " + data.error);
+                }
+            }).catch(err => console.error(err));
+        }
+
+        function closeUserProfile(e) {
+            if(e) e.stopPropagation();
+            const modal = document.getElementById('userProfileModal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function updateFriendButton(status) {
+            const btn = document.getElementById('modalFriendBtn');
+            if(!btn) return;
+            btn.style.display = 'flex';
+            
+            if (status === 'self') {
+                btn.style.display = 'none';
+            } else if (status === 'none') {
+                btn.innerHTML = '<i class="fas fa-user-plus"></i> Barátnak jelölés';
+                btn.style.background = '#333';
+            } else if (status === 'pending_sent') {
+                btn.innerHTML = '<i class="fas fa-clock"></i> Jelölés elküldve';
+                btn.style.background = '#888';
+            } else if (status === 'pending_received') {
+                btn.innerHTML = '<i class="fas fa-check"></i> Jelölés elfogadása';
+                btn.style.background = '#28a745';
+            } else if (status === 'accepted') {
+                btn.innerHTML = '<i class="fas fa-user-minus"></i> Barát törlése';
+                btn.style.background = '#e10600';
+            }
+        }
+
+        function handleFriendAction() {
+            let action = '';
+            if (currentFriendStatus === 'none') action = 'add';
+            else if (currentFriendStatus === 'pending_sent' || currentFriendStatus === 'accepted') action = 'remove';
+            else if (currentFriendStatus === 'pending_received') action = 'accept';
+
+            if(!action) return;
+
+            fetch('/f1fanclub/profile/friend_api.php', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ action: action, target_user: currentModalUser })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if(data.success) {
+                    openUserProfile(currentModalUser);
+                }
+            });
+        }
+
+        // =========================================
+        // MODAL STYLES
+        // =========================================
+        (function addModalStyles() {
+            if (document.getElementById('modal-styles')) return;
+            const style = document.createElement('style');
+            style.id = 'modal-styles';
+            style.textContent = `
+                .user-modal-overlay {
+                    display: none;
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.85);
+                    backdrop-filter: blur(8px);
+                    z-index: 9999;
+                    justify-content: center;
+                    align-items: center;
+                }
+                .user-modal-content {
+                    background: linear-gradient(145deg, #111, #1a1a1a);
+                    width: 320px;
+                    border-radius: 24px;
+                    border: 1px solid #e10600;
+                    padding: 20px;
+                    position: relative;
+                    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+                    animation: popIn 0.3s ease;
+                    text-align: center;
+                }
+                @keyframes popIn {
+                    from { transform: scale(0.8); opacity: 0; }
+                    to { transform: scale(1); opacity: 1; }
+                }
+                .user-modal-close {
+                    position: absolute;
+                    top: 12px;
+                    right: 15px;
+                    background: none;
+                    border: none;
+                    color: #888;
+                    font-size: 1.3rem;
+                    cursor: pointer;
+                }
+                .user-modal-close:hover { color: #e10600; }
+                .user-modal-header img {
+                    width: 80px;
+                    height: 80px;
+                    border-radius: 50%;
+                    border: 3px solid #e10600;
+                    object-fit: cover;
+                    margin-bottom: 10px;
+                }
+                .modal-role {
+                    display: inline-block;
+                    font-size: 0.7rem;
+                    background: rgba(255, 255, 255, 0.1);
+                    padding: 2px 10px;
+                    border-radius: 20px;
+                    margin-top: 5px;
+                    color: #aaa;
+                }
+                .user-modal-body {
+                    margin: 15px 0;
+                    background: rgba(0, 0, 0, 0.3);
+                    padding: 12px;
+                    border-radius: 16px;
+                    text-align: left;
+                }
+                .user-modal-footer {
+                    display: flex;
+                    gap: 10px;
+                }
+                .user-modal-footer button {
+                    flex: 1;
+                    padding: 10px;
+                    border: none;
+                    border-radius: 40px;
+                    cursor: pointer;
+                    font-weight: 600;
+                    transition: all 0.2s;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 6px;
+                }
+                .btn-add-friend {
+                    background: #333;
+                    color: white;
+                }
+                .btn-add-friend:hover { background: #444; }
+                .btn-send-msg {
+                    background: #e10600;
+                    color: white;
+                }
+                .btn-send-msg:hover { background: #b00500; }
+                .clickable-user { cursor: pointer; }
+                .clickable-user:hover { opacity: 0.8; }
+            `;
+            document.head.appendChild(style);
+        })();
+    </script>
 </body>
 </html>

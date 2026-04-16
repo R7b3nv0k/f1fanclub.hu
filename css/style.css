@@ -282,6 +282,104 @@ nav a[style*="color"].active {
 }
 
 /* =========================================
+   DROPDOWN MENU STYLES
+   ========================================= */
+
+.dropdown-container {
+    position: relative;
+    display: inline-block;
+}
+
+.welcome {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.welcome:hover {
+    background: rgba(225, 6, 0, 0.15);
+    border-color: #e10600;
+}
+
+.dropdown-menu-modern {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: #0a0a0a;
+    border-radius: 12px;
+    border: 1px solid rgba(225, 6, 0, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    min-width: 220px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: all 0.2s ease;
+    z-index: 1050;
+}
+
+.dropdown-container.open .dropdown-menu-modern {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-menu-modern a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    color: #fff;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.dropdown-menu-modern a:last-child {
+    border-bottom: none;
+}
+
+.dropdown-menu-modern a:hover {
+    background: rgba(225, 6, 0, 0.15);
+    color: #fff;
+    padding-left: 24px;
+}
+
+.dropdown-menu-modern i {
+    width: 24px;
+    color: #e10600;
+    font-size: 1.1rem;
+}
+
+.dropdown-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 6px 0;
+}
+
+.dropdown-arrow-icon {
+    margin-left: 6px;
+    font-size: 0.7rem;
+    transition: transform 0.2s;
+    color: #e10600;
+}
+
+.dropdown-container.open .dropdown-arrow-icon {
+    transform: rotate(180deg);
+}
+
+.admin-badge {
+    position: absolute;
+    right: 15px;
+    background: #e10600;
+    color: white;
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+/* =========================================
    RESPONSIVE NAVIGATION
    ========================================= */
 
@@ -898,10 +996,10 @@ main {
 
 .team-card[data-team="cadillac"]::before {
     background: linear-gradient(to top, 
-        rgba(70, 29, 124, 0.8) 0%,
-        rgba(70, 29, 124, 0.6) 30%,
-        rgba(70, 29, 124, 0.3) 60%,
-        rgba(70, 29, 124, 0.1) 85%,
+        rgba(182, 186, 189, 0.8) 0%,
+        rgba(182, 186, 189, 0.6) 30%,
+        rgba(182, 186, 189, 0.3) 60%,
+        rgba(182, 186, 189, 0.1) 85%,
         transparent 100%);
 }
 
@@ -1222,7 +1320,7 @@ main {
 }
 
 /* =========================================
-   CHAMPIONSHIP PAGE STYLES - FIXED HEIGHT ALIGNMENT
+   CHAMPIONSHIP PAGE STYLES
    ========================================= */
 
 .championship-layout {
@@ -1673,8 +1771,9 @@ main {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
 /* =========================================
-   STATISTICS PANEL - PERFECT HEIGHT ALIGNMENT
+   STATISTICS PANEL
    ========================================= */
 
 .statistics-panel {
@@ -2018,6 +2117,7 @@ main {
         align-items: flex-start;
     }
 }
+
 /* =========================================
    PROFILE CARD
    ========================================= */
@@ -2043,7 +2143,11 @@ main {
     padding-bottom: 10px;
     border-bottom: 1px solid var(--border);
 }
-/* Add to your style.css file */
+
+/* =========================================
+   TABLE ROW STYLES
+   ========================================= */
+
 .f1-row {
     transition: background 0.3s ease;
     background-position: left center;

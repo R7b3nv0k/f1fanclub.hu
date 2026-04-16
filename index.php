@@ -38,7 +38,7 @@ function getTeamColor($team)
     case 'RB': return '#2b2bff';
     case 'Audi': return '#e3000f';
     case 'Haas F1 Team': return '#B6BABD';
-    case 'Cadillac': return '#1b1b1b';
+    case 'Cadillac': return '#B6BABD';
     default: return '#ffffff';
   }
 }
@@ -46,9 +46,10 @@ function getTeamColor($team)
 $profile_image = null;
 $fav_team = null;
 $teamColor = '#ffffff';
+$isAdmin = false;
 
 if ($isLoggedIn) {
-  $stmt = $conn->prepare("SELECT profile_image, fav_team FROM users WHERE username=?");
+  $stmt = $conn->prepare("SELECT profile_image, fav_team, role FROM users WHERE username=?");
   $stmt->bind_param("s", $username);
   $stmt->execute();
   $row = $stmt->get_result()->fetch_assoc();
@@ -56,6 +57,7 @@ if ($isLoggedIn) {
   $profile_image = $row['profile_image'] ?? null;
   $fav_team = $row['fav_team'] ?? null;
   $teamColor = getTeamColor($fav_team);
+  $isAdmin = !empty($row['role']) && $row['role'] === 'admin';
   $stmt->close();
 }
 
@@ -125,7 +127,7 @@ $liveStatus = ($resLive && $resLive->num_rows > 0) ? $resLive->fetch_assoc()['st
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>F1 Fan Club - Főoldal</title>
   <link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -144,6 +146,23 @@ $liveStatus = ($resLive && $resLive->num_rows > 0) ? $resLive->fetch_assoc()['st
     .logo-title img { width: 40px; height: auto; filter: brightness(0) invert(1); }
     .logo-title span { display: block; margin-top: 4px; }
 
+    /* Hamburger menu button */
+    .hamburger {
+        display: none;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 28px;
+        cursor: pointer;
+        padding: 10px;
+        z-index: 1001;
+        transition: color 0.3s ease;
+    }
+
+    .hamburger:hover {
+        color: #e10600;
+    }
+
     nav { display: flex; gap: 5px; margin: 0 20px; }
     nav a { font-weight: 600; font-size: 0.9rem; text-transform: uppercase; padding: 8px 16px; border-radius: 4px; color: #ffffff !important; text-decoration: none; position: relative; transition: all 0.2s ease; letter-spacing: 0.5px; opacity: 0.9; }
     nav a:hover { color: #e10600 !important; opacity: 1; background: rgba(225, 6, 0, 0.1); }
@@ -151,12 +170,101 @@ $liveStatus = ($resLive && $resLive->num_rows > 0) ? $resLive->fetch_assoc()['st
     nav a[style*="color"] { color: #ffffff !important; }
     nav a[style*="color"]:hover, nav a[style*="color"].active { color: #e10600 !important; }
 
-    .auth { display: flex; align-items: center; gap: 10px; }
-    .welcome { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; margin-right: 10px; padding: 5px 12px; background: rgba(255, 255, 255, 0.05); border-radius: 30px; border: 1px solid rgba(225, 6, 0, 0.2); }
-    .welcome img.avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid #e10600; transition: transform 0.3s; }
-    .welcome img.avatar:hover { transform: scale(1.1); }
-    .welcome-text { color: #ccc; }
-    .welcome-text span { font-weight: 700; }
+    /* DROPDOWN MENU STYLES */
+    .dropdown-container {
+        position: relative;
+        display: inline-block;
+    }
+    
+    .welcome {
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .welcome:hover {
+        background: rgba(225, 6, 0, 0.15);
+        border-color: #e10600;
+    }
+    
+    .dropdown-menu-modern {
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        background: linear-gradient(145deg, #111111, #1a1a1f);
+        backdrop-filter: blur(12px);
+        border-radius: 16px;
+        border: 1px solid rgba(225, 6, 0, 0.4);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+        min-width: 240px;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-8px);
+        transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        z-index: 1050;
+    }
+    
+    .dropdown-container.open .dropdown-menu-modern {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+    
+    .dropdown-menu-modern a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 20px;
+        color: #eee;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.2s;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .dropdown-menu-modern a:last-child {
+        border-bottom: none;
+    }
+    
+    .dropdown-menu-modern a:hover {
+        background: rgba(225, 6, 0, 0.2);
+        color: white;
+        padding-left: 24px;
+    }
+    
+    .dropdown-menu-modern i {
+        width: 24px;
+        color: #e10600;
+        font-size: 1.1rem;
+    }
+    
+    .dropdown-divider {
+        height: 1px;
+        background: rgba(255, 255, 255, 0.1);
+        margin: 6px 0;
+    }
+    
+    .dropdown-arrow-icon {
+        margin-left: 6px;
+        font-size: 0.7rem;
+        transition: transform 0.2s;
+        color: #e10600;
+    }
+    
+    .dropdown-container.open .dropdown-arrow-icon {
+        transform: rotate(180deg);
+    }
+    
+    .admin-badge {
+        position: absolute;
+        right: 15px;
+        background: #e10600;
+        color: white;
+        font-size: 0.65rem;
+        padding: 2px 8px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
 
     .auth .btn { display: inline-block; padding: 8px 20px; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; color: #fff; background-color: transparent; border: 1px solid rgba(225, 6, 0, 0.5); border-radius: 30px; cursor: pointer; transition: all 0.3s ease; text-align: center; text-decoration: none; letter-spacing: 0.5px; }
     .auth .btn:hover { background-color: #e10600; border-color: #e10600; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(225, 6, 0, 0.4); color: #fff; }
@@ -167,10 +275,118 @@ $liveStatus = ($resLive && $resLive->num_rows > 0) ? $resLive->fetch_assoc()['st
     .auth .btn:last-child { border-color: rgba(225, 6, 0, 0.5); }
     .auth .btn:last-child:hover { background-color: #e10600; }
 
-    @media (max-width: 1200px) { header { padding: 0 20px; } nav { gap: 2px; } nav a { padding: 8px 12px; font-size: 0.8rem; } }
-    @media (max-width: 992px) { header { flex-wrap: wrap; height: auto; padding: 15px 20px; gap: 15px; } .logo-title { font-size: 1.2rem; } .logo-title img { width: 30px; } nav { order: 3; width: 100%; justify-content: center; flex-wrap: wrap; margin: 0; } .auth { margin-left: auto; } }
-    @media (max-width: 768px) { .auth { flex-wrap: wrap; justify-content: flex-end; } .welcome { width: 100%; justify-content: center; margin-right: 0; margin-bottom: 5px; } }
-    @media (max-width: 576px) { header { flex-direction: column; text-align: center; } .logo-title { justify-content: center; } .auth { justify-content: center; width: 100%; } nav a { padding: 6px 8px; font-size: 0.75rem; } }
+    /* Desktop navigation - always visible */
+    @media (min-width: 993px) {
+        nav {
+            display: flex !important;
+        }
+    }
+
+    /* Mobile navigation - hamburger mode */
+    @media (max-width: 992px) {
+        .hamburger {
+            display: block;
+        }
+        
+        /* Hide the entire logo on mobile */
+        .left-header {
+            display: none;
+        }
+        
+        nav {
+            display: none;
+            position: absolute;
+            top: 80px;
+            left: 0;
+            right: 0;
+            background: #0a0a0a;
+            border-bottom: 2px solid #e10600;
+            flex-direction: column;
+            gap: 0;
+            margin: 0;
+            z-index: 1000;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+        
+        nav.open {
+            display: flex;
+        }
+        
+        nav a {
+            padding: 15px 20px;
+            margin: 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+            font-size: 1rem;
+        }
+        
+        nav a:last-child {
+            border-bottom: none;
+        }
+        
+        header {
+            position: sticky;
+            top: 0;
+            flex-wrap: nowrap;
+            justify-content: flex-start;
+            gap: 15px;
+            padding: 0 20px;
+        }
+        
+        .hamburger {
+            margin-right: auto;
+        }
+        
+        .auth {
+            margin-left: 0;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .auth {
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+        .welcome {
+            width: 100%;
+            justify-content: center;
+            margin-right: 0;
+            margin-bottom: 5px;
+        }
+        .pitwall-ribbon {
+            top: auto;
+            bottom: 30px;
+            padding: 12px 20px 12px 35px;
+            clip-path: polygon(15px 0, 100% 0, 100% 100%, 15px 100%, 0 50%);
+        }
+        .pitwall-ribbon:hover { transform: translateX(-10px); }
+        .ribbon-text { font-size: 0.95rem; }
+        .pitwall-ribbon i { font-size: 1.3rem; }
+        .ribbon-close {
+            left: 5px;
+            width: 16px;
+            height: 16px;
+            font-size: 0.7rem;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .hamburger {
+            font-size: 24px;
+            padding: 8px;
+        }
+        header {
+            padding: 0 15px;
+        }
+        .auth .btn {
+            padding: 6px 12px;
+            font-size: 0.7rem;
+        }
+        nav a {
+            padding: 12px 15px;
+            font-size: 0.85rem;
+        }
+    }
 
     .live-banner { display: flex; align-items: center; justify-content: center; background: linear-gradient(90deg, #b30000, #e10600, #b30000); color: #fff; text-decoration: none; padding: 15px 20px; font-size: 1.2rem; font-weight: 800; text-transform: uppercase; letter-spacing: 3px; box-shadow: 0 4px 20px rgba(225, 6, 0, 0.4); transition: all 0.3s ease; border-bottom: 2px solid #ff4a4a; margin-bottom: 40px; }
     .live-banner:hover { background: linear-gradient(90deg, #e10600, #ff1a1a, #e10600); color: #fff; letter-spacing: 5px; }
@@ -181,7 +397,7 @@ $liveStatus = ($resLive && $resLive->num_rows > 0) ? $resLive->fetch_assoc()['st
     .section-header { text-align: center; margin-bottom: 25px; position: relative; }
     .section-title { font-size: 2rem; color: #e10600; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; display: inline-block; position: relative; }
     .section-title::after { content: ""; position: absolute; bottom: -8px; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, transparent 0%, #e10600 20%, #e10600 80%, transparent 100%); border-radius: 2px; }
-    .countdown-timer { display: flex; justify-content: center; gap: 15px; margin-top: 15px; }
+    .countdown-timer { display: flex; justify-content: center; gap: 15px; margin-top: 15px; flex-wrap: wrap; }
     .countdown-unit { background: linear-gradient(145deg, #111111 0%, #1a1a1a 100%); padding: 12px 20px; border-radius: 15px; border: 1px solid rgba(225, 6, 0, 0.3); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5); text-align: center; min-width: 100px; }
     .countdown-value { font-size: 2.2rem; font-weight: 800; color: #e10600; display: block; line-height: 1; text-shadow: 0 0 15px rgba(225, 6, 0, 0.3); }
     .countdown-label { font-size: 0.75rem; color: #aaa; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; }
@@ -200,11 +416,11 @@ $liveStatus = ($resLive && $resLive->num_rows > 0) ? $resLive->fetch_assoc()['st
     .circuit-overlay { position: absolute; bottom: 10px; right: 10px; background: rgba(225, 6, 0, 0.9); padding: 5px 10px; border-radius: 8px; font-weight: 500; font-size: 0.8rem; display: flex; gap: 10px; }
 
     .race-schedule { margin-top: 20px; }
-    .schedule-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .schedule-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
     .schedule-header h4 { font-size: 1.2rem; color: #e10600; font-weight: 600; text-transform: uppercase; }
     .timezone { color: #aaa; font-size: 0.8rem; font-weight: 400; }
     .schedule-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
-    .session-card { background: linear-gradient(145deg, #1a1a1a 0%, #222 100%); padding: 12px 8px; border-radius: 12px; text-align: center; border: 1px solid #333; transition: all 0.3s ease; }
+    .session-card { background: linear-gradient(145deg, #1a1a1a 0%, #222 100%); padding: 12px 8px; border-radius: 12px; text-align: center; border: 1px solid #333; transition: all 0.3s ease; cursor: pointer; }
     .session-card:hover { transform: translateY(-3px); border-color: #e10600; box-shadow: 0 5px 15px rgba(225, 6, 0, 0.2); }
     .session-icon { font-size: 1.4rem; color: #e10600; margin-bottom: 8px; }
     .session-card h5 { font-size: 0.9rem; color: white; font-weight: 600; margin-bottom: 5px; }
@@ -238,9 +454,123 @@ $liveStatus = ($resLive && $resLive->num_rows > 0) ? $resLive->fetch_assoc()['st
     .social-icon:hover { fill: #e10600; transform: scale(1.1); }
     .copyright { text-align: center; color: #555; font-size: 0.8rem; border-top: 1px solid #222; padding-top: 20px; margin-top: 20px; }
 
+    /* Responsive grid adjustments */
     @media (max-width: 1200px) { .featured-grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 900px) { .race-location { grid-template-columns: 1fr; } .countdown-timer { flex-wrap: wrap; } .countdown-unit { min-width: 80px; padding: 8px 12px; } .countdown-value { font-size: 1.8rem; } }
-    @media (max-width: 600px) { .featured-grid { grid-template-columns: 1fr; } .schedule-grid { grid-template-columns: 1fr; } .section-title { font-size: 1.5rem; } .race-name { font-size: 1.3rem; } }
+    @media (max-width: 900px) { .race-location { grid-template-columns: 1fr; } .countdown-unit { min-width: 80px; padding: 8px 12px; } .countdown-value { font-size: 1.8rem; } }
+    @media (max-width: 600px) { .featured-grid { grid-template-columns: 1fr; } .schedule-grid { grid-template-columns: 1fr; } .section-title { font-size: 1.5rem; } .race-name { font-size: 1.3rem; } .container { padding: 0 15px; } }
+    
+    /* --- PITWALL RIBBON WITH CLOSE BUTTON --- */
+    .pitwall-ribbon {
+        position: fixed;
+        top: 120px;
+        right: 0;
+        background: linear-gradient(90deg, #990000 0%, #e10600 100%);
+        color: white;
+        text-decoration: none;
+        padding: 15px 30px 15px 50px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        z-index: 999;
+        box-shadow: -5px 10px 20px rgba(0,0,0,0.5);
+        clip-path: polygon(20px 0, 100% 0, 100% 100%, 20px 100%, 0 50%);
+        transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    
+    .pitwall-ribbon:hover {
+        transform: translateX(-15px);
+        background: linear-gradient(90deg, #cc0000 0%, #ff1a1a 100%);
+        box-shadow: -10px 15px 25px rgba(225,6,0,0.4);
+    }
+    
+    .pitwall-ribbon i {
+        font-size: 1.8rem;
+        filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5));
+    }
+    
+    .ribbon-text {
+        font-weight: 800;
+        font-size: 1.2rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        white-space: nowrap;
+    }
+    
+    .ribbon-close {
+        position: absolute;
+        left: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0, 0, 0, 0.4);
+        border: none;
+        color: white;
+        font-size: 0.8rem;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        z-index: 1000;
+        text-decoration: none;
+        font-weight: bold;
+    }
+    
+    .ribbon-close:hover {
+        background: rgba(0, 0, 0, 0.7);
+        transform: translateY(-50%) scale(1.1);
+        color: #ff4a4a;
+    }
+    
+    .pitwall-ribbon.closed {
+        display: none !important;
+    }
+    
+    /* =========================================
+       AUTH / WELCOME SECTION
+       ========================================= */
+    .welcome {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.9rem;
+        margin-right: 10px;
+        padding: 5px 12px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 30px;
+        border: 1px solid rgba(225, 6, 0, 0.2);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .welcome:hover {
+        background: rgba(225, 6, 0, 0.15);
+        border-color: #e10600;
+    }
+
+    .welcome img.avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #e10600;
+        transition: transform 0.3s;
+    }
+
+    .welcome img.avatar:hover {
+        transform: scale(1.1);
+    }
+
+    .welcome-text {
+        color: #ccc;
+    }
+
+    .welcome-text span {
+        font-weight: 700;
+    }
   </style>
 </head>
 
@@ -248,43 +578,77 @@ $liveStatus = ($resLive && $resLive->num_rows > 0) ? $resLive->fetch_assoc()['st
   <div class="bg-lines"></div>
 
   <header>
-    <div class="logo-title">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg" alt="F1 Logo">
-      <span>Fan Club</span>
+    <div class="left-header">
+      <div class="logo-title">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg" alt="F1 Logo">
+        <span>Fan Club</span>
+      </div>
     </div>
 
-    <nav>
-      <a href="/f1fanclub/index.php">Home</a>
-      <a href="/f1fanclub/Championship/championship.php">Championship</a>
-      <a href="/f1fanclub/teams/teams.php">Teams</a>
-      <a href="/f1fanclub/drivers/drivers.php">Drivers</a>
+    <button class="hamburger" id="hamburgerBtn">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <nav id="mainNav">
+      <a href="/f1fanclub/index.php" class="active">Kezdőlap</a>
+      <a href="/f1fanclub/Championship/championship.php">Bajnokság</a>
+      <a href="/f1fanclub/teams/teams.php">Csapatok</a>
+      <a href="/f1fanclub/drivers/drivers.php">Versenyzők</a>
       <a href="/f1fanclub/news/feed.php">Paddock</a>
+      <a href="/f1fanclub/pitwall/pitwall.php"><i class="fas fa-trophy" style="margin-right: 5px;"></i> A Fal</a>
     </nav>
 
+    <!-- DROPDOWN MENU -->
     <?php if ($isLoggedIn): ?>
-      <div class="auth">
-        <a href="/f1fanclub/profile/profile.php" style="text-decoration: none;">
-          <div class="welcome">
+      <div class="dropdown-container" id="userDropdownContainer">
+        <div class="auth">
+          <div class="welcome" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
             <?php if ($profile_image): ?>
-              <img src="/f1fanclub/uploads/<?php echo htmlspecialchars($profile_image); ?>" class="avatar" alt="Profile">
+              <img src="/f1fanclub/uploads/<?php echo htmlspecialchars($profile_image); ?>" class="avatar"
+                alt="Profilkép" style="width:35px; height:35px; border-radius:50%; object-fit: cover; border-color: <?php echo htmlspecialchars($teamColor); ?>;">
             <?php endif; ?>
             <span class="welcome-text">
-              Welcome,
-              <span style="color: <?php echo htmlspecialchars($teamColor); ?>;">
+              <span style="color: <?php echo htmlspecialchars($teamColor); ?>; font-weight:bold;">
                 <?php echo htmlspecialchars($username); ?>
-              </span>!
+              </span>
             </span>
+            <i class="fas fa-chevron-down dropdown-arrow-icon"></i>
           </div>
-        </a>
-        <a href="/f1fanclub/logout/logout.php" class="btn">Log out</a>
+        </div>
+        
+        <div class="dropdown-menu-modern">
+          <a href="/f1fanclub/profile/profile.php">
+            <i class="fas fa-user-circle"></i> Profilom
+          </a>
+          <a href="/f1fanclub/messages/messages.php">
+            <i class="fas fa-envelope"></i> Üzenetek
+          </a>
+          <?php if ($isAdmin): ?>
+            <a href="/f1fanclub/admin/admin.php" style="position: relative;">
+              <i class="fas fa-shield-alt"></i> Admin Panel
+              <span class="admin-badge">ADMIN</span>
+            </a>
+          <?php endif; ?>
+          <div class="dropdown-divider"></div>
+          <a href="/f1fanclub/logout/logout.php">
+            <i class="fas fa-sign-out-alt"></i> Kijelentkezés
+          </a>
+        </div>
       </div>
     <?php else: ?>
       <div class="auth">
-        <a href="/f1fanclub/register/register.html" class="btn">Register</a>
-        <a href="/f1fanclub/login/login.html" class="btn">Login</a>
+        <a href="/f1fanclub/register/register.html" class="btn">Regisztráció</a>
+        <a href="/f1fanclub/login/login.html" class="btn">Bejelentkezés</a>
       </div>
     <?php endif; ?>
   </header>
+  
+  <!-- PITWALL RIBBON WITH CLOSE BUTTON -->
+  <a href="/f1fanclub/pitwall/pitwall.php" class="pitwall-ribbon" id="pitwallRibbon">
+      <button class="ribbon-close" id="closeRibbonBtn" onclick="event.preventDefault(); event.stopPropagation(); closeRibbon();">✕</button>
+      <i class="fas fa-gift"></i>
+      <span class="ribbon-text">Tippelj nyereményekért!</span>
+  </a>
 
   <?php if ($liveStatus === 'running'): ?>
     <a href="/f1fanclub/race/live.php" class="live-banner">
@@ -295,27 +659,27 @@ $liveStatus = ($resLive && $resLive->num_rows > 0) ? $resLive->fetch_assoc()['st
   <section class="next-race-section">
     <div class="container">
       <div class="section-header">
-        <h2 class="section-title">Next Grand Prix</h2>
+        <h2 class="section-title">Következő Nagydíj</h2>
 
         <?php if ($nextRace): ?>
           <div class="countdown-timer">
             <div class="countdown-unit">
               <span class="countdown-value" id="days">00</span>
-              <span class="countdown-label">Days</span>
+              <span class="countdown-label">Nap</span>
             </div>
             <div class="countdown-unit">
               <span class="countdown-value" id="hours">00</span>
-              <span class="countdown-label">Hours</span>
+              <span class="countdown-label">Óra</span>
             </div>
             <div class="countdown-unit">
               <span class="countdown-value" id="minutes">00</span>
-              <span class="countdown-label">Minutes</span>
+              <span class="countdown-label">Perc</span>
             </div>
           </div>
         <?php else: ?>
           <div class="countdown-timer">
             <div class="countdown-unit">
-              <span class="countdown-value" style="font-size:1.5rem;">SEASON FINISHED</span>
+              <span class="countdown-value" style="font-size:1.5rem;">SZEZON VÉGE</span>
             </div>
           </div>
         <?php endif; ?>
@@ -334,17 +698,17 @@ $liveStatus = ($resLive && $resLive->num_rows > 0) ? $resLive->fetch_assoc()['st
             <div class="circuit-visual">
               <img
                 src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Jeddah_Street_Circuit_2021.svg/1200px-Jeddah_Street_Circuit_2021.svg.png"
-                class="circuit-map" alt="Circuit Map">
+                class="circuit-map" alt="Pályarajz">
               <div class="circuit-overlay">
                 <span>5.278 km</span>
-                <span>58 laps</span>
+                <span>58 kör</span>
               </div>
             </div>
           </div>
 
           <div class="race-schedule">
             <div class="schedule-header">
-              <h4>Weekend Schedule</h4>
+              <h4>Hétvégi Program</h4>
               <span class="timezone">(Magyar Idő)</span>
             </div>
             <div class="schedule-grid">
@@ -365,16 +729,15 @@ $liveStatus = ($resLive && $resLive->num_rows > 0) ? $resLive->fetch_assoc()['st
               </a>
               <a href="/f1fanclub/idomero/idomero.php" class="session-card highlight-session" style="text-decoration:none; color:inherit;">
                 <div class="session-icon"><i class="fas fa-tachometer-alt"></i></div>
-                <h5>Quali</h5>
+                <h5>Időmérő</h5>
                 <p class="session-time"><?php echo $quali_time_str; ?></p>
               </a>
               <a href="/f1fanclub/race/live.php" class="session-card main-session" style="text-decoration:none; color:inherit;">
                 <div class="session-icon"><i class="fas fa-flag-checkered"></i></div>
-                <h5>Race</h5>
+                <h5>Futam</h5>
                 <p class="session-time"><?php echo $race_time_str; ?></p>
               </a>
             </div>  
-            </div>
           </div>
         </div>
       <?php else: ?>
@@ -384,7 +747,7 @@ $liveStatus = ($resLive && $resLive->num_rows > 0) ? $resLive->fetch_assoc()['st
       <div class="featured-grid">
         <div class="featured-card">
           <div class="featured-icon"><i class="fas fa-trophy"></i></div>
-          <h3>Championship</h3>
+          <h3>Bajnokság</h3>
           <p>Kövesd nyomon a világbajnokság állását, versenyzői és csapatpontokat.</p>
           <a href="/f1fanclub/Championship/championship.php" class="featured-btn">Megnézem</a>
         </div>
@@ -414,12 +777,14 @@ $liveStatus = ($resLive && $resLive->num_rows > 0) ? $resLive->fetch_assoc()['st
         <p>A legnagyobb magyar F1 közösség. Hírek, futamok, csapatok és szenvedély egy helyen.</p>
       </div>
 
-      <div class="footer-section">
+        <div class="footer-section">
         <h3>Navigáció</h3>
         <a href="/f1fanclub/index.php">Főoldal</a>
         <a href="/f1fanclub/news/feed.php">Paddock (Feed)</a>
+        <a href="/f1fanclub/pitwall/pitwall.php">A Fal</a>
         <a href="/f1fanclub/about/about.php">Rólunk & Működés</a>
         <a href="/f1fanclub/teams/teams.php">Csapatok</a>
+        <a href="/f1fanclub/drivers/drivers.php">Versenyzők</a>
       </div>
 
       <div class="footer-section">
@@ -461,13 +826,78 @@ $liveStatus = ($resLive && $resLive->num_rows > 0) ? $resLive->fetch_assoc()['st
         } else {
           const timerContainer = document.querySelector('.countdown-timer');
           if (timerContainer) {
-            timerContainer.innerHTML = '<div class="countdown-unit"><span class="countdown-value" style="font-size:1.5rem;">RACE WEEKEND!</span></div>';
+            timerContainer.innerHTML = '<div class="countdown-unit"><span class="countdown-value" style="font-size:1.5rem;">VERSENYHÉTVÉGE!</span></div>';
           }
         }
       }
       updateCountdown();
       setInterval(updateCountdown, 60000); 
     <?php endif; ?>
+    
+    // DROPDOWN MENU TOGGLE
+    document.addEventListener('DOMContentLoaded', function() {
+        const dropdownContainer = document.getElementById('userDropdownContainer');
+        if (dropdownContainer) {
+            const welcomeDiv = dropdownContainer.querySelector('.welcome');
+            if (welcomeDiv) {
+                welcomeDiv.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    dropdownContainer.classList.toggle('open');
+                });
+            }
+            
+            document.addEventListener('click', function(e) {
+                if (!dropdownContainer.contains(e.target)) {
+                    dropdownContainer.classList.remove('open');
+                }
+            });
+        }
+    });
+    
+    // HAMBURGER MENU TOGGLE
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const mainNav = document.getElementById('mainNav');
+    
+    if (hamburgerBtn && mainNav) {
+        hamburgerBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            mainNav.classList.toggle('open');
+        });
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', function(event) {
+            if (mainNav.classList.contains('open') && 
+                !mainNav.contains(event.target) && 
+                !hamburgerBtn.contains(event.target)) {
+                mainNav.classList.remove('open');
+            }
+        });
+        
+        // Close menu when a nav link is clicked
+        const navLinks = mainNav.querySelectorAll('a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                mainNav.classList.remove('open');
+            });
+        });
+    }
+    
+    // CLOSE RIBBON FUNCTIONALITY
+    function closeRibbon() {
+        const ribbon = document.getElementById('pitwallRibbon');
+        if (ribbon) {
+            ribbon.classList.add('closed');
+            localStorage.setItem('pitwallRibbonClosed', 'true');
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const ribbonClosed = localStorage.getItem('pitwallRibbonClosed');
+        const ribbon = document.getElementById('pitwallRibbon');
+        if (ribbonClosed === 'true' && ribbon) {
+            ribbon.classList.add('closed');
+        }
+    });
   </script>
 </body>
 

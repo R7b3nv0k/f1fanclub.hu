@@ -1,10 +1,8 @@
 <?php
 session_start();
-// Hibaüzenetek bekapcsolása fejlesztés alatt
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Ha nincs bejelentkezve, dobja vissza a főoldalra
 if (!isset($_SESSION['username'])) {
     header("Location: index.php");
     exit;
@@ -21,18 +19,23 @@ if ($conn->connect_error) die("Hiba: " . $conn->connect_error);
 $username = $_SESSION['username'];
 $message = "";
 
-// --- FELTÖLTÉS KEZELÉSE ---
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['profile_image'])) {
+// Get user ID from database
+$userIdQuery = $conn->prepare("SELECT id FROM users WHERE username=?");
+$userIdQuery->bind_param("s", $username);
+$userIdQuery->execute();
+$userIdResult = $userIdQuery->get_result();
+$userId = $userIdResult->fetch_assoc()['id'] ?? 0;
+$userIdQuery->close();
 
+// Upload handling
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['profile_image'])) {
     $target_dir = "../uploads/";
-    // Biztosítjuk, hogy egyedi neve legyen a fájlnak
     $file_extension = strtolower(pathinfo($_FILES["profile_image"]["name"], PATHINFO_EXTENSION));
     $new_filename = $username . "_" . time() . "." . $file_extension;
     $target_file = $target_dir . $new_filename;
     
     $uploadOk = 1;
 
-    // 1. Ellenőrzés: Valódi kép-e?
     $check = getimagesize($_FILES["profile_image"]["tmp_name"]);
     if($check !== false) {
         $uploadOk = 1;
@@ -41,27 +44,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['profile_image'])) {
         $uploadOk = 0;
     }
 
-    // 2. Fájlméret ellenőrzés (pl. max 5MB)
     if ($_FILES["profile_image"]["size"] > 5000000) {
         $message = "A kép túl nagy! (Max 5MB)";
         $uploadOk = 0;
     }
 
-    // 3. Fájltípus ellenőrzés
     if($file_extension != "jpg" && $file_extension != "png" && $file_extension != "jpeg" && $file_extension != "gif" ) {
         $message = "Csak JPG, JPEG, PNG és GIF fájlok engedélyezettek.";
         $uploadOk = 0;
     }
 
-    // Ha minden oké, feltöltjük
     if ($uploadOk == 1) {
         if (move_uploaded_file($_FILES["profile_image"]["tmp_name"], $target_file)) {
-            // Adatbázis frissítése
             $stmt = $conn->prepare("UPDATE users SET profile_image = ? WHERE username = ?");
             $stmt->bind_param("ss", $new_filename, $username);
-            
             if ($stmt->execute()) {
-                // Sikeres feltöltés után frissítjük az oldalt, hogy ne ragadjon be a POST adat
                 header("Location: " . $_SERVER['PHP_SELF']); 
                 exit;
             } else {
@@ -74,22 +71,130 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['profile_image'])) {
     }
 }
 
-// --- ADATOK LEKÉRÉSE A MEGJELENÍTÉSHEZ ---
-$stmt = $conn->prepare("SELECT email, profile_image, fav_team FROM users WHERE username=?");
+$stmt = $conn->prepare("SELECT email, profile_image, fav_team, pitwall_points FROM users WHERE username=?");
 $stmt->bind_param("s", $username);
 $stmt->execute();
 $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 $stmt->close();
-?>
 
+function getTeamColor($team) {
+    switch ($team) {
+        case 'Red Bull': return '#1E41FF';
+        case 'Ferrari': return '#DC0000';
+        case 'Mercedes': return '#00D2BE';
+        case 'McLaren': return '#FF8700';
+        case 'Aston Martin': return '#006F62';
+        case 'Alpine': return '#0090FF';
+        case 'Williams': return '#00A0DE';
+        case 'RB': return '#2b2bff';
+        case 'Audi': return '#e3000f';
+        case 'Haas F1 Team': return '#B6BABD';
+        case 'Cadillac': return '#B6BABD';
+        default: return '#e10600';
+    }
+}
+
+function getTeamShortening($team) {
+    switch ($team) {
+        case 'Red Bull': return 'RB';
+        case 'Ferrari': return 'FER';
+        case 'Mercedes': return 'MER';
+        case 'McLaren': return 'MCL';
+        case 'Aston Martin': return 'AM';
+        case 'Alpine': return 'ALP';
+        case 'Williams': return 'WIL';
+        case 'RB': return 'RB';
+        case 'Audi': return 'AUD';
+        case 'Haas F1 Team': return 'HAA';
+        case 'Cadillac': return 'CAD';
+        default: return 'F1FC';
+    }
+}
+
+function getRankInfo($points) {
+    // Rainbow Six Siege style ranks
+    if ($points >= 1000000) {
+        return ['name' => 'LEGENDARY', 'color' => '#8B0000', 'tier' => ''];
+    } elseif ($points >= 900000) {
+        return ['name' => 'DIAMOND', 'color' => '#00FFFF', 'tier' => 'I'];
+    } elseif ($points >= 800000) {
+        return ['name' => 'DIAMOND', 'color' => '#00FFFF', 'tier' => 'II'];
+    } elseif ($points >= 700000) {
+        return ['name' => 'DIAMOND', 'color' => '#00FFFF', 'tier' => 'III'];
+    } elseif ($points >= 600000) {
+        return ['name' => 'DIAMOND', 'color' => '#00FFFF', 'tier' => 'IV'];
+    } elseif ($points >= 500000) {
+        return ['name' => 'DIAMOND', 'color' => '#00FFFF', 'tier' => 'V'];
+    } elseif ($points >= 450000) {
+        return ['name' => 'PLATINUM', 'color' => '#20B2AA', 'tier' => 'I'];
+    } elseif ($points >= 400000) {
+        return ['name' => 'PLATINUM', 'color' => '#20B2AA', 'tier' => 'II'];
+    } elseif ($points >= 350000) {
+        return ['name' => 'PLATINUM', 'color' => '#20B2AA', 'tier' => 'III'];
+    } elseif ($points >= 300000) {
+        return ['name' => 'PLATINUM', 'color' => '#20B2AA', 'tier' => 'IV'];
+    } elseif ($points >= 250000) {
+        return ['name' => 'PLATINUM', 'color' => '#20B2AA', 'tier' => 'V'];
+    } elseif ($points >= 200000) {
+        return ['name' => 'GOLD', 'color' => '#FFD700', 'tier' => 'I'];
+    } elseif ($points >= 175000) {
+        return ['name' => 'GOLD', 'color' => '#FFD700', 'tier' => 'II'];
+    } elseif ($points >= 150000) {
+        return ['name' => 'GOLD', 'color' => '#FFD700', 'tier' => 'III'];
+    } elseif ($points >= 125000) {
+        return ['name' => 'GOLD', 'color' => '#FFD700', 'tier' => 'IV'];
+    } elseif ($points >= 100000) {
+        return ['name' => 'GOLD', 'color' => '#FFD700', 'tier' => 'V'];
+    } elseif ($points >= 80000) {
+        return ['name' => 'SILVER', 'color' => '#C0C0C0', 'tier' => 'I'];
+    } elseif ($points >= 60000) {
+        return ['name' => 'SILVER', 'color' => '#C0C0C0', 'tier' => 'II'];
+    } elseif ($points >= 40000) {
+        return ['name' => 'SILVER', 'color' => '#C0C0C0', 'tier' => 'III'];
+    } elseif ($points >= 20000) {
+        return ['name' => 'SILVER', 'color' => '#C0C0C0', 'tier' => 'IV'];
+    } elseif ($points >= 10000) {
+        return ['name' => 'SILVER', 'color' => '#C0C0C0', 'tier' => 'V'];
+    } elseif ($points >= 8000) {
+        return ['name' => 'BRONZE', 'color' => '#CD7F32', 'tier' => 'I'];
+    } elseif ($points >= 6000) {
+        return ['name' => 'BRONZE', 'color' => '#CD7F32', 'tier' => 'II'];
+    } elseif ($points >= 4000) {
+        return ['name' => 'BRONZE', 'color' => '#CD7F32', 'tier' => 'III'];
+    } elseif ($points >= 2000) {
+        return ['name' => 'BRONZE', 'color' => '#CD7F32', 'tier' => 'IV'];
+    } elseif ($points >= 1000) {
+        return ['name' => 'BRONZE', 'color' => '#CD7F32', 'tier' => 'V'];
+    } elseif ($points >= 800) {
+        return ['name' => 'COPPER', 'color' => '#B87333', 'tier' => 'I'];
+    } elseif ($points >= 600) {
+        return ['name' => 'COPPER', 'color' => '#B87333', 'tier' => 'II'];
+    } elseif ($points >= 400) {
+        return ['name' => 'COPPER', 'color' => '#B87333', 'tier' => 'III'];
+    } elseif ($points >= 200) {
+        return ['name' => 'COPPER', 'color' => '#B87333', 'tier' => 'IV'];
+    } elseif ($points >= 100) {
+        return ['name' => 'COPPER', 'color' => '#B87333', 'tier' => 'V'];
+    } else {
+        return ['name' => 'ROOKIE', 'color' => '#FFFFFF', 'tier' => ''];
+    }
+}
+
+$teamColor = getTeamColor($user['fav_team'] ?? null);
+$teamShortening = getTeamShortening($user['fav_team'] ?? null);
+$rankInfo = getRankInfo($user['pitwall_points'] ?? 0);
+$isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
+?>
 <!DOCTYPE html>
 <html lang="hu">
 <head>
     <meta charset="UTF-8">
-    <title><?php echo htmlspecialchars($username); ?> Profilja</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/f1fanclub/css/style.css"> 
+    <title>F1FC Super Licence - <?php echo htmlspecialchars($username); ?></title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/f1fanclub/css/style.css">
+    <link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg">
     <style>
         * {
             margin: 0;
@@ -107,9 +212,9 @@ $stmt->close();
             align-items: center;
             position: relative;
             overflow-x: hidden;
+            padding-top: 80px;
         }
 
-        /* F1-themed background with gradient */
         body::before {
             content: "";
             position: fixed;
@@ -123,152 +228,22 @@ $stmt->close();
             z-index: -1;
         }
 
-        .profile-container {
-            margin-top: 60px;
-            margin-bottom: 40px;
-            background: linear-gradient(145deg, #111111 0%, #1a1a1a 100%);
-            padding: 50px;
-            border-radius: 30px;
+        /* SUPER LICENCE CARD */
+        .super-licence {
+            max-width: 1000px;
             width: 90%;
-            max-width: 1400px; /* Increased to accommodate larger profile pic */
-            border: 1px solid rgba(225, 6, 0, 0.3);
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8),
-                        0 0 50px rgba(225, 6, 0, 0.2);
+            margin: 40px auto 60px;
+            background: linear-gradient(145deg, #111111 0%, #0a0a0a 100%);
+            border-radius: 24px;
+            border: 2px solid;
             position: relative;
             overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+            transition: all 0.3s ease;
         }
 
-        /* F1-inspired accent line */
-        .profile-container::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, 
-                        transparent 0%, 
-                        #e10600 20%, 
-                        #e10600 80%, 
-                        transparent 100%);
-            z-index: 2;
-        }
-
-        /* Glowing effect */
-        .profile-container::after {
-            content: "";
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(45deg, 
-                        transparent 30%, 
-                        rgba(225, 6, 0, 0.15) 50%, 
-                        transparent 70%);
-            border-radius: 32px;
-            z-index: -1;
-            animation: borderGlow 4s infinite;
-        }
-
-        @keyframes borderGlow {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 0.8; }
-        }
-
-        /* Main layout - Flex container */
-        .profile-content {
-            display: flex;
-            gap: 60px;
-            align-items: flex-start;
-            position: relative;
-            z-index: 2;
-        }
-
-        /* Left section - Profile picture - EVEN BIGGER */
-        .profile-left {
-            flex: 0 0 550px; /* Increased from 450px to 550px */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        /* Profile picture wrapper - F1 style */
-        .profile-pic-wrapper {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 1;
-            border-radius: 30px;
-            cursor: pointer;
-            overflow: hidden;
-            border: 4px solid #e10600;
-            box-shadow: 0 0 50px rgba(225, 6, 0, 0.5),
-                        0 20px 40px rgba(0, 0, 0, 0.8);
-            transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
-
-        .profile-pic-wrapper:hover {
-            transform: translateY(-8px) scale(1.03);
-            border-color: #ff1a00;
-            box-shadow: 0 0 70px rgba(225, 6, 0, 0.7),
-                        0 30px 60px rgba(0, 0, 0, 0.9);
-        }
-
-        .profile-pic-large {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            transition: transform 0.6s ease;
-        }
-
-        .profile-pic-wrapper:hover .profile-pic-large {
-            transform: scale(1.15);
-        }
-
-        /* F1-style overlay */
-        .profile-pic-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, 
-                        rgba(225, 6, 0, 0.95) 0%, 
-                        rgba(200, 5, 0, 0.95) 100%);
-            color: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            transition: opacity 0.4s ease;
-            backdrop-filter: blur(4px);
-        }
-
-        .profile-pic-wrapper:hover .profile-pic-overlay {
-            opacity: 1;
-        }
-
-        .change-text {
-            font-size: 28px; /* Larger text for bigger picture */
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-            border: 3px solid white;
-            padding: 15px 30px;
-            border-radius: 50px;
-            transform: translateY(30px);
-            transition: transform 0.4s ease;
-        }
-
-        .profile-pic-wrapper:hover .change-text {
-            transform: translateY(0);
-        }
-
-        /* Speed lines effect on hover */
-        .profile-pic-wrapper::before {
+        /* Holographic overlay */
+        .super-licence::before {
             content: "";
             position: absolute;
             top: -50%;
@@ -276,457 +251,757 @@ $stmt->close();
             width: 200%;
             height: 200%;
             background: linear-gradient(45deg,
-                        transparent 30%,
-                        rgba(255, 255, 255, 0.1) 50%,
-                        transparent 70%);
-            transform: rotate(45deg) translateY(100%);
-            transition: transform 0.8s ease;
-            z-index: 2;
+                transparent 40%,
+                rgba(225, 6, 0, 0.03) 50%,
+                transparent 60%);
+            transform: rotate(45deg);
+            animation: hologram 8s infinite linear;
             pointer-events: none;
         }
 
-        .profile-pic-wrapper:hover::before {
-            transform: rotate(45deg) translateY(-100%);
+        @keyframes hologram {
+            0% { transform: rotate(45deg) translateX(-50%); }
+            100% { transform: rotate(45deg) translateX(50%); }
         }
 
-        /* SIMPLE SMALL TEXT - No styling, just basic */
-        .upload-hint-small {
-            margin-top: 20px;
-            font-size: 14px;
+        /* Header */
+        .fia-header {
+            background: linear-gradient(135deg, #0a0a0a 0%, #151515 100%);
+            padding: 20px 30px;
+            border-bottom: 2px solid;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .fia-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .fia-logo i {
+            font-size: 2.5rem;
+        }
+
+        .fia-logo h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        .fia-logo p {
+            font-size: 0.6rem;
             color: #888;
+            letter-spacing: 1px;
+        }
+
+        .licence-type {
+            padding: 6px 16px;
+            border-radius: 30px;
+        }
+
+        .licence-type span {
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        /* Main Content */
+        .licence-content {
+            padding: 30px;
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        /* Photo Section */
+        .photo-section {
+            flex: 0 0 220px;
             text-align: center;
         }
 
-        /* Right section - Profile info */
-        .profile-right {
-            flex: 1;
-            padding-left: 30px;
-            border-left: 3px solid rgba(225, 6, 0, 0.3);
-        }
-
-        /* Heading */
-        h2 {
-            font-size: 3rem;
-            font-weight: 800;
-            margin-bottom: 40px;
-            background: linear-gradient(135deg, #fff 20%, #e10600 80%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
-            letter-spacing: 4px;
+        .photo-frame {
+            background: #0a0a0a;
+            border: 2px solid;
+            border-radius: 12px;
+            padding: 6px;
             position: relative;
-            display: inline-block;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
-        h2::after {
-            content: "";
-            position: absolute;
-            bottom: -15px;
-            left: 0;
-            width: 120px;
-            height: 4px;
-            background: linear-gradient(90deg, 
-                        #e10600 0%, 
-                        #e10600 80%, 
-                        transparent 100%);
-            border-radius: 2px;
+        .photo-frame:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(225,6,0,0.3);
         }
 
-        /* Info groups - F1 card style */
-        .info-group {
-            margin-bottom: 30px;
-            text-align: left;
-            background: linear-gradient(145deg, #1e1e1e 0%, #151515 100%);
-            padding: 25px 30px;
-            border-radius: 20px;
-            border-left: 6px solid #e10600;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            transition: all 0.4s ease;
-            position: relative;
-            overflow: hidden;
+        .profile-photo {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: 8px;
+            display: block;
         }
 
-        .info-group:hover {
-            transform: translateX(15px);
-            border-left-width: 8px;
-            border-left-color: #ff1a00;
-            box-shadow: 0 15px 40px rgba(225, 6, 0, 0.3);
-        }
-
-        /* Subtle F1 gradient overlay on hover */
-        .info-group:hover::after {
-            content: "";
+        .photo-overlay {
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(90deg, 
-                        rgba(225, 6, 0, 0.15) 0%, 
-                        transparent 100%);
-            pointer-events: none;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+            border-radius: 8px;
         }
 
-        /* Info group speed lines */
-        .info-group::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 100px;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(225, 6, 0, 0.05));
-            transform: skewX(-15deg) translateX(100px);
-            transition: transform 0.6s ease;
+        .photo-frame:hover .photo-overlay {
+            opacity: 1;
         }
 
-        .info-group:hover::before {
-            transform: skewX(-15deg) translateX(-20px);
+        .photo-overlay span {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #fff;
+        }
+
+        .licence-number {
+            margin-top: 12px;
+            font-size: 0.7rem;
+            color: #666;
+            letter-spacing: 1px;
+        }
+
+        /* Info Section */
+        .info-section {
+            flex: 1;
+        }
+
+        .info-row {
+            display: flex;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding: 12px 0;
         }
 
         .info-label {
-            color: #e10600;
-            font-size: 1rem;
-            display: block;
-            margin-bottom: 10px;
+            width: 130px;
+            font-size: 0.75rem;
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            font-weight: 700;
+            letter-spacing: 1px;
         }
 
         .info-value {
-            font-size: 1.8rem;
-            font-weight: 700;
+            flex: 1;
+            font-size: 1rem;
+            font-weight: 500;
             color: #fff;
-            display: block;
-            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-            line-height: 1.4;
         }
 
-        /* Alert message */
-        .alert {
-            background: linear-gradient(145deg, #2a1a1a 0%, #221515 100%);
-            color: #ff6b6b;
-            padding: 20px 25px;
-            margin-bottom: 30px;
-            border-radius: 15px;
-            border-left: 6px solid #e10600;
-            border-right: 6px solid #e10600;
-            text-align: center;
-            font-weight: 600;
-            letter-spacing: 1px;
-            box-shadow: 0 10px 25px rgba(225, 6, 0, 0.3);
-            position: relative;
-            font-size: 1.1rem;
-            backdrop-filter: blur(5px);
-        }
-
-        .alert::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(90deg, 
-                        transparent 30%, 
-                        rgba(225, 6, 0, 0.15) 50%, 
-                        transparent 70%);
-            pointer-events: none;
-            animation: alertPulse 2s infinite;
-        }
-
-        @keyframes alertPulse {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 0.8; }
-        }
-
-        /* Back button - F1 style */
-        .back-btn {
+        .team-color-badge {
             display: inline-block;
-            margin-top: 40px;
-            color: #fff;
-            text-decoration: none;
-            font-size: 1.2rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            padding: 18px 45px;
-            background: linear-gradient(145deg, #222 0%, #1a1a1a 100%);
-            border: 2px solid #e10600;
-            border-radius: 60px;
-            transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-        }
-
-        .back-btn:hover {
-            background: linear-gradient(145deg, #e10600 0%, #ff1a00 100%);
-            color: white;
-            transform: translateY(-5px);
-            box-shadow: 0 25px 40px rgba(225, 6, 0, 0.5);
-            border-color: transparent;
-        }
-
-        .back-btn:active {
-            transform: translateY(0);
-        }
-
-        .back-btn i {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
             margin-right: 10px;
-            font-style: normal;
-            display: inline-block;
-            transition: transform 0.3s ease;
+            vertical-align: middle;
         }
 
-        .back-btn:hover i {
-            transform: translateX(-8px);
+        /* Points Section - YELLOW (exception) */
+        .points-section {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 16px;
+            padding: 25px 30px;
+            margin-top: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 30px;
         }
 
-        /* Hide file input */
+        .points-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #d4af37;
+        }
+
+        .points-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #d4af37;
+        }
+
+        .points-value small {
+            font-size: 1rem;
+            color: #d4af37;
+            opacity: 0.7;
+        }
+
+        /* Rank styling */
+        .rank-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+
+        /* Security Features */
+        .security-features {
+            background: rgba(0,0,0,0.3);
+            padding: 12px 30px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .hologram-strip {
+            display: flex;
+            gap: 4px;
+        }
+
+        .hologram-strip span {
+            width: 25px;
+            height: 15px;
+            background: linear-gradient(45deg, #e10600, #ff4d4d, #990000);
+            opacity: 0.4;
+            border-radius: 2px;
+        }
+
+        .qr-code {
+            width: 35px;
+            height: 35px;
+            background: repeating-linear-gradient(0deg, #fff 0px, #fff 3px, #000 3px, #000 6px);
+            opacity: 0.2;
+        }
+
+        .signature {
+            font-size: 0.65rem;
+        }
+
+        /* Buttons */
+        .action-buttons {
+            padding: 20px 30px 30px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 25px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-decoration: none;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            font-size: 0.75rem;
+        }
+
+        .btn-primary {
+            background: rgba(225, 6, 0, 0.15);
+            border: 1px solid rgba(225, 6, 0, 0.5);
+            color: #e10600;
+        }
+
+        .btn-primary:hover {
+            background: #e10600;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ccc;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(225, 6, 0, 0.2);
+            border-color: #e10600;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: rgba(225, 6, 0, 0.1);
+            border: 1px solid rgba(225, 6, 0, 0.3);
+            color: #ff6b6b;
+        }
+
+        .btn-danger:hover {
+            background: #e10600;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        /* Alert */
+        .alert {
+            margin: 20px 30px 0;
+            padding: 12px 20px;
+            background: rgba(225, 6, 0, 0.15);
+            border-left: 3px solid #e10600;
+            color: #ff6b6b;
+            font-size: 0.85rem;
+            border-radius: 8px;
+        }
+
         #fileInput {
             display: none;
         }
 
-        /* F1 chequered flag pattern */
-        .chequered-bg {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 300px;
-            height: 300px;
-            background-image: 
-                linear-gradient(45deg, #e10600 25%, transparent 25%),
-                linear-gradient(-45deg, #e10600 25%, transparent 25%),
-                linear-gradient(45deg, transparent 75%, #e10600 75%),
-                linear-gradient(-45deg, transparent 75%, #e10600 75%);
-            background-size: 30px 30px;
-            background-position: 0 0, 0 15px, 15px -15px, -15px 0px;
-            opacity: 0.05;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        /* Floating F1 car silhouette */
-        .f1-silhouette {
-            position: absolute;
-            top: 30px;
-            right: 30px;
-            width: 180px;
-            height: 70px;
-            background: rgba(225, 6, 0, 0.1);
-            clip-path: polygon(0% 0%, 100% 0%, 95% 100%, 5% 100%);
-            transform: skewX(-10deg);
-            z-index: 1;
-            animation: floatCar 6s infinite ease-in-out;
-        }
-
-        @keyframes floatCar {
-            0%, 100% { transform: skewX(-10deg) translateX(0); }
-            50% { transform: skewX(-10deg) translateX(-15px); }
-        }
-
-        /* Responsive design */
-        @media (max-width: 1200px) {
-            .profile-left {
-                flex: 0 0 450px; /* Still large but smaller on medium screens */
-            }
-        }
-
-        @media (max-width: 968px) {
-            .profile-container {
-                padding: 35px;
-            }
-            
-            .profile-content {
-                gap: 40px;
-            }
-            
-            .profile-left {
-                flex: 0 0 380px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .profile-container {
-                margin-top: 30px;
-                padding: 30px;
-            }
-            
-            .profile-content {
-                flex-direction: column;
-                gap: 40px;
-            }
-            
-            .profile-left {
-                flex: 0 0 auto;
-                width: 380px;
-                margin: 0 auto;
-            }
-            
-            .profile-right {
-                border-left: none;
-                padding-left: 0;
-                width: 100%;
-            }
-            
-            h2 {
-                font-size: 2.5rem;
-                margin-bottom: 30px;
-            }
-            
-            h2::after {
-                left: 50%;
-                transform: translateX(-50%);
-            }
-            
-            h2, .info-group {
-                text-align: center;
-            }
-            
-            .info-group:hover {
-                transform: translateY(-8px);
-            }
-            
-            .back-btn {
-                display: block;
-                text-align: center;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .profile-container {
-                padding: 25px;
-            }
-            
-            .profile-left {
-                width: 280px;
-            }
-            
-            .change-text {
-                font-size: 18px;
-                padding: 12px 20px;
-            }
-            
-            h2 {
-                font-size: 2rem;
-            }
-            
-            .info-group {
-                padding: 20px;
-            }
-            
-            .info-value {
-                font-size: 1.3rem;
-            }
-            
-            .back-btn {
-                font-size: 1rem;
-                padding: 15px 30px;
-            }
-            
-            .upload-hint-small {
-                font-size: 12px;
-            }
-        }
-
-        /* Animation for page load */
-        @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes slideInRight {
-            from {
-                opacity: 0;
-                transform: translateX(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .profile-left {
-            animation: slideInLeft 0.8s ease-out;
-        }
-
-        .profile-right {
-            animation: slideInRight 0.8s ease-out;
+        /* Responsive */
+        @media (max-width: 700px) {
+            .licence-content { flex-direction: column; align-items: center; }
+            .photo-section { flex: 0 0 auto; width: 180px; }
+            .info-row { flex-direction: column; gap: 5px; }
+            .info-label { width: auto; }
+            .fia-header { flex-direction: column; text-align: center; }
+            .super-licence { width: 95%; margin-top: 20px; }
+            .points-section { flex-direction: column; text-align: center; }
+            .rank-value { font-size: 1.3rem; }
         }
     </style>
 </head>
 <body>
 
-    <div class="profile-container">
-        
-        <!-- F1 Decorative Elements -->
-        <div class="chequered-bg"></div>
-        <div class="f1-silhouette"></div>
-        
-        <?php if($message): ?>
-            <div class="alert"><?php echo $message; ?></div>
-        <?php endif; ?>
+<div class="bg-lines"></div>
 
-        <div class="profile-content">
-            <!-- Left side - Profile picture (EVEN BIGGER) -->
-            <div class="profile-left">
-                <?php 
-                $img_src = $user['profile_image'] ? "/f1fanclub/uploads/" . htmlspecialchars($user['profile_image']) : "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png";
-                ?>
+<header>
+    <div class="left-header">
+        <div class="logo-title">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg" alt="F1 Logo">
+            <span>Fan Club</span>
+        </div>
+    </div>
 
-                <form action="" method="post" enctype="multipart/form-data" id="profileForm">
-                    <label for="fileInput">
-                        <div class="profile-pic-wrapper">
-                            <img src="<?php echo $img_src; ?>" class="profile-pic-large" alt="Profilkép">
-                            <div class="profile-pic-overlay">
-                                <span class="change-text">Csere</span>
-                            </div>
-                        </div>
-                    </label>
-                    <input type="file" name="profile_image" id="fileInput" onchange="document.getElementById('profileForm').submit();">
-                </form>
-                
-                <!-- SIMPLE SMALL TEXT - No styling, just basic -->
-                <div class="upload-hint-small">
-                    ⚡ Kattints a képre a módosításhoz (Max 5MB) ⚡
+    <nav>
+        <a href="/f1fanclub/index.php">Kezdőlap</a>
+        <a href="/f1fanclub/Championship/championship.php">Bajnokság</a>
+        <a href="/f1fanclub/teams/teams.php">Csapatok</a>
+        <a href="/f1fanclub/drivers/drivers.php">Versenyzők</a>
+        <a href="/f1fanclub/news/feed.php">Paddock</a>
+        <a href="/f1fanclub/pitwall/pitwall.php"><i class="fas fa-trophy" style="margin-right: 5px;"></i> A Fal</a>
+    </nav>
+
+    <!-- DROPDOWN MENU -->
+    <?php if (isset($_SESSION['username'])): ?>
+        <div class="dropdown-container" id="userDropdownContainer">
+            <div class="auth">
+                <div class="welcome" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                    <?php if ($user['profile_image']): ?>
+                        <img src="/f1fanclub/uploads/<?php echo htmlspecialchars($user['profile_image']); ?>" class="avatar clickable-user"
+                            alt="Profilkép" onclick="openUserProfile('<?php echo htmlspecialchars(addslashes($username)); ?>')"
+                            style="width:35px; height:35px; border-radius:50%; object-fit: cover; border: 2px solid <?php echo htmlspecialchars($teamColor); ?>;">
+                    <?php endif; ?>
+                    <span class="welcome-text">
+                        <span class="clickable-user" onclick="openUserProfile('<?php echo htmlspecialchars(addslashes($username)); ?>')"
+                            style="color: <?php echo htmlspecialchars($teamColor); ?>; font-weight:bold;"><?php echo htmlspecialchars($username); ?></span>
+                    </span>
+                    <i class="fas fa-chevron-down dropdown-arrow-icon"></i>
                 </div>
             </div>
-
-            <!-- Right side - Profile info -->
-            <div class="profile-right">
-                <h2>Profil Adatok</h2>
-                
-                <div class="info-group">
-                    <span class="info-label">Felhasználónév</span>
-                    <span class="info-value"><?php echo htmlspecialchars($username); ?></span>
-                </div>
-
-                <div class="info-group">
-                    <span class="info-label">Email cím</span>
-                    <span class="info-value"><?php echo htmlspecialchars($user['email']); ?></span>
-                </div>
-
-                <div class="info-group">
-                    <span class="info-label">Kedvenc Csapat</span>
-                    <span class="info-value"><?php echo htmlspecialchars($user['fav_team'] ?? "Nincs kiválasztva"); ?></span>
-                </div>
-
-                <a href="/f1fanclub/index.php" class="back-btn"><i>←</i> Vissza a főoldalra</a>
-                <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
-                    <a href="/f1fanclub/admin/admin.php" class="back-btn" style="border-color: #ff9800; color: #ff9800; margin-left: 15px;"><i>⚙️</i> Admin Panel</a>
+            
+            <div class="dropdown-menu-modern">
+                <a href="/f1fanclub/profile/profile.php">
+                    <i class="fas fa-user-circle"></i> Profilom
+                </a>
+                <a href="/f1fanclub/messages/messages.php">
+                    <i class="fas fa-envelope"></i> Üzenetek
+                </a>
+                <?php if ($isAdmin): ?>
+                    <a href="/f1fanclub/admin/admin.php" style="position: relative;">
+                        <i class="fas fa-shield-alt"></i> Admin Panel
+                        <span class="admin-badge">ADMIN</span>
+                    </a>
                 <?php endif; ?>
+                <div class="dropdown-divider"></div>
+                <a href="/f1fanclub/logout/logout.php">
+                    <i class="fas fa-sign-out-alt"></i> Kijelentkezés
+                </a>
+            </div>
+        </div>
+    <?php else: ?>
+        <div class="auth">
+            <a href="/f1fanclub/register/register.html" class="btn">Regisztráció</a>
+            <a href="/f1fanclub/login/login.html" class="btn">Bejelentkezés</a>
+        </div>
+    <?php endif; ?>
+</header>
+
+<!-- SUPER LICENCE CARD WITH TEAM COLOR -->
+<div class="super-licence" style="border-color: <?php echo $teamColor; ?>; box-shadow: 0 30px 60px rgba(0,0,0,0.8), 0 0 20px <?php echo $teamColor; ?>20;">
+    <div class="fia-header" style="border-bottom: 2px solid <?php echo $teamColor; ?>;">
+        <div class="fia-logo">
+            <i class="fas fa-flag-checkered" style="color: <?php echo $teamColor; ?>;"></i>
+            <div>
+                <h1>F1FC</h1>
+                <p>F1 RAJONGÓI KLUB - SZUPER LICENC</p>
+            </div>
+        </div>
+        <div class="licence-type" style="background: <?php echo $teamColor; ?>15; border: 1px solid <?php echo $teamColor; ?>40;">
+            <span style="color: <?php echo $teamColor; ?>;">SZUPER LICENC</span>
+        </div>
+    </div>
+
+    <?php if($message): ?>
+        <div class="alert"><?php echo $message; ?></div>
+    <?php endif; ?>
+
+    <div class="licence-content">
+        <div class="photo-section">
+            <form action="" method="post" enctype="multipart/form-data" id="profileForm">
+                <label for="fileInput">
+                    <div class="photo-frame" style="border-color: <?php echo $teamColor; ?>;">
+                        <?php 
+                        $img_src = $user['profile_image'] ? "/f1fanclub/uploads/" . htmlspecialchars($user['profile_image']) : "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png";
+                        ?>
+                        <img src="<?php echo $img_src; ?>" class="profile-photo" alt="Licenc Fotó">
+                        <div class="photo-overlay">
+                            <span><i class="fas fa-camera"></i> FRISSÍTÉS</span>
+                        </div>
+                    </div>
+                </label>
+                <input type="file" name="profile_image" id="fileInput" onchange="document.getElementById('profileForm').submit();">
+            </form>
+            <div class="licence-number">
+                <i class="fas fa-id-card"></i> LICENC SZÁM: F1FC-<?php echo $teamShortening; ?>-<?php echo str_pad($userId, 8, '0', STR_PAD_LEFT); ?>
             </div>
         </div>
 
+        <div class="info-section">
+            <div class="info-row">
+                <div class="info-label" style="color: <?php echo $teamColor; ?>;">TELJES NÉV</div>
+                <div class="info-value"><?php echo strtoupper(htmlspecialchars($username)); ?></div>
+            </div>
+            <div class="info-row">
+                <div class="info-label" style="color: <?php echo $teamColor; ?>;">EMAIL</div>
+                <div class="info-value"><?php echo htmlspecialchars($user['email']); ?></div>
+            </div>
+            <div class="info-row">
+                <div class="info-label" style="color: <?php echo $teamColor; ?>;">CSAPAT</div>
+                <div class="info-value">
+                    <span class="team-color-badge" style="background: <?php echo $teamColor; ?>;"></span>
+                    <?php echo htmlspecialchars($user['fav_team'] ?? "Nincs kiválasztva"); ?>
+                </div>
+            </div>
+            <div class="info-row">
+                <div class="info-label" style="color: <?php echo $teamColor; ?>;">LICENC ÁLLAPOT</div>
+                <div class="info-value" style="color: #4caf50;">✓ AKTÍV</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label" style="color: <?php echo $teamColor; ?>;">KIÁLLÍTÁS DÁTUMA</div>
+                <div class="info-value"><?php echo date('Y. m. d.'); ?></div>
+            </div>
+            <div class="info-row">
+                <div class="info-label" style="color: <?php echo $teamColor; ?>;">LEJÁRAT DÁTUMA</div>
+                <div class="info-value"><?php echo date('Y. m. d.', strtotime('+5 years')); ?></div>
+            </div>
+
+            <!-- Points Section - YELLOW (exception from team color) -->
+            <div class="points-section">
+                <div>
+                    <div class="points-label"><i class="fas fa-trophy"></i> PITWALL PONTOK</div>
+                    <div class="points-value"><?php echo number_format($user['pitwall_points'] ?? 0); ?> <small>PONT</small></div>
+                </div>
+                <div>
+                    <div class="points-label"><i class="fas fa-star"></i> RAJONGÓI RANG</div>
+                    <div class="rank-value" style="color: <?php echo $rankInfo['color']; ?>;">
+                        <?php 
+                        if ($rankInfo['name'] === 'LEGENDARY') {
+                            echo 'LEGENDÁS';
+                        } elseif ($rankInfo['name'] === 'ROOKIE') {
+                            echo 'ÚJONC';
+                        } else {
+                            $rankNames = [
+                                'DIAMOND' => 'GYÉMÁNT',
+                                'PLATINUM' => 'PLATINA',
+                                'GOLD' => 'ARANY',
+                                'SILVER' => 'EZÜST',
+                                'BRONZE' => 'BRONZ',
+                                'COPPER' => 'RÉZ'
+                            ];
+                            $hungarianRank = $rankNames[$rankInfo['name']] ?? $rankInfo['name'];
+                            echo $hungarianRank . ' ' . $rankInfo['tier'];
+                        }
+                        ?>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <div class="security-features">
+        <div class="hologram-strip">
+            <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="signature" style="color: <?php echo $teamColor; ?>;">
+            <i class="fas fa-signature"></i> F1FC Hitelesített Aláírás
+        </div>
+        <div class="qr-code"></div>
+    </div>
+
+    <div class="action-buttons">
+        <a href="/f1fanclub/index.php" class="btn btn-primary">
+            <i class="fas fa-home"></i> VISSZA A PADDOCKBA
+        </a>
+        <?php if ($isAdmin): ?>
+            <a href="/f1fanclub/admin/admin.php" class="btn btn-danger">
+                <i class="fas fa-shield-alt"></i> ADMIN PANEL
+            </a>
+        <?php endif; ?>
+        <a href="/f1fanclub/messages/messages.php" class="btn btn-secondary">
+            <i class="fas fa-envelope"></i> ÜZENETEK
+        </a>
+    </div>
+</div>
+
+<script>
+    // DROPDOWN MENU TOGGLE
+    document.addEventListener('DOMContentLoaded', function() {
+        const dropdownContainer = document.getElementById('userDropdownContainer');
+        if (dropdownContainer) {
+            const welcomeDiv = dropdownContainer.querySelector('.welcome');
+            if (welcomeDiv) {
+                welcomeDiv.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    dropdownContainer.classList.toggle('open');
+                });
+            }
+            
+            document.addEventListener('click', function(e) {
+                if (!dropdownContainer.contains(e.target)) {
+                    dropdownContainer.classList.remove('open');
+                }
+            });
+        }
+    });
+
+    // USER PROFILE POP-UP
+    let currentModalUser = "";
+    let currentFriendStatus = "";
+
+    function openUserProfile(username) {
+        fetch('/f1fanclub/profile/user_profile_api.php?username=' + encodeURIComponent(username))
+        .then(r => r.json())
+        .then(data => {
+            if(data.success) {
+                currentModalUser = data.user.username;
+                currentFriendStatus = data.user.friendship_status;
+
+                let modal = document.getElementById('userProfileModal');
+                if (!modal) {
+                    modal = document.createElement('div');
+                    modal.id = 'userProfileModal';
+                    modal.className = 'user-modal-overlay';
+                    modal.onclick = closeUserProfile;
+                    modal.innerHTML = `
+                        <div class="user-modal-content" onclick="event.stopPropagation()">
+                            <button class="user-modal-close" onclick="closeUserProfile(event)">&times;</button>
+                            <div class="user-modal-header">
+                                <img id="modalProfileImg" src="" alt="Avatar">
+                                <h3 id="modalUsername">Felhasználónév</h3>
+                                <span id="modalRole" class="modal-role">Szerepkör</span>
+                            </div>
+                            <div class="user-modal-body">
+                                <p><i class="fas fa-flag-checkered"></i> <strong>Csapat:</strong> <span id="modalTeam">Csapat</span></p>
+                                <p><i class="far fa-calendar-alt"></i> <strong>Regisztrált:</strong> <span id="modalRegDate">Dátum</span></p>
+                            </div>
+                            <div class="user-modal-footer">
+                                <button id="modalFriendBtn" class="btn-add-friend" onclick="handleFriendAction()">
+                                    <i class="fas fa-user-plus"></i> Barátnak jelölés
+                                </button>
+                                <button class="btn-send-msg" onclick="window.location.href='/f1fanclub/messages/messages.php'">
+                                    <i class="fas fa-comment"></i> Üzenet küldése
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(modal);
+                }
+
+                const modalImg = document.getElementById('modalProfileImg');
+                if (modalImg) {
+                    modalImg.src = data.user.profile_image;
+                    modalImg.style.borderColor = data.user.team_color;
+                }
+                document.getElementById('modalUsername').innerText = data.user.username;
+                document.getElementById('modalRole').innerText = data.user.role_name;
+                document.getElementById('modalTeam').innerText = data.user.fav_team || 'Nincs megadva';
+                document.getElementById('modalRegDate').innerText = data.user.reg_date;
+                
+                updateFriendButton(data.user.friendship_status);
+                document.getElementById('userProfileModal').style.display = 'flex';
+            }
+        }).catch(err => console.error(err));
+    }
+
+    function closeUserProfile(e) {
+        if(e) e.stopPropagation();
+        const modal = document.getElementById('userProfileModal');
+        if (modal) modal.style.display = 'none';
+    }
+
+    function updateFriendButton(status) {
+        const btn = document.getElementById('modalFriendBtn');
+        if(!btn) return;
+        btn.style.display = 'flex';
+        
+        if (status === 'self') {
+            btn.style.display = 'none';
+        } else if (status === 'none') {
+            btn.innerHTML = '<i class="fas fa-user-plus"></i> Barátnak jelölés';
+            btn.style.background = '#333';
+        } else if (status === 'pending_sent') {
+            btn.innerHTML = '<i class="fas fa-clock"></i> Jelölés elküldve';
+            btn.style.background = '#888';
+        } else if (status === 'pending_received') {
+            btn.innerHTML = '<i class="fas fa-check"></i> Jelölés elfogadása';
+            btn.style.background = '#28a745';
+        } else if (status === 'accepted') {
+            btn.innerHTML = '<i class="fas fa-user-minus"></i> Barát törlése';
+            btn.style.background = '#e10600';
+        }
+    }
+
+    function handleFriendAction() {
+        let action = '';
+        if (currentFriendStatus === 'none') action = 'add';
+        else if (currentFriendStatus === 'pending_sent' || currentFriendStatus === 'accepted') action = 'remove';
+        else if (currentFriendStatus === 'pending_received') action = 'accept';
+
+        if(!action) return;
+
+        fetch('/f1fanclub/profile/friend_api.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ action: action, target_user: currentModalUser })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if(data.success) {
+                openUserProfile(currentModalUser);
+            }
+        });
+    }
+</script>
+
+<style>
+    /* Modal Styles */
+    .user-modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(8px);
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+    }
+    .user-modal-content {
+        background: linear-gradient(145deg, #111, #1a1a1a);
+        width: 320px;
+        border-radius: 24px;
+        border: 1px solid #e10600;
+        padding: 20px;
+        position: relative;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        animation: popIn 0.3s ease;
+        text-align: center;
+    }
+    @keyframes popIn {
+        from { transform: scale(0.8); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+    .user-modal-close {
+        position: absolute;
+        top: 12px;
+        right: 15px;
+        background: none;
+        border: none;
+        color: #888;
+        font-size: 1.3rem;
+        cursor: pointer;
+    }
+    .user-modal-close:hover {
+        color: #e10600;
+    }
+    .user-modal-header img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        border: 3px solid #e10600;
+        object-fit: cover;
+        margin-bottom: 10px;
+    }
+    .modal-role {
+        display: inline-block;
+        font-size: 0.7rem;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 2px 10px;
+        border-radius: 20px;
+        margin-top: 5px;
+        color: #aaa;
+    }
+    .user-modal-body {
+        margin: 15px 0;
+        background: rgba(0, 0, 0, 0.3);
+        padding: 12px;
+        border-radius: 16px;
+        text-align: left;
+    }
+    .user-modal-footer {
+        display: flex;
+        gap: 10px;
+    }
+    .user-modal-footer button {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 40px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+    .btn-add-friend {
+        background: #333;
+        color: white;
+    }
+    .btn-add-friend:hover {
+        background: #444;
+    }
+    .btn-send-msg {
+        background: #e10600;
+        color: white;
+    }
+    .btn-send-msg:hover {
+        background: #b00500;
+    }
+    .clickable-user {
+        cursor: pointer;
+    }
+</style>
 
 </body>
 </html>

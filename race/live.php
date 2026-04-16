@@ -30,12 +30,15 @@ function getTeamColor($team) {
     }
 }
 
-$profile_image = null; $teamColor = '#ffffff';
+$profile_image = null; $fav_team = null; $teamColor = '#ffffff'; $isAdmin = false;
 if ($isLoggedIn) {
-    $stmt = $conn->prepare("SELECT profile_image, fav_team FROM users WHERE username=?");
+    $stmt = $conn->prepare("SELECT profile_image, fav_team, role FROM users WHERE username=?");
     $stmt->bind_param("s", $username); $stmt->execute();
     $row = $stmt->get_result()->fetch_assoc();
-    $profile_image = $row['profile_image'] ?? null; $teamColor = getTeamColor($row['fav_team'] ?? null);
+    $profile_image = $row['profile_image'] ?? null; 
+    $fav_team = $row['fav_team'] ?? null;
+    $teamColor = getTeamColor($fav_team);
+    $isAdmin = !empty($row['role']) && $row['role'] === 'admin';
     $stmt->close();
 }
 ?>
@@ -47,6 +50,7 @@ if ($isLoggedIn) {
     <title>ÉLŐ: Kanadai Nagydíj 2026</title>
     <link rel="stylesheet" href="../css/style.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;0,900;1,400&family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
     <style>
         body { background-color: #050505; background-image: radial-gradient(circle at 50% 0%, #1a0505 0%, #050505 60%); background-attachment: fixed; font-family: 'Montserrat', sans-serif; color: #fff; }
@@ -54,7 +58,19 @@ if ($isLoggedIn) {
         .live-wrapper { display: flex; gap: 20px; max-width: 1700px; width: 98%; margin: 30px auto; align-items: flex-start; }
         .telemetry-panel { flex: 3; min-width: 0; } 
         
-        .chat-panel { flex: 1; background: #0a0a0a; border: 1px solid #333; border-radius: 12px; height: 85vh; display: flex; flex-direction: column; position: sticky; top: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); overflow: hidden; }
+        .chat-panel { 
+            flex: 1; 
+            background: #0a0a0a; 
+            border: 1px solid #333; 
+            border-radius: 12px; 
+            height: calc(100vh - 120px); 
+            display: flex; 
+            flex-direction: column; 
+            position: sticky; 
+            top: 100px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8); 
+            overflow: hidden; 
+        }
         .chat-header { background: #111; padding: 15px 20px; font-weight: 900; text-transform: uppercase; color: #fff; border-bottom: 2px solid #e10600; display: flex; align-items: center; gap: 10px; }
         .chat-messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 15px; }
         .chat-messages::-webkit-scrollbar { width: 6px; }
@@ -120,25 +136,217 @@ if ($isLoggedIn) {
         .standings-table tr:hover { background: #161616; }
         .champ-gold { color: #d4af37; font-weight: 900; }
         
-        @media(max-width: 1200px) { .live-wrapper { flex-direction: column; } .chat-panel { width: 100%; height: 500px; } }
+        @media(max-width: 1200px) { .live-wrapper { flex-direction: column; } .chat-panel { width: 100%; height: 500px; position: static; } }
 
-        /* ÚJ: MODAL CSS (Pop-up Ablak) */
-        .user-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-        .user-modal-content { background: linear-gradient(145deg, #111, #1a1a1a); width: 320px; border-radius: 15px; border: 1px solid rgba(225,6,0,0.3); padding: 20px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.8); color: #fff; text-align: center; animation: popIn 0.3s ease; }
-        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .user-modal-close { position: absolute; top: 10px; right: 15px; background: none; border: none; color: #888; font-size: 1.5rem; cursor: pointer; }
-        .user-modal-close:hover { color: #e10600; }
-        .user-modal-header img { width: 90px; height: 90px; border-radius: 50%; border: 3px solid #e10600; object-fit: cover; margin-bottom: 10px; }
-        .user-modal-header h3 { margin: 0; font-size: 1.3rem; }
-        .modal-role { display: inline-block; font-size: 0.75rem; background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 10px; margin-top: 5px; color: #aaa; text-transform: uppercase; letter-spacing: 1px;}
-        .user-modal-body { margin: 20px 0; font-size: 0.9rem; color: #ddd; text-align: left; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; }
-        .user-modal-body p { margin: 5px 0; }
-        .user-modal-footer { display: flex; gap: 10px; justify-content: center; }
-        .user-modal-footer button { flex: 1; padding: 10px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; color: #fff; display: flex; align-items: center; justify-content: center; gap: 5px;}
-        .btn-add-friend { background: #333; } .btn-add-friend:hover { background: #444; }
-        .btn-send-msg { background: #e10600; } .btn-send-msg:hover { background: #ff1a1a; }
-        .clickable-user { cursor: pointer; transition: opacity 0.2s; }
-        .clickable-user:hover { opacity: 0.7; }
+        /* Dropdown menu styles */
+        .dropdown-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .welcome {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 5px 12px;
+            border-radius: 30px;
+            border: 1px solid rgba(225, 6, 0, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .welcome:hover {
+            background: rgba(225, 6, 0, 0.15);
+            border-color: #e10600;
+        }
+
+        .dropdown-menu-modern {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: linear-gradient(145deg, #111111, #1a1a1f);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: 1px solid rgba(225, 6, 0, 0.4);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+            min-width: 240px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-8px);
+            transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            z-index: 1050;
+        }
+
+        .dropdown-container.open .dropdown-menu-modern {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-menu-modern a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: #eee;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .dropdown-menu-modern a:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-menu-modern a:hover {
+            background: rgba(225, 6, 0, 0.2);
+            color: white;
+            padding-left: 24px;
+        }
+
+        .dropdown-menu-modern i {
+            width: 24px;
+            color: #e10600;
+            font-size: 1.1rem;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 6px 0;
+        }
+
+        .dropdown-arrow-icon {
+            margin-left: 6px;
+            font-size: 0.7rem;
+            transition: transform 0.2s;
+            color: #e10600;
+        }
+
+        .dropdown-container.open .dropdown-arrow-icon {
+            transform: rotate(180deg);
+        }
+
+        .admin-badge {
+            position: absolute;
+            right: 15px;
+            background: #e10600;
+            color: white;
+            font-size: 0.65rem;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .clickable-user {
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .clickable-user:hover {
+            opacity: 0.8;
+        }
+
+        /* Modal Styles */
+        .user-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        .user-modal-content {
+            background: linear-gradient(145deg, #111, #1a1a1a);
+            width: 320px;
+            border-radius: 24px;
+            border: 1px solid #e10600;
+            padding: 20px;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            animation: popIn 0.3s ease;
+            text-align: center;
+        }
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .user-modal-close {
+            position: absolute;
+            top: 12px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 1.3rem;
+            cursor: pointer;
+        }
+        .user-modal-close:hover {
+            color: #e10600;
+        }
+        .user-modal-header img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid #e10600;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
+        .modal-role {
+            display: inline-block;
+            font-size: 0.7rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 10px;
+            border-radius: 20px;
+            margin-top: 5px;
+            color: #aaa;
+        }
+        .user-modal-body {
+            margin: 15px 0;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px;
+            border-radius: 16px;
+            text-align: left;
+        }
+        .user-modal-footer {
+            display: flex;
+            gap: 10px;
+        }
+        .user-modal-footer button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn-add-friend {
+            background: #333;
+            color: white;
+        }
+        .btn-add-friend:hover {
+            background: #444;
+        }
+        .btn-send-msg {
+            background: #e10600;
+            color: white;
+        }
+        .btn-send-msg:hover {
+            background: #b00500;
+        }
     </style>
 </head>
 <body>
@@ -151,36 +359,78 @@ if ($isLoggedIn) {
     </h1>
   </div>
   <nav style="margin: 20px 0;">
-      <a href="/f1fanclub/index.php" style="color:white; margin:0 10px;">Home</a>
-      <a href="/f1fanclub/Championship/championship.php" style="color:white; margin:0 10px;">Championship</a>
-      <a href="/f1fanclub/teams/teams.php" style="color:white; margin:0 10px;">Teams</a>
-      <a href="/f1fanclub/drivers/drivers.php" style="color:white; margin:0 10px;">Drivers</a>
+      <a href="/f1fanclub/index.php" style="color:white; margin:0 10px;">Kezdőlap</a>
+      <a href="/f1fanclub/Championship/championship.php" style="color:white; margin:0 10px;">Bajnokság</a>
+      <a href="/f1fanclub/teams/teams.php" style="color:white; margin:0 10px;">Csapatok</a>
+      <a href="/f1fanclub/drivers/drivers.php" style="color:white; margin:0 10px;">Versenyzők</a>
       <a href="/f1fanclub/news/feed.php" style="color:white; margin:0 10px;">Paddock</a>
+      <a href="/f1fanclub/pitwall/pitwall.php" style="color:white; margin:0 10px;"><i class="fas fa-trophy" style="margin-right: 5px;"></i> A Fal</a>
   </nav>
-  <div class="auth">
-      <a href="../index.php" class="btn btn-ghost" style="color: #e10600; border-color: #e10600;">VISSZA A PADDOCKBA</a>
-  </div>
+  
+  <!-- DROPDOWN MENU - Same as other pages -->
+  <?php if ($isLoggedIn): ?>
+    <div class="dropdown-container" id="userDropdownContainer">
+        <div class="auth">
+            <div class="welcome" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                <?php if ($profile_image): ?>
+                    <img src="/f1fanclub/uploads/<?php echo htmlspecialchars($profile_image); ?>" class="avatar clickable-user"
+                        alt="Profilkép" onclick="openUserProfile('<?php echo htmlspecialchars(addslashes($username)); ?>')"
+                        style="width:35px; height:35px; border-radius:50%; object-fit: cover; border: 2px solid <?php echo htmlspecialchars($teamColor); ?>;">
+                <?php endif; ?>
+                <span class="welcome-text">
+                    <span class="clickable-user" onclick="openUserProfile('<?php echo htmlspecialchars(addslashes($username)); ?>')"
+                        style="color: <?php echo htmlspecialchars($teamColor); ?>; font-weight:bold;"><?php echo htmlspecialchars($username); ?></span>
+                </span>
+                <i class="fas fa-chevron-down dropdown-arrow-icon"></i>
+            </div>
+        </div>
+        
+        <div class="dropdown-menu-modern">
+            <a href="/f1fanclub/profile/profile.php">
+                <i class="fas fa-user-circle"></i> Profilom
+            </a>
+            <a href="/f1fanclub/messages/messages.php">
+                <i class="fas fa-envelope"></i> Üzenetek
+            </a>
+            <?php if ($isAdmin): ?>
+                <a href="/f1fanclub/admin/admin.php" style="position: relative;">
+                    <i class="fas fa-shield-alt"></i> Admin Panel
+                    <span class="admin-badge">ADMIN</span>
+                </a>
+            <?php endif; ?>
+            <div class="dropdown-divider"></div>
+            <a href="/f1fanclub/logout/logout.php">
+                <i class="fas fa-sign-out-alt"></i> Kijelentkezés
+            </a>
+        </div>
+    </div>
+  <?php else: ?>
+    <div class="auth">
+        <a href="/f1fanclub/register/register.html" class="btn">Regisztráció</a>
+        <a href="/f1fanclub/login/login.html" class="btn">Bejelentkezés</a>
+    </div>
+  <?php endif; ?>
 </header>
 
 <div class="live-wrapper">
     <div class="telemetry-panel">
         <div class="race-header">
             <div>
-                <h1>Canadian Grand Prix <span style="color:#e10600;">2026</span></h1>
+                <h1>Kanadai Nagydíj <span style="color:#e10600;">2026</span></h1>
                 <div class="indicators">
-                    <div id="raceStatusText" class="indicator-badge" style="background: rgba(225,6,0,0.1); color:#e10600; border: 1px solid #e10600;">● LIVE SESSION</div>
-                    <div id="weatherBadge" class="indicator-badge weather-sunny"><i class="fas fa-sun"></i> SUNNY</div>
-                    <div id="scBadge" class="indicator-badge sc-active" style="display:none;"><i class="fas fa-car"></i> SAFETY CAR</div>
+                    <div id="raceStatusText" class="indicator-badge" style="background: rgba(225,6,0,0.1); color:#e10600; border: 1px solid #e10600;">● ÉLŐ SZEZON</div>
+                    <div id="weatherBadge" class="indicator-badge weather-sunny"><i class="fas fa-sun"></i> NAPOS</div>
+                    <div id="scBadge" class="indicator-badge sc-active" style="display:none;"><i class="fas fa-car"></i> BIZTONSÁGI AUTÓ</div>
                 </div>
             </div>
             <div>
-                <div class="lap-label">Lap</div>
+                <div class="lap-label">Kör</div>
                 <div class="lap-counter"><span id="currentLap">0</span><span style="color:#444;">/</span><span id="totalLaps" style="color:#666;">70</span></div>
             </div>
         </div>
 
         <div class="leaderboard-header">
-            <div>Poz.</div><div>Pilóta</div><div>Csapat</div><div>Gumi</div><div>Interval</div><div>Státusz</div>
+            <div>Poz.</div><div>Versenyző</div><div>Csapat</div><div>Gumi</div><div>Különbség</div><div>Állapot</div>
         </div>
 
         <div id="raceGrid" class="leaderboard-grid">
@@ -188,9 +438,9 @@ if ($isLoggedIn) {
         </div>
 
         <div id="postRaceStandings">
-            <h2 style="color: #d4af37; text-align: center; font-size: 2rem; margin-bottom: 20px;"><i class="fas fa-trophy"></i> 2026 Drivers Championship (Mock)</h2>
+            <h2 style="color: #d4af37; text-align: center; font-size: 2rem; margin-bottom: 20px;"><i class="fas fa-trophy"></i> 2026 Versenyzői Bajnokság</h2>
             <table class="standings-table">
-                <thead><tr><th>Poz.</th><th>Pilóta</th><th>Csapat</th><th style="text-align:right;">Pontok</th></tr></thead>
+                <thead><tr><th>Poz.</th><th>Versenyző</th><th>Csapat</th><th style="text-align:right;">Pontok</th></tr></thead>
                 <tbody id="standingsBody"></tbody>
             </table>
         </div>
@@ -198,7 +448,7 @@ if ($isLoggedIn) {
     
     <div class="chat-panel">
         <div class="chat-header">
-            <i class="fas fa-comments"></i> Paddock Live Chat
+            <i class="fas fa-comments"></i> Paddock Élő Chat
         </div>
         
         <div class="chat-messages" id="chatMessagesBox">
@@ -222,16 +472,16 @@ if ($isLoggedIn) {
         <button class="user-modal-close" onclick="closeUserProfile(event)">&times;</button>
         <div class="user-modal-header">
             <img id="modalProfileImg" src="" alt="Avatar">
-            <h3 id="modalUsername">Username</h3>
-            <span id="modalRole" class="modal-role">Role</span>
+            <h3 id="modalUsername">Felhasználónév</h3>
+            <span id="modalRole" class="modal-role">Szerepkör</span>
         </div>
         <div class="user-modal-body">
             <p><i class="fas fa-flag-checkered" style="color:#888; width:20px;"></i> <strong>Csapat:</strong> <span id="modalTeam">Csapat</span></p>
             <p><i class="far fa-calendar-alt" style="color:#888; width:20px;"></i> <strong>Regisztrált:</strong> <span id="modalRegDate">Dátum</span></p>
         </div>
         <div class="user-modal-footer">
-            <button class="btn-add-friend" onclick="alert('Barátjelölés funkció hamarosan...')"><i class="fas fa-user-plus"></i> Barátnak jelöl</button>
-            <button class="btn-send-msg" onclick="alert('Privát üzenet funkció a következő frissítésben érkezik!')"><i class="fas fa-comment"></i> Üzenet</button>
+            <button id="modalFriendBtn" class="btn-add-friend" onclick="handleFriendAction()"><i class="fas fa-user-plus"></i> Barátnak jelölés</button>
+            <button class="btn-send-msg" onclick="window.location.href='/f1fanclub/messages/messages.php'"><i class="fas fa-comment"></i> Üzenet küldése</button>
         </div>
     </div>
 </div>
@@ -241,18 +491,26 @@ if ($isLoggedIn) {
     let isFetching = false;
     let chatMessageCount = 0; 
 
-    // --- ÚJ: USER PROFILE POP-UP JS ---
+    // USER PROFILE MODAL FUNCTIONS
+    let currentModalUser = "";
+    let currentFriendStatus = "";
+
     function openUserProfile(username) {
         fetch('/f1fanclub/profile/user_profile_api.php?username=' + encodeURIComponent(username))
         .then(r => r.json())
         .then(data => {
             if(data.success) {
+                currentModalUser = data.user.username;
+                currentFriendStatus = data.user.friendship_status;
+
                 document.getElementById('modalProfileImg').src = data.user.profile_image;
                 document.getElementById('modalProfileImg').style.borderColor = data.user.team_color;
                 document.getElementById('modalUsername').innerText = data.user.username;
                 document.getElementById('modalRole').innerText = data.user.role_name;
                 document.getElementById('modalTeam').innerText = data.user.fav_team || 'Nincs megadva';
                 document.getElementById('modalRegDate').innerText = data.user.reg_date;
+                
+                updateFriendButton(data.user.friendship_status);
                 document.getElementById('userProfileModal').style.display = 'flex';
             } else {
                 alert("Hiba: " + data.error);
@@ -265,9 +523,72 @@ if ($isLoggedIn) {
         document.getElementById('userProfileModal').style.display = 'none';
     }
 
+    function updateFriendButton(status) {
+        const btn = document.getElementById('modalFriendBtn');
+        if(!btn) return;
+        btn.style.display = 'flex';
+        
+        if (status === 'self') {
+            btn.style.display = 'none';
+        } else if (status === 'none') {
+            btn.innerHTML = '<i class="fas fa-user-plus"></i> Barátnak jelölés';
+            btn.style.background = '#333';
+        } else if (status === 'pending_sent') {
+            btn.innerHTML = '<i class="fas fa-clock"></i> Jelölés elküldve';
+            btn.style.background = '#888';
+        } else if (status === 'pending_received') {
+            btn.innerHTML = '<i class="fas fa-check"></i> Jelölés elfogadása';
+            btn.style.background = '#28a745';
+        } else if (status === 'accepted') {
+            btn.innerHTML = '<i class="fas fa-user-minus"></i> Barát törlése';
+            btn.style.background = '#e10600';
+        }
+    }
+
+    function handleFriendAction() {
+        let action = '';
+        if (currentFriendStatus === 'none') action = 'add';
+        else if (currentFriendStatus === 'pending_sent' || currentFriendStatus === 'accepted') action = 'remove';
+        else if (currentFriendStatus === 'pending_received') action = 'accept';
+
+        if(!action) return;
+
+        fetch('/f1fanclub/profile/friend_api.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ action: action, target_user: currentModalUser })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if(data.success) {
+                openUserProfile(currentModalUser);
+            }
+        });
+    }
+
     function makeSafeStr(str) {
         return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
     }
+
+    // DROPDOWN MENU TOGGLE
+    document.addEventListener('DOMContentLoaded', function() {
+        const dropdownContainer = document.getElementById('userDropdownContainer');
+        if (dropdownContainer) {
+            const welcomeDiv = dropdownContainer.querySelector('.welcome');
+            if (welcomeDiv) {
+                welcomeDiv.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    dropdownContainer.classList.toggle('open');
+                });
+            }
+            
+            document.addEventListener('click', function(e) {
+                if (!dropdownContainer.contains(e.target)) {
+                    dropdownContainer.classList.remove('open');
+                }
+            });
+        }
+    });
 
     // --- TELEMETRIA JS ---
     async function fetchData() {
@@ -286,13 +607,13 @@ if ($isLoggedIn) {
                     let timeout = data.race.safety_car == "1" ? 15000 : 10000;
                     setTimeout(fetchData, timeout);
                 } else if (data.race.status === 'finished') {
-                    document.getElementById('raceStatusText').innerHTML = '<i class="fas fa-flag-checkered"></i> RACE FINISHED';
+                    document.getElementById('raceStatusText').innerHTML = '<i class="fas fa-flag-checkered"></i> FUTAM VÉGE';
                     document.getElementById('raceStatusText').style.color = '#fff';
                     document.getElementById('raceStatusText').style.borderColor = '#fff';
                     document.getElementById('scBadge').style.display = 'none';
                     renderStandings(data.standings);
                 } else {
-                    document.getElementById('raceStatusText').innerHTML = '⚠️ RACE STOPPED';
+                    document.getElementById('raceStatusText').innerHTML = '⚠️ FUTAM MEGÁLLÍTVA';
                     document.getElementById('raceStatusText').style.color = 'orange';
                     document.getElementById('raceStatusText').style.borderColor = 'orange';
                     setTimeout(fetchData, 5000);
@@ -308,10 +629,10 @@ if ($isLoggedIn) {
         const weatherBadge = document.getElementById('weatherBadge');
         if (data.race.weather === 'Rain') {
             weatherBadge.className = 'indicator-badge weather-rain';
-            weatherBadge.innerHTML = '<i class="fas fa-cloud-rain"></i> WET TRACK';
+            weatherBadge.innerHTML = '<i class="fas fa-cloud-rain"></i> NEDVES PÁLYA';
         } else {
             weatherBadge.className = 'indicator-badge weather-sunny';
-            weatherBadge.innerHTML = '<i class="fas fa-sun"></i> DRY TRACK';
+            weatherBadge.innerHTML = '<i class="fas fa-sun"></i> SZÁRAZ PÁLYA';
         }
 
         const scBadge = document.getElementById('scBadge');
@@ -335,17 +656,17 @@ if ($isLoggedIn) {
             let gap = ''; let posDisplay = ''; let statusHtml = '';
 
             if (driver.status === 'DNF') {
-                posDisplay = '<span style="color:#e10600; font-size:1.3rem;">OUT</span>';
+                posDisplay = '<span style="color:#e10600; font-size:1.3rem;">KI</span>';
                 gap = driver.gap ? `<span style="color:#666; font-size:1rem;">${driver.gap}</span>` : 'Kiesett';
                 statusHtml = '<span class="status-dnf">DNF</span>';
             } else {
                 posDisplay = driver.position + '.';
                 if (driver.status === 'Pit') {
-                    gap = '<span style="color:#ffcc00;">IN PIT</span>';
-                    statusHtml = '<span class="status-pit">PIT</span>';
+                    gap = '<span style="color:#ffcc00;">BOX</span>';
+                    statusHtml = '<span class="status-pit">BOX</span>';
                 } else {
-                    if (isSC) { gap = driver.position === 1 ? 'SC' : '<span class="gap-sc">SC QUEUE</span>'; } 
-                    else { gap = driver.position === 1 ? 'Leader' : '+' + (driver.position * 1.5 + Math.random()).toFixed(1) + 's'; }
+                    if (isSC) { gap = driver.position === 1 ? 'SC' : '<span class="gap-sc">SC SOR</span>'; } 
+                    else { gap = driver.position === 1 ? 'Vezet' : '+' + (driver.position * 1.5 + Math.random()).toFixed(1) + 's'; }
                 }
             }
 
@@ -404,7 +725,7 @@ if ($isLoggedIn) {
         standings.forEach(s => {
             let tr = document.createElement('tr');
             if(s.pos === 1) tr.style.background = 'linear-gradient(90deg, rgba(212,175,55,0.1), transparent)';
-            tr.innerHTML = `<td class="${s.pos === 1 ? 'champ-gold' : ''}">${s.pos}.</td><td style="font-weight:bold;">${s.name}</td><td style="color:#888;">${s.team}</td><td style="text-align:right; font-family:monospace; font-size:1.2rem; font-weight:bold;" class="${s.pos === 1 ? 'champ-gold' : ''}">${s.points} PTS</td>`;
+            tr.innerHTML = `<td class="${s.pos === 1 ? 'champ-gold' : ''}">${s.pos}.</td><td style="font-weight:bold;">${s.name}</td><td style="color:#888;">${s.team}</td><td style="text-align:right; font-family:monospace; font-size:1.2rem; font-weight:bold;" class="${s.pos === 1 ? 'champ-gold' : ''}">${s.points} PONT</td>`;
             tbody.appendChild(tr);
         });
     }
@@ -419,7 +740,6 @@ if ($isLoggedIn) {
             if (msgs.length > chatMessageCount) {
                 box.innerHTML = '';
                 msgs.forEach(m => {
-                    // ITT BELETETTÜK A KATTINTHATÓ PROFILOKAT A CHATBE IS!
                     box.innerHTML += `
                         <div class="chat-msg">
                             <img src="${m.profile_image}" class="clickable-user" onclick="openUserProfile('${makeSafeStr(m.username)}')" onerror="this.src='../drivers/default.png'" style="border-color: ${m.color}; width:35px; height:35px; border-radius:50%; object-fit: cover; border: 2px solid transparent;">

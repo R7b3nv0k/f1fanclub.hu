@@ -26,7 +26,7 @@ if (!$adminData || $adminData['role'] !== 'admin') {
     exit;
 }
 
-// --- FÜGGVÉNY: LOGOLÁS ---
+// --- FÜGGVÉNY: NAPLÓZÁS ---
 function logActivity($conn, $user, $action, $details) {
     $ip = $_SERVER['REMOTE_ADDR'];
     $stmt = $conn->prepare("INSERT INTO activity_logs (username, action, details, ip_address) VALUES (?, ?, ?, ?)");
@@ -83,17 +83,26 @@ $raceStatusResult = $conn->query("SELECT status, current_lap, total_laps FROM ra
 $raceData = $raceStatusResult->fetch_assoc();
 $raceStatus = $raceData['status'] ?? 'archived';
 
-// Lekérjük a learchivált chat üzeneteket is
 $chatArchives = $conn->query("SELECT a.*, u.profile_image, u.fav_team FROM race_chat_archives a LEFT JOIN users u ON a.username = u.username ORDER BY a.archived_at DESC, a.sent_at ASC LIMIT 200");
+
+// ÚJ: Pitwall Ranglista lekérése (Csak azok, akik már tippeltek, pontok alapján csökkenve)
+$pitwallUsers = $conn->query("
+    SELECT DISTINCT u.id, u.username, u.email, u.profile_image, u.fav_team, u.pitwall_points 
+    FROM users u 
+    JOIN pitwall_predictions p ON u.username = p.username 
+    ORDER BY u.pitwall_points DESC, u.username ASC
+");
+
 ?>
 <!DOCTYPE html>
 <html lang="hu">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>F1 Admin Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>F1 Admin Vezérlőpult</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg">
     <style>
         :root { --primary: #e10600; --dark: #15151e; --darker: #0f0f15; --light: #f0f0f0; --sidebar-width: 260px; }
         body { font-family: 'Poppins', sans-serif; background-color: var(--darker); color: var(--light); margin: 0; display: flex; height: 100vh; overflow: hidden; }
@@ -138,14 +147,367 @@ $chatArchives = $conn->query("SELECT a.*, u.profile_image, u.fav_team FROM race_
         .alert { padding: 15px; background: rgba(0, 210, 190, 0.1); border: 1px solid #00d2be; border-radius: 8px; margin-bottom: 20px; color: #00d2be; }
         .btn-return { color: var(--primary) !important; font-weight: 800; background: rgba(225, 6, 0, 0.08) !important; box-sizing: border-box; }
         .btn-return:hover { background-color: var(--primary) !important; color: #fff !important; box-shadow: 0 4px 15px rgba(225, 6, 0, 0.4); }
+
+        /* =========================================
+           ADDED STYLES TO MATCH GLOBAL DESIGN
+           ========================================= */
+        
+        * {
+            box-sizing: border-box;
+        }
+
+        /* Override body styles to match global */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(circle at 20% 50%, rgba(225, 6, 0, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(225, 6, 0, 0.05) 0%, transparent 50%);
+            background-color: var(--darker);
+        }
+
+        /* Update sidebar to match global dark theme */
+        .sidebar {
+            background: linear-gradient(180deg, #0a0a0a 0%, #111 100%);
+            border-right: 1px solid rgba(225, 6, 0, 0.3);
+        }
+
+        /* Update menu buttons */
+        .menu-btn {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .menu-btn i {
+            width: 24px;
+            font-size: 1rem;
+        }
+
+        .menu-btn:hover, .menu-btn.active {
+            background: linear-gradient(135deg, #e10600, #ff1a00);
+            color: white;
+            box-shadow: 0 4px 15px rgba(225, 6, 0, 0.4);
+        }
+
+        /* Update user panel */
+        .user-panel {
+            border-top: 1px solid rgba(225, 6, 0, 0.3);
+        }
+
+        .user-panel img {
+            border: 2px solid var(--primary);
+        }
+
+        /* Update cards to match global style */
+        .card {
+            background: linear-gradient(145deg, #111111 0%, #1a1a1a 100%);
+            border: 1px solid rgba(225, 6, 0, 0.3);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Update headers */
+        h2 {
+            color: var(--primary);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* Update buttons */
+        .btn {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-ban {
+            background: #b30000;
+        }
+
+        .btn-ban:hover {
+            background: #ff0000;
+            transform: translateY(-2px);
+        }
+
+        .btn-unban {
+            background: #008f00;
+        }
+
+        .btn-unban:hover {
+            background: #00b300;
+            transform: translateY(-2px);
+        }
+
+        .btn-save {
+            background: #333;
+            border: 1px solid #555;
+        }
+
+        .btn-save:hover {
+            background: #555;
+            transform: translateY(-2px);
+        }
+
+        /* Update table styles */
+        th {
+            color: var(--primary);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+        }
+
+        td {
+            color: #ddd;
+        }
+
+        tr:hover {
+            background: rgba(225, 6, 0, 0.05);
+        }
+
+        /* Update race status */
+        .race-status {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            display: block;
+            text-shadow: 0 2px 10px rgba(225, 6, 0, 0.3);
+        }
+
+        /* Update large buttons */
+        .btn-large {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 50px;
+        }
+
+        .btn-large:hover {
+            transform: translateY(-3px);
+        }
+
+        .start {
+            background: #00d2be;
+            color: #000;
+        }
+
+        .stop {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .hard-stop {
+            background: #8b0000;
+            color: #fff;
+            border: 2px solid #ff4a4a;
+        }
+
+        /* Update alert styles */
+        .alert {
+            background: rgba(0, 210, 190, 0.1);
+            border: 1px solid #00d2be;
+            border-radius: 12px;
+            color: #00d2be;
+            font-weight: 600;
+        }
+
+        /* Update log items */
+        .log-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .log-action {
+            color: var(--primary);
+        }
+
+        /* Update select dropdown */
+        select {
+            background: #222;
+            color: white;
+            border: 1px solid #444;
+            border-radius: 6px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Update brand */
+        .brand {
+            color: #fff;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+
+        /* Update hr */
+        hr {
+            border-top: 1px solid rgba(225, 6, 0, 0.2);
+        }
+
+        /* Avatar images */
+        .user-panel img,
+        .card img[style*="width:30px"] {
+            border: 2px solid var(--primary);
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ff1a00;
+        }
+
+        /* =========================================
+           RESPONSIVE STYLES - ADDED ONLY THESE
+           ========================================= */
+        
+        /* Hamburger menu button */
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 10px;
+            z-index: 1001;
+            transition: color 0.3s ease;
+            position: fixed;
+            top: 15px;
+            right: 20px;
+        }
+
+        .hamburger:hover {
+            color: #e10600;
+        }
+
+        /* Mobile responsive styles */
+        @media (max-width: 992px) {
+            .hamburger {
+                display: block;
+            }
+            
+            .sidebar {
+                position: fixed;
+                left: -260px;
+                top: 0;
+                bottom: 0;
+                z-index: 1000;
+                transition: left 0.3s ease;
+            }
+            
+            .sidebar.open {
+                left: 0;
+            }
+            
+            .main-content {
+                width: 100%;
+                padding: 70px 15px 15px 15px;
+            }
+            
+            .card {
+                padding: 15px;
+                overflow-x: auto;
+            }
+            
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            
+            th, td {
+                padding: 8px 10px;
+                font-size: 0.75rem;
+            }
+            
+            .btn-large {
+                padding: 10px 20px;
+                font-size: 0.8rem;
+            }
+            
+            .control-btns {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .control-btns .btn-large {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .race-status {
+                font-size: 1.2rem;
+            }
+            
+            .log-item {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .log-item > div:last-child {
+                text-align: left;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .hamburger {
+                font-size: 24px;
+                top: 12px;
+                right: 15px;
+            }
+            
+            .main-content {
+                padding: 60px 10px 10px 10px;
+            }
+            
+            .brand {
+                font-size: 0.9rem;
+            }
+            
+            .brand img {
+                height: 22px;
+            }
+            
+            .menu-btn {
+                padding: 10px 12px;
+                font-size: 0.7rem;
+            }
+            
+            .menu-btn i {
+                font-size: 0.8rem;
+            }
+            
+            .card h3 {
+                font-size: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <aside class="sidebar">
+    <!-- Hamburger button -->
+    <button class="hamburger" id="hamburgerBtn">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <aside class="sidebar" id="sidebar">
         <div class="brand">
             <img src="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg" alt="F1">
-            <span>ADMIN PADDOCK</span>
+            <span>ADMIN</span>
         </div>
 
         <ul class="menu">
@@ -167,8 +529,13 @@ $chatArchives = $conn->query("SELECT a.*, u.profile_image, u.fav_team FROM race_
                 </button>
             </li>
             <li>
+                <button class="menu-btn" onclick="showTab('pitwall')">
+                    <i class="fas fa-trophy"></i> Pontok követése
+                </button>
+            </li>
+            <li>
                 <button class="menu-btn" onclick="showTab('banned')">
-                    <i class="fas fa-user-slash"></i> Kirúgottak (Ban)
+                    <i class="fas fa-user-slash"></i> Kitiltott felhasználók
                 </button>
             </li>
             <li>
@@ -208,7 +575,7 @@ $chatArchives = $conn->query("SELECT a.*, u.profile_image, u.fav_team FROM race_
                     $displayStatus = 'ÉLŐ VERSENY';
                     $color = '#00d2be';
                     if ($raceStatus === 'stopped') { $displayStatus = 'SZÜNETEL'; $color = 'orange'; }
-                    if ($raceStatus === 'archived') { $displayStatus = 'ARCHIVÁLVA (ZÁRVA)'; $color = '#666'; }
+                    if ($raceStatus === 'archived') { $displayStatus = 'ARCHIVÁLVA (LEZÁRVA)'; $color = '#666'; }
                     if ($raceStatus === 'finished') { $displayStatus = 'BEFEJEZŐDÖTT'; $color = '#fff'; }
                 ?>
                 
@@ -219,10 +586,10 @@ $chatArchives = $conn->query("SELECT a.*, u.profile_image, u.fav_team FROM race_
                 
                 <div class="control-btns">
                     <button onclick="controlRace('start')" class="btn-large start" <?= $raceStatus === 'running' ? 'disabled' : '' ?>>
-                        <i class="fas fa-play"></i> START
+                        <i class="fas fa-play"></i> INDÍTÁS
                     </button>
                     <button onclick="controlRace('stop')" class="btn-large stop" <?= ($raceStatus !== 'running') ? 'disabled' : '' ?>>
-                        <i class="fas fa-pause"></i> PAUSE
+                        <i class="fas fa-pause"></i> SZÜNET
                     </button>
                     <button onclick="controlRace('hard_stop')" class="btn-large hard-stop" <?= $raceStatus === 'archived' ? 'disabled' : '' ?>>
                         <i class="fas fa-trash-alt"></i> TELJES LEÁLLÍTÁS ÉS MENTÉS
@@ -241,41 +608,88 @@ $chatArchives = $conn->query("SELECT a.*, u.profile_image, u.fav_team FROM race_
         <div id="tab-users" class="tab-content">
             <header><h2>Aktív Felhasználók</h2></header>
             <div class="card">
+                <div style="overflow-x: auto;">
                 <table>
-                    <thead><tr><th>User</th><th>Email</th><th>IP Cím</th> <th>Role</th><th>Csapat</th><th>Regisztrált</th><th>Műveletek</th></tr></thead>
+                    <thead>
+                        <tr><th>Felhasználó</th><th>Email</th><th>IP Cím</th> <th>Szerepkör</th><th>Csapat</th><th>Regisztrált</th><th>Műveletek</th></tr>
+                    </thead>
                     <tbody>
                         <?php while($u = $activeUsers->fetch_assoc()): ?>
                         <tr>
-                            <td><div style="display:flex; align-items:center; gap:10px;"><img src="/f1fanclub/uploads/<?= htmlspecialchars($u['profile_image'] ?? 'default.png') ?>" style="width:30px;height:30px;border-radius:50%;"><?= htmlspecialchars($u['username']) ?></div></td>
+                            <td><div style="display:flex; align-items:center; gap:10px;"><img src="/f1fanclub/uploads/<?= htmlspecialchars($u['profile_image'] ?? 'default.png') ?>" style="width:30px;height:30px;border-radius:50%;object-fit:cover;"><?= htmlspecialchars($u['username']) ?></div></td>
                             <td><?= htmlspecialchars($u['email']) ?></td>
                             <td style="font-family: monospace; color:#aaa;"><?= htmlspecialchars($u['ip_address'] ?? 'Ismeretlen') ?></td> 
                             <td>
-                                <form method="POST" style="display:flex; gap:5px;">
+                                <form method="POST" style="display:flex; gap:5px; flex-wrap:wrap;">
                                     <input type="hidden" name="action" value="change_role"><input type="hidden" name="user_id" value="<?= $u['id'] ?>">
                                     <select name="new_role" style="background:#222; color:#fff; border:1px solid #444; border-radius:4px;">
-                                        <option value="user" <?= $u['role'] == 'user' ? 'selected' : '' ?>>User</option><option value="admin" <?= $u['role'] == 'admin' ? 'selected' : '' ?>>Admin</option>
+                                        <option value="user" <?= $u['role'] == 'user' ? 'selected' : '' ?>>Felhasználó</option><option value="admin" <?= $u['role'] == 'admin' ? 'selected' : '' ?>>Admin</option>
                                     </select><button type="submit" class="btn btn-save">OK</button>
                                 </form>
                             </td>
-                            <td><?= htmlspecialchars($u['fav_team']) ?></td><td><?= date('Y.m.d', strtotime($u['reg_date'])) ?></td>
+                            <td><?= htmlspecialchars($u['fav_team']) ?></td>
+                            <td><?= date('Y.m.d', strtotime($u['reg_date'])) ?></td>
                             <td>
                                 <?php if($u['username'] !== $currentUser): ?>
-                                <form method="POST" onsubmit="return confirm('Biztos ki akarod rúgni (ban)?');"><input type="hidden" name="action" value="ban_user"><input type="hidden" name="user_id" value="<?= $u['id'] ?>"><button type="submit" class="btn btn-ban"><i class="fas fa-ban"></i> Kirúgás</button></form>
+                                <form method="POST" onsubmit="return confirm('Biztosan ki akarod tiltani ezt a felhasználót?');"><input type="hidden" name="action" value="ban_user"><input type="hidden" name="user_id" value="<?= $u['id'] ?>"><button type="submit" class="btn btn-ban"><i class="fas fa-ban"></i> Kitiltás</button></form>
                                 <?php endif; ?>
                             </td>
                         </tr>
                         <?php endwhile; ?>
                     </tbody>
                 </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-pitwall" class="tab-content">
+            <header><h2>The Pitwall Ranglista</h2></header>
+            <div class="card">
+                <?php if($pitwallUsers && $pitwallUsers->num_rows > 0): ?>
+                <div style="overflow-x: auto;">
+                </table>
+                    <thead>
+                        <tr>
+                            <th>Helyezés</th>
+                            <th>Felhasználó</th>
+                            <th>Email</th>
+                            <th>Csapat</th>
+                            <th style="text-align: right;">Pontszám</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php $rank = 1; while($pUser = $pitwallUsers->fetch_assoc()): ?>
+                        <tr>
+                            <td style="font-weight: bold; color: var(--primary); font-size: 1.1rem;"><?= $rank++ ?>.</td>
+                            <td>
+                                <div style="display:flex; align-items:center; gap:10px;">
+                                    <img src="/f1fanclub/uploads/<?= htmlspecialchars($pUser['profile_image'] ?? 'default.png') ?>" style="width:30px;height:30px;border-radius:50%;object-fit:cover;">
+                                    <strong><?= htmlspecialchars($pUser['username']) ?></strong>
+                                </div>
+                            </td>
+                            <td style="color:#aaa;"><?= htmlspecialchars($pUser['email']) ?></td>
+                            <td><?= htmlspecialchars($pUser['fav_team'] ?? 'Nincs megadva') ?></td>
+                            <td style="text-align: right; font-weight: 800; color: #d4af37; font-size: 1.1rem;">
+                                <?= number_format($pUser['pitwall_points']) ?> PONT
+                            </td>
+                        </tr>
+                        <?php endwhile; ?>
+                    </tbody>
+                </table>
+                </div>
+                <?php else: ?>
+                    <p style="text-align:center; color:#888; padding: 20px;">Még egyetlen felhasználó sem adott le tippet The Pitwall-on.</p>
+                <?php endif; ?>
             </div>
         </div>
 
         <div id="tab-banned" class="tab-content">
-            <header><h2>Kirúgott Felhasználók</h2></header>
+            <header><h2>Kitiltott Felhasználók</h2></header>
             <div class="card">
                 <?php if($bannedUsers->num_rows > 0): ?>
+                <div style="overflow-x: auto;">
                 <table>
-                    <thead><tr><th>User</th><th>Email</th><th>IP Cím</th> <th>Regisztrált</th><th>Műveletek</th></tr></thead>
+                    <thead><tr><th>Felhasználó</th><th>Email</th><th>IP Cím</th> <th>Regisztrált</th><th>Műveletek</th></tr></thead>
                     <tbody>
                         <?php while($b = $bannedUsers->fetch_assoc()): ?>
                         <tr><td style="color:#ff4444;"><?= htmlspecialchars($b['username']) ?></td><td><?= htmlspecialchars($b['email']) ?></td><td style="font-family: monospace; color:#aaa;"><?= htmlspecialchars($b['ip_address'] ?? 'Ismeretlen') ?></td> <td><?= date('Y.m.d', strtotime($b['reg_date'])) ?></td>
@@ -284,12 +698,13 @@ $chatArchives = $conn->query("SELECT a.*, u.profile_image, u.fav_team FROM race_
                         <?php endwhile; ?>
                     </tbody>
                 </table>
+                </div>
                 <?php else: ?><p style="text-align:center; color:#888;">Nincs kitiltott felhasználó.</p><?php endif; ?>
             </div>
         </div>
 
         <div id="tab-activity" class="tab-content">
-            <header><h2>Oldal Aktivitás (Log)</h2></header>
+            <header><h2>Oldal Aktivitás (Napló)</h2></header>
             <div class="card">
                 <?php while($log = $logs->fetch_assoc()): ?>
                 <div class="log-item">
@@ -304,8 +719,9 @@ $chatArchives = $conn->query("SELECT a.*, u.profile_image, u.fav_team FROM race_
             <header><h2>Archivált Verseny Chatek</h2></header>
             <div class="card" style="max-height: 70vh; overflow-y: auto;">
                 <?php if($chatArchives->num_rows > 0): ?>
+                <div style="overflow-x: auto;">
                 <table>
-                    <thead><tr><th>Dátum</th><th>User</th><th>Üzenet</th></tr></thead>
+                    <thead><tr><th>Dátum</th><th>Felhasználó</th><th>Üzenet</th></tr></thead>
                     <tbody>
                         <?php while($c = $chatArchives->fetch_assoc()): ?>
                         <tr>
@@ -316,6 +732,7 @@ $chatArchives = $conn->query("SELECT a.*, u.profile_image, u.fav_team FROM race_
                         <?php endwhile; ?>
                     </tbody>
                 </table>
+                </div>
                 <?php else: ?>
                     <p style="text-align:center; color:#888;">Nincsenek még lementett chatek.</p>
                 <?php endif; ?>
@@ -331,6 +748,11 @@ $chatArchives = $conn->query("SELECT a.*, u.profile_image, u.fav_team FROM race_
             document.getElementById('tab-' + tabName).classList.add('active');
             event.currentTarget.classList.add('active');
             localStorage.setItem('activeAdminTab', tabName);
+            
+            // Close sidebar on mobile after selecting a tab
+            if (window.innerWidth <= 992) {
+                document.getElementById('sidebar').classList.remove('open');
+            }
         }
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -355,6 +777,36 @@ $chatArchives = $conn->query("SELECT a.*, u.profile_image, u.fav_team FROM race_
                     alert("Hiba történt: " + error);
                 }
             }
+        }
+        
+        // HAMBURGER MENU TOGGLE
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const sidebar = document.getElementById('sidebar');
+        
+        if (hamburgerBtn && sidebar) {
+            hamburgerBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                sidebar.classList.toggle('open');
+            });
+            
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', function(event) {
+                if (window.innerWidth <= 992) {
+                    if (!sidebar.contains(event.target) && !hamburgerBtn.contains(event.target)) {
+                        sidebar.classList.remove('open');
+                    }
+                }
+            });
+            
+            // Close sidebar when a menu item is clicked (on mobile)
+            const menuBtns = document.querySelectorAll('.menu-btn');
+            menuBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    if (window.innerWidth <= 992) {
+                        sidebar.classList.remove('open');
+                    }
+                });
+            });
         }
     </script>
 </body>

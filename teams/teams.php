@@ -5,7 +5,6 @@ session_start();
  * ============================================================================
  * DATABASE CONNECTION
  * ============================================================================
- * Establishes the connection to the MySQL database.
  */
 $DB_HOST = "localhost";
 $DB_USER = "swmjndga_swmjndga";
@@ -21,7 +20,6 @@ if ($conn->connect_error) {
  * ============================================================================
  * SESSION DETAILS & USER AUTHENTICATION
  * ============================================================================
- * Retrieves the current logged-in user details from the session variables.
  */
 $isLoggedIn = isset($_SESSION['username']);
 $username = $isLoggedIn ? $_SESSION['username'] : null;
@@ -51,7 +49,7 @@ function getTeamColor($team)
     case 'Haas F1 Team':
       return '#B6BABD';
     case 'Cadillac':
-      return '#1b1b1b';
+      return '#B6BABD';
     default:
       return '#ffffff';
   }
@@ -60,15 +58,15 @@ function getTeamColor($team)
 $profile_image = null;
 $fav_team = null;
 $teamColor = '#ffffff';
+$isAdmin = false;
 
 /**
  * ============================================================================
  * USER DATA FETCHING
  * ============================================================================
- * Retrieves the favorite team and other user details from the database.
  */
 if ($isLoggedIn) {
-  $stmt = $conn->prepare("SELECT profile_image, fav_team FROM users WHERE username=?");
+  $stmt = $conn->prepare("SELECT profile_image, fav_team, role FROM users WHERE username=?");
   $stmt->bind_param("s", $username);
   $stmt->execute();
   $row = $stmt->get_result()->fetch_assoc();
@@ -76,6 +74,7 @@ if ($isLoggedIn) {
   $profile_image = $row['profile_image'] ?? null;
   $fav_team = $row['fav_team'] ?? null;
   $teamColor = getTeamColor($fav_team);
+  $isAdmin = !empty($row['role']) && $row['role'] === 'admin';
 
   $stmt->close();
 }
@@ -85,17 +84,28 @@ if ($isLoggedIn) {
 
 <head>
   <meta charset="UTF-8">
-  <title>Teams – F1 Fan Club</title>
+  <title>Csapatok – F1 Fan Club</title>
   <link rel="stylesheet" href="/f1fanclub/css/style.css">
   <link rel="stylesheet" href="team_style.css">
+  <link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .flag-img {
+        width: 24px;
+        height: 16px;
+        vertical-align: middle;
+        margin-right: 5px;
+        border-radius: 2px;
+    }
+  </style>
   <style>
     /* =========================================
        FIX FOR STATISTICS PANEL HEIGHT AND TABS
        ========================================= */
     
     /* Override global body padding for teams page */
-    body.BODY_PADDING_FIX {
+    body {
         padding-top: 80px !important;
         min-height: 100vh;
         height: auto;
@@ -238,7 +248,7 @@ if ($isLoggedIn) {
   </style>
 </head>
 
-<body class="BODY_PADDING_FIX">
+<body>
 
   <header>
     <div class="left-header">
@@ -250,144 +260,153 @@ if ($isLoggedIn) {
     </div>
 
     <nav style="margin: 20px 0;">
-      <a href="/f1fanclub/index.php" style="color:white; margin:0 10px;">Home</a>
-      <a href="/f1fanclub/Championship/championship.php" style="color:white; margin:0 10px;">Championship</a>
-      <a href="/f1fanclub/teams/teams.php" style="color:#e10600; margin:0 10px; font-weight:bold;">Teams</a>
-      <a href="/f1fanclub/drivers/drivers.php" style="color:white; margin:0 10px;">Drivers</a>
+      <a href="/f1fanclub/index.php" style="color:white; margin:0 10px;">Kezdőlap</a>
+      <a href="/f1fanclub/Championship/championship.php" style="color:white; margin:0 10px;">Bajnokság</a>
+      <a href="/f1fanclub/teams/teams.php" style="color:#e10600; margin:0 10px; font-weight:bold;">Csapatok</a>
+      <a href="/f1fanclub/drivers/drivers.php" style="color:white; margin:0 10px;">Versenyzők</a>
       <a href="/f1fanclub/news/feed.php" style="color:white; margin:0 10px;">Paddock</a>
+      <a href="/f1fanclub/pitwall/pitwall.php" style="color:white; margin:0 10px;"><i class="fas fa-trophy" style="margin-right: 5px;"></i> A Fal</a>
     </nav>
 
     <?php if ($isLoggedIn): ?>
-      <div class="auth">
-        <a href="/f1fanclub/profile/profile.php" style="text-decoration: none;">
-          <div class="welcome">
+      <div class="dropdown-container" id="userDropdownContainer">
+        <div class="auth">
+          <div class="welcome" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
             <?php if ($profile_image): ?>
-              <img src="/f1fanclub/uploads/<?php echo htmlspecialchars($profile_image); ?>" class="avatar" alt="Profile"
-                style="width:30px; height:30px; border-radius:50%; vertical-align:middle; object-fit: cover;">
+              <img src="/f1fanclub/uploads/<?php echo htmlspecialchars($profile_image); ?>" class="avatar clickable-user" alt="Profilkép"
+                style="width:35px; height:35px; border-radius:50%; object-fit: cover; border-color: <?php echo htmlspecialchars($teamColor); ?>;"
+                onclick="openUserProfile('<?php echo htmlspecialchars(addslashes($username)); ?>')">
             <?php endif; ?>
             <span class="welcome-text">
-              Welcome,
-              <span style="color: <?php echo htmlspecialchars($teamColor); ?>;">
-                <?php echo htmlspecialchars($username); ?>
-              </span>!
+              <span class="clickable-user" onclick="openUserProfile('<?php echo htmlspecialchars(addslashes($username)); ?>')"
+                style="color: <?php echo htmlspecialchars($teamColor); ?>; font-weight:bold;"><?php echo htmlspecialchars($username); ?></span>
             </span>
+            <i class="fas fa-chevron-down dropdown-arrow-icon"></i>
           </div>
-        </a>
-        <a href="/f1fanclub/logout/logout.php" class="btn">Log out</a>
+        </div>
+        
+        <div class="dropdown-menu-modern">
+          <a href="/f1fanclub/profile/profile.php">
+            <i class="fas fa-user-circle"></i> Profilom
+          </a>
+          <a href="/f1fanclub/messages/messages.php">
+            <i class="fas fa-envelope"></i> Üzenetek
+          </a>
+          <?php if ($isAdmin): ?>
+            <a href="/f1fanclub/admin/admin.php" style="position: relative;">
+              <i class="fas fa-shield-alt"></i> Admin Panel
+              <span class="admin-badge">ADMIN</span>
+            </a>
+          <?php endif; ?>
+          <div class="dropdown-divider"></div>
+          <a href="/f1fanclub/logout/logout.php">
+            <i class="fas fa-sign-out-alt"></i> Kijelentkezés
+          </a>
+        </div>
       </div>
     <?php else: ?>
       <div class="auth">
-        <a href="/f1fanclub/register/register.html" class="btn">Register</a>
-        <a href="/f1fanclub/login/login.html" class="btn">Login</a>
+        <a href="/f1fanclub/register/register.html" class="btn">Regisztráció</a>
+        <a href="/f1fanclub/login/login.html" class="btn">Bejelentkezés</a>
       </div>
     <?php endif; ?>
   </header>
   
   <section id="teams">
 
-    <!-- Statistics Panel (hidden by default) -->
+    <!-- Statisztikai Panel (alapból rejtett) -->
     <div class="statistics-panel" id="statistics-panel">
       <button class="close-panel" id="close-panel">×</button>
       <div class="statistics-header">
         <div class="stats-image-container">
-          <img id="stats-team-image" src="" alt="Team" class="stats-team-image">
+          <img id="stats-team-image" src="" alt="Csapat logó" class="stats-team-image">
           <div class="glow-effect"></div>
         </div>
         <div class="stats-team-info">
-          <h2 id="stats-team-name">TEAM NAME</h2>
-          <p id="stats-team-base">BASE LOCATION</p>
+          <h2 id="stats-team-name">CSAPAT NÉV</h2>
+          <p id="stats-team-base">SZÉKHELY</p>
           <div class="stats-team-nationality">
-            <span id="stats-flag">🏁</span>
-            <span id="stats-country">COUNTRY</span>
+            <span id="stats-flag"></span>
+            <span id="stats-country">ORSZÁG</span>
           </div>
         </div>
       </div>
 
-      <!-- Stats Toggle -->
+      <!-- Statisztika Váltógombok -->
       <div class="stats-toggle">
         <button class="toggle-btn active" data-period="current">
-          <span class="toggle-text">2025 SEASON</span>
+          <span class="toggle-text">2025-ÖS SZEZON</span>
           <span class="toggle-glow"></span>
         </button>
         <button class="toggle-btn" data-period="career">
-          <span class="toggle-text">TEAM HISTORY</span>
+          <span class="toggle-text">CSAPAT TÖRTÉNETE</span>
           <span class="toggle-glow"></span>
         </button>
       </div>
 
-      <!-- Statistics Content - 2x3 Grid -->
+      <!-- Statisztika Tartalom - 2x3 Rács -->
       <div class="statistics-content">
         <div class="stats-grid" id="current-stats">
-          <!-- Current Season Stats - Row 1 -->
           <div class="stat-item">
-            <span class="stat-label">POSITION</span>
-            <span class="stat-value" id="current-position">1st</span>
+            <span class="stat-label">HELYEZÉS</span>
+            <span class="stat-value" id="current-position">1.</span>
             <div class="stat-glow"></div>
           </div>
           <div class="stat-item">
-            <span class="stat-label">POINTS</span>
+            <span class="stat-label">PONTOK</span>
             <span class="stat-value" id="current-points">654</span>
             <div class="stat-glow"></div>
           </div>
-
-          <!-- Current Season Stats - Row 2 -->
           <div class="stat-item">
-            <span class="stat-label">WINS</span>
+            <span class="stat-label">GYŐZELMEK</span>
             <span class="stat-value" id="current-wins">21</span>
             <div class="stat-glow"></div>
           </div>
           <div class="stat-item">
-            <span class="stat-label">PODIUMS</span>
+            <span class="stat-label">DOBOGÓK</span>
             <span class="stat-value" id="current-podiums">32</span>
             <div class="stat-glow"></div>
           </div>
-
-          <!-- Current Season Stats - Row 3 -->
           <div class="stat-item">
-            <span class="stat-label">POLES</span>
+            <span class="stat-label">POLE POZÍCIÓK</span>
             <span class="stat-value" id="current-poles">14</span>
             <div class="stat-glow"></div>
           </div>
           <div class="stat-item">
-            <span class="stat-label">FASTEST LAPS</span>
+            <span class="stat-label">LEGGYORSABB KÖRÖK</span>
             <span class="stat-value" id="current-fastest-laps">12</span>
             <div class="stat-glow"></div>
           </div>
         </div>
 
         <div class="stats-grid" id="career-stats" style="display: none;">
-          <!-- Career Stats - Row 1 -->
           <div class="stat-item">
-            <span class="stat-label">GRAND PRIX</span>
+            <span class="stat-label">NAGYDÍJAK</span>
             <span class="stat-value" id="career-races">385</span>
             <div class="stat-glow"></div>
           </div>
           <div class="stat-item">
-            <span class="stat-label">WINS</span>
+            <span class="stat-label">GYŐZELMEK</span>
             <span class="stat-value" id="career-wins">124</span>
             <div class="stat-glow"></div>
           </div>
-
-          <!-- Career Stats - Row 2 -->
           <div class="stat-item">
-            <span class="stat-label">PODIUMS</span>
+            <span class="stat-label">DOBOGÓK</span>
             <span class="stat-value" id="career-podiums">298</span>
             <div class="stat-glow"></div>
           </div>
           <div class="stat-item">
-            <span class="stat-label">POLES</span>
+            <span class="stat-label">POLE POZÍCIÓK</span>
             <span class="stat-value" id="career-poles">133</span>
             <div class="stat-glow"></div>
           </div>
-
-          <!-- Career Stats - Row 3 -->
           <div class="stat-item">
-            <span class="stat-label">FASTEST LAPS</span>
+            <span class="stat-label">LEGGYORSABB KÖRÖK</span>
             <span class="stat-value" id="career-fastest-laps">128</span>
             <div class="stat-glow"></div>
           </div>
           <div class="stat-item">
-            <span class="stat-label">CONSTRUCTORS</span>
+            <span class="stat-label">KONSTRUKTŐRI CÍMEK</span>
             <span class="stat-value" id="career-titles">8</span>
             <div class="stat-glow"></div>
           </div>
@@ -395,7 +414,7 @@ if ($isLoggedIn) {
       </div>
     </div>
 
-    <!-- F1 Scroll Buttons -->
+    <!-- F1 Görgető Gombok -->
     <div class="scroll-button left" id="scroll-left">
       <div class="accent-line"></div>
     </div>
@@ -406,8 +425,8 @@ if ($isLoggedIn) {
 
     <div class="teams-container">
       <div class="teams-wrapper" id="teams-wrapper">
-        <!-- ========== RED BULL ========== -->
-        <div class="team-card" data-team="redbull" id="RBR" data-team-id="red_bull">
+        <!-- ========== RED BULL (AUSZTRIA) ========== -->
+        <div class="team-card" data-team="redbull" id="RBR" data-team-id="red_bull" data-team-logo="red bull-logo-Photoroom.png">
           <div class="team-image-container">
             <img src="red bull-logo-Photoroom.png" alt="Red Bull Racing" class="team-image">
             <div class="team-name-logo">Red Bull Racing</div>
@@ -418,18 +437,17 @@ if ($isLoggedIn) {
               <h2 class="team-name">RED BULL RACING</h2>
               <p class="team-principal">Christian Horner</p>
               <div class="team-details">
-                <span class="flag">🇦🇹</span>
+                <span class="flag"><img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Flag_of_Austria.svg" class="flag-img" alt="Ausztria"></span>
                 MILTON KEYNES
               </div>
             </div>
           </div>
         </div>
 
-        <!-- ========== FERRARI ========== -->
-        <div class="team-card" data-team="ferrari" id="FER" data-team-id="ferrari">
+        <!-- ========== FERRARI (OLASZORSZÁG) ========== -->
+        <div class="team-card" data-team="ferrari" id="FER" data-team-id="ferrari" data-team-logo="ferrari-logo-removebg-preview.png">
           <div class="team-image-container">
-            <img src="ferrari-logo-removebg-preview.png
-" alt="Ferrari" class="team-image">
+            <img src="ferrari-logo-removebg-preview.png" alt="Ferrari" class="team-image">
             <div class="team-name-logo">Ferrari</div>
             <div class="team-glow"></div>
           </div>
@@ -438,15 +456,15 @@ if ($isLoggedIn) {
               <h2 class="team-name">SCUDERIA FERRARI</h2>
               <p class="team-principal">Frédéric Vasseur</p>
               <div class="team-details">
-                <span class="flag">🇮🇹</span>
+                <span class="flag"><img src="https://upload.wikimedia.org/wikipedia/en/0/03/Flag_of_Italy.svg" class="flag-img" alt="Olaszország"></span>
                 MARANELLO
               </div>
             </div>
           </div>
         </div>
 
-        <!-- ========== MERCEDES ========== -->
-        <div class="team-card" data-team="mercedes" id="MER" data-team-id="mercedes">
+        <!-- ========== MERCEDES (NÉMETORSZÁG) ========== -->
+        <div class="team-card" data-team="mercedes" id="MER" data-team-id="mercedes" data-team-logo="mercedes-logo.png">
           <div class="team-image-container">
             <img src="mercedes-logo.png" alt="Mercedes" class="team-image">
             <div class="team-name-logo">Mercedes</div>
@@ -457,15 +475,15 @@ if ($isLoggedIn) {
               <h2 class="team-name">MERCEDES-AMG</h2>
               <p class="team-principal">Toto Wolff</p>
               <div class="team-details">
-                <span class="flag">🇩🇪</span>
+                <span class="flag"><img src="https://upload.wikimedia.org/wikipedia/en/b/ba/Flag_of_Germany.svg" class="flag-img" alt="Németország"></span>
                 BRACKLEY
               </div>
             </div>
           </div>
         </div>
 
-        <!-- ========== McLAREN ========== -->
-        <div class="team-card" data-team="mclaren" id="MCL" data-team-id="mclaren">
+        <!-- ========== McLAREN (EGYESÜLT KIRÁLYSÁG) ========== -->
+        <div class="team-card" data-team="mclaren" id="MCL" data-team-id="mclaren" data-team-logo="mclaren-logo.png">
           <div class="team-image-container">
             <img src="mclaren-logo.png" alt="McLaren" class="team-image">
             <div class="team-name-logo">McLaren</div>
@@ -476,15 +494,15 @@ if ($isLoggedIn) {
               <h2 class="team-name">McLAREN F1 TEAM</h2>
               <p class="team-principal">Andrea Stella</p>
               <div class="team-details">
-                <span class="flag">🇬🇧</span>
+                <span class="flag"><img src="https://upload.wikimedia.org/wikipedia/en/a/ae/Flag_of_the_United_Kingdom.svg" class="flag-img" alt="Egyesült Királyság"></span>
                 WOKING
               </div>
             </div>
           </div>
         </div>
 
-        <!-- ========== ASTON MARTIN ========== -->
-        <div class="team-card" data-team="astonmartin" id="AST" data-team-id="aston_martin">
+        <!-- ========== ASTON MARTIN (EGYESÜLT KIRÁLYSÁG) ========== -->
+        <div class="team-card" data-team="astonmartin" id="AST" data-team-id="aston_martin" data-team-logo="Aston-Martin-Logo.png">
           <div class="team-image-container">
             <img src="Aston-Martin-Logo.png" alt="Aston Martin" class="team-image">
             <div class="team-name-logo">Aston Martin</div>
@@ -495,15 +513,15 @@ if ($isLoggedIn) {
               <h2 class="team-name">ASTON MARTIN</h2>
               <p class="team-principal">Mike Krack</p>
               <div class="team-details">
-                <span class="flag">🇬🇧</span>
+                <span class="flag"><img src="https://upload.wikimedia.org/wikipedia/en/a/ae/Flag_of_the_United_Kingdom.svg" class="flag-img" alt="Egyesült Királyság"></span>
                 SILVERSTONE
               </div>
             </div>
           </div>
         </div>
 
-        <!-- ========== ALPINE ========== -->
-        <div class="team-card" data-team="alpine" id="ALP" data-team-id="alpine">
+        <!-- ========== ALPINE (FRANCIAORSZÁG) ========== -->
+        <div class="team-card" data-team="alpine" id="ALP" data-team-id="alpine" data-team-logo="alpine-logo-Photoroom.png">
           <div class="team-image-container">
             <img src="alpine-logo-Photoroom.png" alt="Alpine" class="team-image">
             <div class="team-name-logo">Alpine</div>
@@ -514,15 +532,15 @@ if ($isLoggedIn) {
               <h2 class="team-name">ALPINE F1 TEAM</h2>
               <p class="team-principal">Oliver Oakes</p>
               <div class="team-details">
-                <span class="flag">🇫🇷</span>
+                <span class="flag"><img src="https://upload.wikimedia.org/wikipedia/en/c/c3/Flag_of_France.svg" class="flag-img" alt="Franciaország"></span>
                 ENSTONE
               </div>
             </div>
           </div>
         </div>
 
-        <!-- ========== WILLIAMS ========== -->
-        <div class="team-card" data-team="williams" id="WIL" data-team-id="williams">
+        <!-- ========== WILLIAMS (EGYESÜLT KIRÁLYSÁG) ========== -->
+        <div class="team-card" data-team="williams" id="WIL" data-team-id="williams" data-team-logo="williams-logo-Photoroom.png">
           <div class="team-image-container">
             <img src="williams-logo-Photoroom.png" alt="Williams" class="team-image">
             <div class="team-name-logo">Williams</div>
@@ -533,15 +551,15 @@ if ($isLoggedIn) {
               <h2 class="team-name">WILLIAMS RACING</h2>
               <p class="team-principal">James Vowles</p>
               <div class="team-details">
-                <span class="flag">🇬🇧</span>
+                <span class="flag"><img src="https://upload.wikimedia.org/wikipedia/en/a/ae/Flag_of_the_United_Kingdom.svg" class="flag-img" alt="Egyesült Királyság"></span>
                 GROVE
               </div>
             </div>
           </div>
         </div>
 
-        <!-- ========== RACING BULLS ========== -->
-        <div class="team-card" data-team="racingbulls" id="RB" data-team-id="racing_bulls">
+        <!-- ========== RACING BULLS (OLASZORSZÁG) ========== -->
+        <div class="team-card" data-team="racingbulls" id="RB" data-team-id="racing_bulls" data-team-logo="racing_bulls-logo.png">
           <div class="team-image-container">
             <img src="racing_bulls-logo.png" alt="Racing Bulls" class="team-image">
             <div class="team-name-logo">Racing Bulls</div>
@@ -552,15 +570,15 @@ if ($isLoggedIn) {
               <h2 class="team-name">RACING BULLS</h2>
               <p class="team-principal">Laurent Mekies</p>
               <div class="team-details">
-                <span class="flag">🇮🇹</span>
+                <span class="flag"><img src="https://upload.wikimedia.org/wikipedia/en/0/03/Flag_of_Italy.svg" class="flag-img" alt="Olaszország"></span>
                 FAENZA
               </div>
             </div>
           </div>
         </div>
 
-        <!-- ========== HAAS ========== -->
-        <div class="team-card" data-team="haas" id="HAA" data-team-id="haas">
+        <!-- ========== HAAS (USA) ========== -->
+        <div class="team-card" data-team="haas" id="HAA" data-team-id="haas" data-team-logo="haas-logo.png">
           <div class="team-image-container">
             <img src="haas-logo.png" alt="Haas" class="team-image">
             <div class="team-name-logo">Haas</div>
@@ -571,15 +589,15 @@ if ($isLoggedIn) {
               <h2 class="team-name">MONEYGRAM HAAS</h2>
               <p class="team-principal">Ayao Komatsu</p>
               <div class="team-details">
-                <span class="flag">🇺🇸</span>
+                <span class="flag"><img src="https://upload.wikimedia.org/wikipedia/en/a/a4/Flag_of_the_United_States.svg" class="flag-img" alt="USA"></span>
                 KANNAPOLIS
               </div>
             </div>
           </div>
         </div>
 
-        <!-- ========== AUDI ========== -->
-        <div class="team-card" data-team="audi" id="AUD" data-team-id="audi">
+        <!-- ========== AUDI (NÉMETORSZÁG) ========== -->
+        <div class="team-card" data-team="audi" id="AUD" data-team-id="audi" data-team-logo="audi-white.png">
           <div class="team-image-container">
             <img src="audi-white.png" alt="Audi" class="team-image">
             <div class="team-name-logo">Audi</div>
@@ -590,15 +608,15 @@ if ($isLoggedIn) {
               <h2 class="team-name">AUDI F1 TEAM</h2>
               <p class="team-principal">Mattia Binotto</p>
               <div class="team-details">
-                <span class="flag">🇩🇪</span>
+                <span class="flag"><img src="https://upload.wikimedia.org/wikipedia/en/b/ba/Flag_of_Germany.svg" class="flag-img" alt="Németország"></span>
                 HINWIL
               </div>
             </div>
           </div>
         </div>
 
-        <!-- ========== CADILLAC ========== -->
-        <div class="team-card" data-team="cadillac" id="CAD" data-team-id="cadillac">
+        <!-- ========== CADILLAC (USA) ========== -->
+        <div class="team-card" data-team="cadillac" id="CAD" data-team-id="cadillac" data-team-logo="cadillac-black-logo.png">
           <div class="team-image-container">
             <img src="cadillac-black-logo.png" alt="Cadillac" class="team-image">
             <div class="team-name-logo">Cadillac</div>
@@ -609,7 +627,7 @@ if ($isLoggedIn) {
               <h2 class="team-name">CADILLAC RACING</h2>
               <p class="team-principal">Mario Andretti</p>
               <div class="team-details">
-                <span class="flag">🇺🇸</span>
+                <span class="flag"><img src="https://upload.wikimedia.org/wikipedia/en/a/a4/Flag_of_the_United_States.svg" class="flag-img" alt="USA"></span>
                 CHARLOTTE
               </div>
             </div>
@@ -619,33 +637,234 @@ if ($isLoggedIn) {
       </div>
     </div>
   </section>
-
-  <?php if ($isLoggedIn): ?>
-    <div class="profile-card" id="profileCard">
-      <h3><?php echo htmlspecialchars($username); ?>'s Profile</h3>
-      <?php if ($profile_image): ?>
-        <img src="/uploads/<?php echo htmlspecialchars($profile_image); ?>" alt="Profile picture" style="max-width:100px;">
-      <?php endif; ?>
-      <form action="/f1fanclub/profile/upload_profile.php" method="post" enctype="multipart/form-data">
-        <p><small>Upload new profile picture (max 250×250 px)</small></p>
-        <input type="file" name="profile_image" required>
-        <input type="submit" value="Upload" class="btn">
-      </form>
-    </div>
-  <?php endif; ?>
   
   <script src="team_script.js"></script>
   <script>
-    // Immediate test to see if script is loading
-    console.log('Inline script test');
-    document.addEventListener('DOMContentLoaded', function () {
-      console.log('DOM Content Loaded - checking team cards');
-      const cards = document.querySelectorAll('.team-card');
-      console.log('Team cards found on load:', cards.length);
+    // =========================================
+    // LEGÖRDÜLŐ MENÜ FUNKCIÓK
+    // =========================================
+    document.addEventListener('DOMContentLoaded', function() {
+        const dropdownContainer = document.getElementById('userDropdownContainer');
+        if (dropdownContainer) {
+            const welcomeDiv = dropdownContainer.querySelector('.welcome');
+            if (welcomeDiv) {
+                welcomeDiv.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    dropdownContainer.classList.toggle('open');
+                });
+            }
+            
+            document.addEventListener('click', function(e) {
+                if (!dropdownContainer.contains(e.target)) {
+                    dropdownContainer.classList.remove('open');
+                }
+            });
+        }
+    });
 
-      cards.forEach((card, index) => {
-        console.log(`Card ${index}:`, card.getAttribute('data-team-id'));
-      });
+    // =========================================
+    // FELHASZNÁLÓI PROFIL MODÁLIS FUNKCIÓK
+    // =========================================
+    let currentModalUser = "";
+    let currentFriendStatus = "";
+
+    function openUserProfile(username) {
+        fetch('/f1fanclub/profile/user_profile_api.php?username=' + encodeURIComponent(username))
+        .then(r => r.json())
+        .then(data => {
+            if(data.success) {
+                currentModalUser = data.user.username;
+                currentFriendStatus = data.user.friendship_status;
+
+                let modal = document.getElementById('userProfileModal');
+                if (!modal) {
+                    modal = document.createElement('div');
+                    modal.id = 'userProfileModal';
+                    modal.className = 'user-modal-overlay';
+                    modal.onclick = closeUserProfile;
+                    modal.innerHTML = `
+                        <div class="user-modal-content" onclick="event.stopPropagation()">
+                            <button class="user-modal-close" onclick="closeUserProfile(event)">&times;</button>
+                            <div class="user-modal-header">
+                                <img id="modalProfileImg" src="" alt="Avatar">
+                                <h3 id="modalUsername">Felhasználónév</h3>
+                                <span id="modalRole" class="modal-role">Szerepkör</span>
+                            </div>
+                            <div class="user-modal-body">
+                                <p><i class="fas fa-flag-checkered"></i> <strong>Csapat:</strong> <span id="modalTeam">Csapat</span></p>
+                                <p><i class="far fa-calendar-alt"></i> <strong>Regisztrált:</strong> <span id="modalRegDate">Dátum</span></p>
+                            </div>
+                            <div class="user-modal-footer">
+                                <button id="modalFriendBtn" class="btn-add-friend" onclick="handleFriendAction()">
+                                    <i class="fas fa-user-plus"></i> Barátnak jelölés
+                                </button>
+                                <button class="btn-send-msg" onclick="window.location.href='/f1fanclub/messages/messages.php'">
+                                    <i class="fas fa-comment"></i> Üzenet küldése
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(modal);
+                }
+
+                const modalImg = document.getElementById('modalProfileImg');
+                if (modalImg) {
+                    modalImg.src = data.user.profile_image;
+                    modalImg.style.borderColor = data.user.team_color;
+                }
+                document.getElementById('modalUsername').innerText = data.user.username;
+                document.getElementById('modalRole').innerText = data.user.role_name;
+                document.getElementById('modalTeam').innerText = data.user.fav_team || 'Nincs megadva';
+                document.getElementById('modalRegDate').innerText = data.user.reg_date;
+                
+                updateFriendButton(data.user.friendship_status);
+                document.getElementById('userProfileModal').style.display = 'flex';
+            } else {
+                alert("Hiba: " + data.error);
+            }
+        }).catch(err => console.error(err));
+    }
+
+    function closeUserProfile(e) {
+        if(e) e.stopPropagation();
+        const modal = document.getElementById('userProfileModal');
+        if (modal) modal.style.display = 'none';
+    }
+
+    function updateFriendButton(status) {
+        const btn = document.getElementById('modalFriendBtn');
+        if(!btn) return;
+        btn.style.display = 'flex';
+        
+        if (status === 'self') {
+            btn.style.display = 'none';
+        } else if (status === 'none') {
+            btn.innerHTML = '<i class="fas fa-user-plus"></i> Barátnak jelölés';
+            btn.style.background = '#333';
+        } else if (status === 'pending_sent') {
+            btn.innerHTML = '<i class="fas fa-clock"></i> Jelölés elküldve';
+            btn.style.background = '#888';
+        } else if (status === 'pending_received') {
+            btn.innerHTML = '<i class="fas fa-check"></i> Jelölés elfogadása';
+            btn.style.background = '#28a745';
+        } else if (status === 'accepted') {
+            btn.innerHTML = '<i class="fas fa-user-minus"></i> Barát törlése';
+            btn.style.background = '#e10600';
+        }
+    }
+
+    function handleFriendAction() {
+        let action = '';
+        if (currentFriendStatus === 'none') action = 'add';
+        else if (currentFriendStatus === 'pending_sent' || currentFriendStatus === 'accepted') action = 'remove';
+        else if (currentFriendStatus === 'pending_received') action = 'accept';
+
+        if(!action) return;
+
+        fetch('/f1fanclub/profile/friend_api.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ action: action, target_user: currentModalUser })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if(data.success) {
+                openUserProfile(currentModalUser);
+            }
+        });
+    }
+
+    // =========================================
+    // CSAPAT STATISZTIKAI PANEL LOGÓ MEGJELENÍTÉSSEL
+    // =========================================
+    document.addEventListener('DOMContentLoaded', function() {
+        // Összes csapatkártya lekérése
+        const teamCards = document.querySelectorAll('.team-card');
+        const statsPanel = document.getElementById('statistics-panel');
+        const closePanelBtn = document.getElementById('close-panel');
+        const teamsContainer = document.querySelector('.teams-container');
+        const scrollRightBtn = document.getElementById('scroll-right');
+        
+        // Statisztikai panel elemek
+        const statsTeamImage = document.getElementById('stats-team-image');
+        const statsTeamName = document.getElementById('stats-team-name');
+        const statsTeamBase = document.getElementById('stats-team-base');
+        const statsFlag = document.getElementById('stats-flag');
+        const statsCountry = document.getElementById('stats-country');
+        
+        // Funkció a csapat logó fájlnév lekéréséhez az adat attribútumból
+        function getTeamLogoFilename(teamCard) {
+            return teamCard.getAttribute('data-team-logo') || '';
+        }
+        
+        // Funkció a statisztikai panel frissítéséhez a csapat adataival
+        function updateStatsPanel(teamCard) {
+            // Csapat adatok lekérése a kártyáról
+            const teamLogo = getTeamLogoFilename(teamCard);
+            const teamNameElem = teamCard.querySelector('.team-name');
+            const teamPrincipalElem = teamCard.querySelector('.team-principal');
+            const teamDetailsElem = teamCard.querySelector('.team-details');
+            
+            // Csapat adatok kinyerése
+            let fullTeamName = teamNameElem ? teamNameElem.textContent : 'CSAPAT NÉV';
+            let teamBase = teamPrincipalElem ? teamPrincipalElem.textContent : 'SZÉKHELY';
+            let flagHtml = '';
+            let countryText = '';
+            
+            if (teamDetailsElem) {
+                // A zászló kép lekérése - pontosabb módszer
+                const flagSpan = teamDetailsElem.querySelector('.flag');
+                if (flagSpan) {
+                    flagHtml = flagSpan.innerHTML;
+                }
+                // Az ország szöveg lekérése - a zászló után
+                const detailsText = teamDetailsElem.cloneNode(true);
+                const flagSpanClone = detailsText.querySelector('.flag');
+                if (flagSpanClone) {
+                    flagSpanClone.remove();
+                }
+                countryText = detailsText.textContent.trim();
+            }
+            
+            // Alap csapat adatok frissítése
+            if (statsTeamName) statsTeamName.textContent = fullTeamName;
+            if (statsTeamBase) statsTeamBase.textContent = teamBase;
+            if (statsFlag) statsFlag.innerHTML = flagHtml || '🏁';
+            if (statsCountry) statsCountry.textContent = countryText || 'ORSZÁG';
+            
+            // Csapat logó frissítése
+            if (statsTeamImage) {
+                if (teamLogo) {
+                    statsTeamImage.src = teamLogo;
+                    statsTeamImage.alt = `${fullTeamName} logó`;
+                    statsTeamImage.style.display = 'block';
+                } else {
+                    statsTeamImage.style.display = 'none';
+                }
+            }
+        }
+        
+        // Kattintás esemény hozzáadása minden csapatkártyához
+        teamCards.forEach(card => {
+            card.addEventListener('click', function(e) {
+                // Statisztikai panel frissítése a kattintott csapat adataival
+                updateStatsPanel(this);
+                
+                // Statisztikai panel megnyitása
+                statsPanel.classList.add('active');
+                teamsContainer.classList.add('panel-active');
+                if (scrollRightBtn) scrollRightBtn.classList.add('panel-active');
+            });
+        });
+        
+        // Panel bezárás funkció
+        if (closePanelBtn) {
+            closePanelBtn.addEventListener('click', function() {
+                statsPanel.classList.remove('active');
+                teamsContainer.classList.remove('panel-active');
+                if (scrollRightBtn) scrollRightBtn.classList.remove('panel-active');
+            });
+        }
     });
   </script>
 </body>

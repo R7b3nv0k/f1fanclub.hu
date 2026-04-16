@@ -1,0 +1,20 @@
+[30-Mar-2026 12:55:26 Europe/Budapest] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'swmjndga_f1adat.drivers' doesn't exist in /home/swmjndga/public_html/f1fanclub/pitwall/pitwall.php:65
+Stack trace:
+#0 /home/swmjndga/public_html/f1fanclub/pitwall/pitwall.php(65): mysqli->query('SELECT driver_i...')
+#1 {main}
+  thrown in /home/swmjndga/public_html/f1fanclub/pitwall/pitwall.php on line 65
+[30-Mar-2026 12:55:36 Europe/Budapest] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'swmjndga_f1adat.drivers' doesn't exist in /home/swmjndga/public_html/f1fanclub/pitwall/pitwall.php:65
+Stack trace:
+#0 /home/swmjndga/public_html/f1fanclub/pitwall/pitwall.php(65): mysqli->query('SELECT driver_i...')
+#1 {main}
+  thrown in /home/swmjndga/public_html/f1fanclub/pitwall/pitwall.php on line 65
+[30-Mar-2026 12:56:34 Europe/Budapest] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'swmjndga_f1adat.drivers' doesn't exist in /home/swmjndga/public_html/f1fanclub/pitwall/pitwall.php:82
+Stack trace:
+#0 /home/swmjndga/public_html/f1fanclub/pitwall/pitwall.php(82): mysqli->query('SELECT driver_i...')
+#1 {main}
+  thrown in /home/swmjndga/public_html/f1fanclub/pitwall/pitwall.php on line 82
+[31-Mar-2026 14:33:00 Europe/Budapest] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'points' in 'SELECT' in /home/swmjndga/public_html/f1fanclub/pitwall/pitwall.php:78
+Stack trace:
+#0 /home/swmjndga/public_html/f1fanclub/pitwall/pitwall.php(78): mysqli->prepare('SELECT profile_...')
+#1 {main}
+  thrown in /home/swmjndga/public_html/f1fanclub/pitwall/pitwall.php on line 78

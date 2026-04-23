@@ -1,20 +1,5 @@
-[19-Dec-2025 18:17:14 Europe/Budapest] PHP Warning:  move_uploaded_file(): Unable to move &quot;/tmp/phpT7MdP0&quot; to &quot;uploads/HELL\JUMPER_1766164634.jpg&quot; in /home/swmjndga/public_html/profile/profile.php on line 58
-[19-Dec-2025 18:18:58 Europe/Budapest] PHP Warning:  move_uploaded_file(uploads/HELL\JUMPER_1766164738.jpg): Failed to open stream: No such file or directory in /home/swmjndga/public_html/profile/profile.php on line 58
-[19-Dec-2025 18:18:58 Europe/Budapest] PHP Warning:  move_uploaded_file(): Unable to move &quot;/tmp/phpQCo23S&quot; to &quot;uploads/HELL\JUMPER_1766164738.jpg&quot; in /home/swmjndga/public_html/profile/profile.php on line 58
-[19-Dec-2025 18:19:10 Europe/Budapest] PHP Warning:  move_uploaded_file(uploads/HELL\JUMPER_1766164750.jpg): Failed to open stream: No such file or directory in /home/swmjndga/public_html/profile/profile.php on line 58
-[19-Dec-2025 18:19:10 Europe/Budapest] PHP Warning:  move_uploaded_file(): Unable to move &quot;/tmp/phpGurlx4&quot; to &quot;uploads/HELL\JUMPER_1766164750.jpg&quot; in /home/swmjndga/public_html/profile/profile.php on line 58
-[19-Dec-2025 18:36:44 Europe/Budapest] PHP Warning:  move_uploaded_file(uploads/indibgo@gmail.com_1766165804.jpg): Failed to open stream: No such file or directory in /home/swmjndga/public_html/profile/profile.php on line 58
-[19-Dec-2025 18:36:44 Europe/Budapest] PHP Warning:  move_uploaded_file(): Unable to move &quot;/tmp/phpTfPGAd&quot; to &quot;uploads/indibgo@gmail.com_1766165804.jpg&quot; in /home/swmjndga/public_html/profile/profile.php on line 58
-[23-Dec-2025 13:54:21 Europe/Budapest] PHP Warning:  require(PHPMailer/Exception.php): Failed to open stream: No such file or directory in /home/swmjndga/public_html/profile/forgot.php on line 11
-[23-Dec-2025 13:54:21 Europe/Budapest] PHP Fatal error:  Uncaught Error: Failed opening required 'PHPMailer/Exception.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home/swmjndga/public_html/profile/forgot.php:11
+[14-Mar-2026 13:36:10 Europe/Budapest] PHP Warning:  require(PHPMailer/Exception.php): Failed to open stream: No such file or directory in /home/swmjndga/public_html/f1fanclub/profile/forgot.php on line 11
+[14-Mar-2026 13:36:10 Europe/Budapest] PHP Fatal error:  Uncaught Error: Failed opening required 'PHPMailer/Exception.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home/swmjndga/public_html/f1fanclub/profile/forgot.php:11
 Stack trace:
 #0 {main}
-  thrown in /home/swmjndga/public_html/profile/forgot.php on line 11
-[07-Jan-2026 13:59:59 Europe/Budapest] PHP Warning:  move_uploaded_file(uploads/Zero_1767790799.png): Failed to open stream: No such file or directory in /home/swmjndga/public_html/profile/profile.php on line 58
-[07-Jan-2026 13:59:59 Europe/Budapest] PHP Warning:  move_uploaded_file(): Unable to move &quot;/tmp/phpTSyFL8&quot; to &quot;uploads/Zero_1767790799.png&quot; in /home/swmjndga/public_html/profile/profile.php on line 58
-[07-Jan-2026 14:00:51 Europe/Budapest] PHP Warning:  move_uploaded_file(uploads/Zero_1767790851.jpg): Failed to open stream: No such file or directory in /home/swmjndga/public_html/profile/profile.php on line 58
-[07-Jan-2026 14:00:51 Europe/Budapest] PHP Warning:  move_uploaded_file(): Unable to move &quot;/tmp/php0GOvhK&quot; to &quot;uploads/Zero_1767790851.jpg&quot; in /home/swmjndga/public_html/profile/profile.php on line 58
-[07-Jan-2026 14:01:54 Europe/Budapest] PHP Warning:  move_uploaded_file(uploads/Zero_1767790914.jpg): Failed to open stream: No such file or directory in /home/swmjndga/public_html/profile/profile.php on line 58
-[07-Jan-2026 14:01:54 Europe/Budapest] PHP Warning:  move_uploaded_file(): Unable to move &quot;/tmp/phpeMytZ9&quot; to &quot;uploads/Zero_1767790914.jpg&quot; in /home/swmjndga/public_html/profile/profile.php on line 58
-[09-Jan-2026 11:17:13 Europe/Budapest] PHP Warning:  Undefined variable $profile_image in /home/swmjndga/public_html/profile/profile.php on line 194
-[09-Jan-2026 11:17:13 Europe/Budapest] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in /home/swmjndga/public_html/profile/profile.php on line 194
+  thrown in /home/swmjndga/public_html/f1fanclub/profile/forgot.php on line 11

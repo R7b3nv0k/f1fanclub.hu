@@ -2,15 +2,14 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// ... itt jön a többi kód ...
-// PHPMailer betöltése
+// PHPMailer betöltése a főkönyvtárból (egy szinttel feljebb lépünk a ../ jellel)
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\SMTP;
 
-require 'PHPMailer/Exception.php';
-require 'PHPMailer/PHPMailer.php';
-require 'PHPMailer/SMTP.php';
+require '../PHPMailer/Exception.php';
+require '../PHPMailer/PHPMailer.php';
+require '../PHPMailer/SMTP.php';
 
 $DB_HOST = "localhost";
 $DB_USER = "swmjndga_swmjndga";
@@ -46,37 +45,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // 4. Email küldés
             $mail = new PHPMailer(true);
             try {
-// ... a try { után ...
+                $mail->isSMTP();
+                $mail->Host       = 'mail.f1fanclub.hu'; 
+                $mail->SMTPAuth   = true;
+                $mail->Username   = 'noreply@f1fanclub.hu';
+                $mail->Password   = 'oe1.;Mgm71YW9W'; // Ellenőrizd, hogy biztos jó-e!
 
-    $mail->isSMTP();
-    // 1. VÁLTOZÁS: Nem localhost, hanem a domain előtaggal
-    $mail->Host       = 'mail.f1fanclub.hu'; 
-    $mail->SMTPAuth   = true;
-    $mail->Username   = 'noreply@f1fanclub.hu';
-    $mail->Password   = 'oe1.;Mgm71YW9W'; // Ellenőrizd, hogy biztos jó-e!
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+                $mail->Port       = 465;
 
-    // 2. VÁLTOZÁS: Vissza a 465-ös portra és SMTPS-re
-    $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-    $mail->Port       = 465;
+                $mail->SMTPOptions = array(
+                    'ssl' => array(
+                        'verify_peer' => false,
+                        'verify_peer_name' => false,
+                        'allow_self_signed' => true
+                    )
+                );
 
-    // 3. VÁLTOZÁS: A biztonsági ellenőrzés kikapcsolása (EZ A KULCS!)
-    $mail->SMTPOptions = array(
-        'ssl' => array(
-            'verify_peer' => false,
-            'verify_peer_name' => false,
-            'allow_self_signed' => true
-        )
-    );
-
-    $mail->setFrom('noreply@f1fanclub.hu', 'F1 Fan Club');
-    $mail->addAddress($email);
-
-// ... innen mehet tovább a többi ...
+                $mail->setFrom('noreply@f1fanclub.hu', 'F1 Fan Club');
+                $mail->addAddress($email);
 
                 $mail->isHTML(true);
                 $mail->Subject = 'Uj jelszo igenyles';
                 
-                $link = "http://f1fanclub.hu/ujjelszo.php?token=" . $token;
+                // JAVÍTVA: A pontos elérési út az ujjelszo.php-hez (amely a profile mappában van)
+                $link = "https://f1fanclub.hu/f1fanclub/profile/ujjelszo.php?token=" . $token;
                 
                 $mail->Body    = "
                     <h3>Szia {$user['username']}!</h3>
@@ -92,7 +85,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         }
     } else {
-        // Biztonsági okból nem írjuk ki, ha nincs ilyen email, vagy kiírhatjuk, te döntöd el.
+        // Biztonsági okból nem írjuk ki, ha nincs ilyen email
         $message = "Ha létezik ez az email cím, küldtünk rá levelet.";
     }
 }
@@ -120,7 +113,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <p style="font-size:14px; color:#aaa;">Add meg az email címed, és küldünk egy linket az új jelszó beállításához.</p>
     <input type="email" name="email" placeholder="Email cím" required>
     <input type="submit" value="Küldés">
-    <a href="/login/login.html" class="back">Vissza a belépéshez</a>
+    
+    <a href="/f1fanclub/login/login.html" class="back">Vissza a belépéshez</a>
   </form>
 </body>
 </html>

@@ -1,20 +1,9 @@
-[02-Feb-2026 13:52:22 Europe/Budapest] PHP Warning:  Undefined variable $n in /home/swmjndga/public_html/f1fanclub/news/news.php on line 221
-[02-Feb-2026 13:52:22 Europe/Budapest] PHP Warning:  Trying to access array offset on null in /home/swmjndga/public_html/f1fanclub/news/news.php on line 221
-[02-Feb-2026 13:52:22 Europe/Budapest] PHP Warning:  Undefined variable $n in /home/swmjndga/public_html/f1fanclub/news/news.php on line 222
-[02-Feb-2026 13:52:22 Europe/Budapest] PHP Warning:  Trying to access array offset on null in /home/swmjndga/public_html/f1fanclub/news/news.php on line 222
-[02-Feb-2026 13:52:23 Europe/Budapest] PHP Warning:  Undefined variable $n in /home/swmjndga/public_html/f1fanclub/news/news.php on line 209
-[02-Feb-2026 13:52:23 Europe/Budapest] PHP Warning:  Trying to access array offset on null in /home/swmjndga/public_html/f1fanclub/news/news.php on line 209
-[02-Feb-2026 13:52:23 Europe/Budapest] PHP Warning:  Undefined variable $n in /home/swmjndga/public_html/f1fanclub/news/news.php on line 212
-[02-Feb-2026 13:52:23 Europe/Budapest] PHP Warning:  Trying to access array offset on null in /home/swmjndga/public_html/f1fanclub/news/news.php on line 212
-[02-Feb-2026 13:52:23 Europe/Budapest] PHP Warning:  Undefined variable $n in /home/swmjndga/public_html/f1fanclub/news/news.php on line 221
-[02-Feb-2026 13:52:23 Europe/Budapest] PHP Warning:  Trying to access array offset on null in /home/swmjndga/public_html/f1fanclub/news/news.php on line 221
-[02-Feb-2026 13:52:23 Europe/Budapest] PHP Warning:  Undefined variable $n in /home/swmjndga/public_html/f1fanclub/news/news.php on line 222
-[02-Feb-2026 13:52:23 Europe/Budapest] PHP Warning:  Trying to access array offset on null in /home/swmjndga/public_html/f1fanclub/news/news.php on line 222
-[02-Feb-2026 13:54:16 Europe/Budapest] PHP Warning:  Undefined variable $n in /home/swmjndga/public_html/f1fanclub/news/news.php on line 209
-[02-Feb-2026 13:54:16 Europe/Budapest] PHP Warning:  Trying to access array offset on null in /home/swmjndga/public_html/f1fanclub/news/news.php on line 209
-[02-Feb-2026 13:54:16 Europe/Budapest] PHP Warning:  Undefined variable $n in /home/swmjndga/public_html/f1fanclub/news/news.php on line 212
-[02-Feb-2026 13:54:16 Europe/Budapest] PHP Warning:  Trying to access array offset on null in /home/swmjndga/public_html/f1fanclub/news/news.php on line 212
-[02-Feb-2026 13:54:16 Europe/Budapest] PHP Warning:  Undefined variable $n in /home/swmjndga/public_html/f1fanclub/news/news.php on line 221
-[02-Feb-2026 13:54:16 Europe/Budapest] PHP Warning:  Trying to access array offset on null in /home/swmjndga/public_html/f1fanclub/news/news.php on line 221
-[02-Feb-2026 13:54:16 Europe/Budapest] PHP Warning:  Undefined variable $n in /home/swmjndga/public_html/f1fanclub/news/news.php on line 222
-[02-Feb-2026 13:54:16 Europe/Budapest] PHP Warning:  Trying to access array offset on null in /home/swmjndga/public_html/f1fanclub/news/news.php on line 222
+[08-Mar-2026 15:23:28 Europe/Budapest] PHP Warning:  file_get_contents(): https:// wrapper is disabled in the server configuration by allow_url_fopen=0 in /home/swmjndga/public_html/f1fanclub/news/feed.php on line 83
+[08-Mar-2026 15:23:28 Europe/Budapest] PHP Warning:  file_get_contents(https://api.tinify.com/output/8gkdmhq906kajmqqax1vsn34r78nfbrd): Failed to open stream: no suitable wrapper could be found in /home/swmjndga/public_html/f1fanclub/news/feed.php on line 83
+[08-Mar-2026 15:23:28 Europe/Budapest] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home/swmjndga/public_html/f1fanclub/news/feed.php:83) in /home/swmjndga/public_html/f1fanclub/news/feed.php on line 201
+[08-Mar-2026 15:24:25 Europe/Budapest] PHP Warning:  file_get_contents(): https:// wrapper is disabled in the server configuration by allow_url_fopen=0 in /home/swmjndga/public_html/f1fanclub/news/feed.php on line 83
+[08-Mar-2026 15:24:25 Europe/Budapest] PHP Warning:  file_get_contents(https://api.tinify.com/output/3ex67770yqvdb47ky3kk50eb68c6yvrt): Failed to open stream: no suitable wrapper could be found in /home/swmjndga/public_html/f1fanclub/news/feed.php on line 83
+[08-Mar-2026 15:24:25 Europe/Budapest] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home/swmjndga/public_html/f1fanclub/news/feed.php:83) in /home/swmjndga/public_html/f1fanclub/news/feed.php on line 201
+[09-Mar-2026 13:49:39 Europe/Budapest] PHP Warning:  file_get_contents(): https:// wrapper is disabled in the server configuration by allow_url_fopen=0 in /home/swmjndga/public_html/f1fanclub/news/feed.php on line 83
+[09-Mar-2026 13:49:39 Europe/Budapest] PHP Warning:  file_get_contents(https://api.tinify.com/output/36yr86jm23rtcyn0503f8sf1k0tqh9gv): Failed to open stream: no suitable wrapper could be found in /home/swmjndga/public_html/f1fanclub/news/feed.php on line 83
+[09-Mar-2026 13:49:39 Europe/Budapest] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home/swmjndga/public_html/f1fanclub/news/feed.php:83) in /home/swmjndga/public_html/f1fanclub/news/feed.php on line 201

@@ -15,19 +15,33 @@ if ($conn->connect_error) {
 }
 
 // Csapatszín segédfüggvény (JSON válaszhoz)
-function getTeamColor($team) {
+function getTeamColor($team)
+{
     switch ($team) {
-        case 'Red Bull': return '#1E41FF';
-        case 'Ferrari': return '#DC0000';
-        case 'Mercedes': return '#00D2BE';
-        case 'McLaren': return '#FF8700';
-        case 'Aston Martin': return '#006F62';
-        case 'Alpine': return '#0090FF';
-        case 'Williams': return '#00A0DE';
-        case 'RB': return '#2b2bff';
-        case 'Kick Sauber': return '#52E252';
-        case 'Haas F1 Team': return '#B6BABD';
-        default: return '#ffffff';
+        case 'Red Bull':
+            return '#1E41FF';
+        case 'Ferrari':
+            return '#DC0000';
+        case 'Mercedes':
+            return '#00D2BE';
+        case 'McLaren':
+            return '#FF8700';
+        case 'Aston Martin':
+            return '#006F62';
+        case 'Alpine':
+            return '#0090FF';
+        case 'Williams':
+            return '#00A0DE';
+        case 'RB':
+            return '#2b2bff';
+        case 'Audi':
+            return '#e3000f';
+        case 'Haas F1 Team':
+            return '#B6BABD';
+        case 'Cadillac':
+            return '#1b1b1b';
+        default:
+            return '#ffffff';
     }
 }
 
@@ -35,8 +49,8 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 // --- KOMMENTEK LEKÉRÉSE (GET) ---
 if ($method === 'GET') {
-    $news_id = isset($_GET['news_id']) ? (int)$_GET['news_id'] : 0;
-    
+    $news_id = isset($_GET['news_id']) ? (int) $_GET['news_id'] : 0;
+
     // JOIN-oljuk a users táblát a profilkép és kedvenc csapat miatt
     $stmt = $conn->prepare("
         SELECT c.id, c.username, c.comment, c.created_at, 
@@ -49,7 +63,7 @@ if ($method === 'GET') {
     $stmt->bind_param("i", $news_id);
     $stmt->execute();
     $result = $stmt->get_result();
-    
+
     $comments = [];
     while ($row = $result->fetch_assoc()) {
         $row['team_color'] = getTeamColor($row['fav_team']);
@@ -57,7 +71,7 @@ if ($method === 'GET') {
         $row['date_formatted'] = date('M d, H:i', strtotime($row['created_at']));
         $comments[] = $row;
     }
-    
+
     echo json_encode(['success' => true, 'comments' => $comments]);
     exit;
 }
@@ -69,7 +83,7 @@ if ($method === 'POST') {
         exit;
     }
 
-    $news_id = isset($_POST['news_id']) ? (int)$_POST['news_id'] : 0;
+    $news_id = isset($_POST['news_id']) ? (int) $_POST['news_id'] : 0;
     $comment = isset($_POST['comment']) ? trim($_POST['comment']) : '';
     $username = $_SESSION['username'];
 
@@ -80,7 +94,7 @@ if ($method === 'POST') {
 
     $stmt = $conn->prepare("INSERT INTO news_comments (news_id, username, comment) VALUES (?, ?, ?)");
     $stmt->bind_param("iss", $news_id, $username, $comment);
-    
+
     if ($stmt->execute()) {
         echo json_encode(['success' => true]);
     } else {

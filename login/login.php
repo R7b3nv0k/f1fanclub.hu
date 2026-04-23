@@ -23,10 +23,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (password_verify($password, $user['password'])) {
             // 1. Email ellenőrzés
             if ($user['is_verified'] == 0) {
+<<<<<<< HEAD
+=======
+                // Styled email not verified page
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
                 ?>
                 <!DOCTYPE html>
                 <html lang="hu">
                 <head>
+<<<<<<< HEAD
                     <link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg">
                     <meta charset="UTF-8">
                     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
@@ -178,6 +183,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     scrollbar-width: thin;
     scrollbar-color: #e10600 #1a1a1a;
 }
+=======
+                    <meta charset="UTF-8">
+                    <title>Feldolgozás – F1 Fan Club</title>
+                    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+                    <link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg">
+                    <style>
+                        *{margin:0;padding:0;box-sizing:border-box}
+                        body{background:#0a0a0a;color:#fff;font-family:'Poppins',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0;padding:20px}
+                        .bg-lines{position:fixed;width:200%;height:200%;background:repeating-linear-gradient(60deg,rgba(225,6,0,0.03)0px,rgba(225,6,0,0.03)2px,transparent 2px,transparent 10px);animation:slide 10s linear infinite;opacity:0.3;z-index:-1;top:0;left:0}
+                        @keyframes slide{from{transform:translateX(0)}to{transform:translateX(-200px)}}
+                        .card{background:linear-gradient(145deg,#111,#1a1a1a);padding:50px 40px;border-radius:30px;max-width:450px;width:100%;border:1px solid rgba(225,6,0,0.3);text-align:center;position:relative;animation:slideInUp 0.8s ease-out}
+                        .card::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,transparent,#e10600 20%,#e10600 80%,transparent)}
+                        .logo-title{font-size:32px;font-weight:800;text-transform:uppercase;margin-bottom:30px;display:flex;justify-content:center;align-items:center;gap:12px}
+                        .logo-title img{width:50px}
+                        .error-icon{font-size:60px;color:#ffcc00;margin-bottom:20px}
+                        h2{font-weight:800;font-size:2rem;text-transform:uppercase;color:#ffcc00;margin-bottom:15px}
+                        .message{margin:20px 0;font-size:1rem;color:#ddd;line-height:1.6}
+                        .btn{display:inline-block;background:linear-gradient(145deg,#e10600,#ff4d4d);color:#fff;padding:14px 32px;text-decoration:none;border-radius:50px;font-weight:700;margin-top:20px;transition:all 0.3s ease}
+                        .btn:hover{transform:translateY(-3px)}
+                        @keyframes slideInUp{from{opacity:0;transform:translateY(50px)}to{opacity:1;transform:translateY(0)}}
+                        @media(max-width:500px){.card{padding:35px 25px}.logo-title{font-size:26px}.logo-title img{width:40px}h2{font-size:1.6rem}}
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
                     </style>
                 </head>
                 <body>
@@ -185,9 +213,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="card">
                     <div class="logo-title"><img src="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg" alt="F1 Logo"><span>Fan Club</span></div>
                     <div class="error-icon"><i class="fas fa-envelope"></i></div>
+<<<<<<< HEAD
                     <h2>FELDOLGOZÁS...</h2>
                     <div class="message">A fiókod még nincs megerősítve!<br>Kérlek ellenőrizd az emailjeidet.</div>
                     <a href="login.html" class="btn">VISSZA</a>
+=======
+                    <h2>Feldolgozás...</h2>
+                    <div class="message">A fiókod még nincs megerősítve!<br>Kérlek ellenőrizd az emailjeidet.</div>
+                    <a href="login.html" class="btn">Vissza</a>
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
                 </div>
                 </body>
                 </html>
@@ -199,6 +233,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['username'] = $user['username'];
             $_SESSION['role'] = $user['role'];
             
+<<<<<<< HEAD
             $ip_address = $_SERVER['REMOTE_ADDR'];
             $update_ip = $conn->prepare("UPDATE users SET ip_address = ? WHERE id = ?");
             $update_ip->bind_param("si", $ip_address, $user['id']);
@@ -212,6 +247,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $insert_log->execute();
             $insert_log->close();
 
+=======
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
             $current_session_id = session_id();
             $update_session = $conn->prepare("UPDATE users SET session_token = ? WHERE id = ?");
             $update_session->bind_param("si", $current_session_id, $user['id']);
@@ -233,10 +270,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit;
 
         } else {
+<<<<<<< HEAD
+=======
+            // Styled wrong password page
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
             ?>
             <!DOCTYPE html>
             <html lang="hu">
             <head>
+<<<<<<< HEAD
                 <link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg">
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
@@ -388,6 +430,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     scrollbar-width: thin;
     scrollbar-color: #e10600 #1a1a1a;
 }
+=======
+                <meta charset="UTF-8">
+                <title>Hibás Jelszó – F1 Fan Club</title>
+                <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+                <link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg">
+                <style>
+                    *{margin:0;padding:0;box-sizing:border-box}
+                    body{background:#0a0a0a;color:#fff;font-family:'Poppins',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0;padding:20px}
+                    .bg-lines{position:fixed;width:200%;height:200%;background:repeating-linear-gradient(60deg,rgba(225,6,0,0.03)0px,rgba(225,6,0,0.03)2px,transparent 2px,transparent 10px);animation:slide 10s linear infinite;opacity:0.3;z-index:-1;top:0;left:0}
+                    @keyframes slide{from{transform:translateX(0)}to{transform:translateX(-200px)}}
+                    .card{background:linear-gradient(145deg,#111,#1a1a1a);padding:50px 40px;border-radius:30px;max-width:450px;width:100%;border:1px solid rgba(225,6,0,0.3);text-align:center;position:relative;animation:slideInUp 0.8s ease-out}
+                    .card::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,transparent,#e10600 20%,#e10600 80%,transparent)}
+                    .logo-title{font-size:32px;font-weight:800;text-transform:uppercase;margin-bottom:30px;display:flex;justify-content:center;align-items:center;gap:12px}
+                    .logo-title img{width:50px}
+                    .error-icon{font-size:60px;color:#e10600;margin-bottom:20px}
+                    h2{font-weight:800;font-size:2rem;text-transform:uppercase;color:#e10600;margin-bottom:15px}
+                    .message{margin:20px 0;font-size:1rem;color:#ddd;line-height:1.6}
+                    .btn{display:inline-block;background:linear-gradient(145deg,#e10600,#ff4d4d);color:#fff;padding:14px 32px;text-decoration:none;border-radius:50px;font-weight:700;margin-top:20px;transition:all 0.3s ease}
+                    .btn:hover{transform:translateY(-3px)}
+                    @keyframes slideInUp{from{opacity:0;transform:translateY(50px)}to{opacity:1;transform:translateY(0)}}
+                    @media(max-width:500px){.card{padding:35px 25px}.logo-title{font-size:26px}.logo-title img{width:40px}h2{font-size:1.6rem}}
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
                 </style>
             </head>
             <body>
@@ -395,19 +460,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="card">
                 <div class="logo-title"><img src="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg" alt="F1 Logo"><span>Fan Club</span></div>
                 <div class="error-icon"><i class="fas fa-lock"></i></div>
+<<<<<<< HEAD
                 <h2>HIBÁS JELSZÓ!</h2>
                 <div class="message">A megadott jelszó nem megfelelő.<br>Kérlek próbáld újra!</div>
                 <a href="login.html" class="btn">VISSZA</a>
+=======
+                <h2>Hibás jelszó!</h2>
+                <div class="message">A megadott jelszó nem megfelelő.<br>Kérlek próbáld újra!</div>
+                <a href="login.html" class="btn">Vissza</a>
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
             </div>
             </body>
             </html>
             <?php
         }
     } else {
+<<<<<<< HEAD
+=======
+        // Styled user not found page
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
         ?>
         <!DOCTYPE html>
         <html lang="hu">
         <head>
+<<<<<<< HEAD
                                 <link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg">
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
@@ -559,6 +635,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     scrollbar-width: thin;
     scrollbar-color: #e10600 #1a1a1a;
 }
+=======
+            <meta charset="UTF-8">
+            <title>Hibás Felhasználónév – F1 Fan Club</title>
+            <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+            <link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg">
+            <style>
+                *{margin:0;padding:0;box-sizing:border-box}
+                body{background:#0a0a0a;color:#fff;font-family:'Poppins',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0;padding:20px}
+                .bg-lines{position:fixed;width:200%;height:200%;background:repeating-linear-gradient(60deg,rgba(225,6,0,0.03)0px,rgba(225,6,0,0.03)2px,transparent 2px,transparent 10px);animation:slide 10s linear infinite;opacity:0.3;z-index:-1;top:0;left:0}
+                @keyframes slide{from{transform:translateX(0)}to{transform:translateX(-200px)}}
+                .card{background:linear-gradient(145deg,#111,#1a1a1a);padding:50px 40px;border-radius:30px;max-width:450px;width:100%;border:1px solid rgba(225,6,0,0.3);text-align:center;position:relative;animation:slideInUp 0.8s ease-out}
+                .card::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,transparent,#e10600 20%,#e10600 80%,transparent)}
+                .logo-title{font-size:32px;font-weight:800;text-transform:uppercase;margin-bottom:30px;display:flex;justify-content:center;align-items:center;gap:12px}
+                .logo-title img{width:50px}
+                .error-icon{font-size:60px;color:#e10600;margin-bottom:20px}
+                h2{font-weight:800;font-size:2rem;text-transform:uppercase;color:#e10600;margin-bottom:15px}
+                .message{margin:20px 0;font-size:1rem;color:#ddd;line-height:1.6}
+                .btn{display:inline-block;background:linear-gradient(145deg,#e10600,#ff4d4d);color:#fff;padding:14px 32px;text-decoration:none;border-radius:50px;font-weight:700;margin-top:20px;transition:all 0.3s ease}
+                .btn:hover{transform:translateY(-3px)}
+                @keyframes slideInUp{from{opacity:0;transform:translateY(50px)}to{opacity:1;transform:translateY(0)}}
+                @media(max-width:500px){.card{padding:35px 25px}.logo-title{font-size:26px}.logo-title img{width:40px}h2{font-size:1.6rem}}
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
             </style>
         </head>
         <body>
@@ -566,9 +665,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="card">
             <div class="logo-title"><img src="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg" alt="F1 Logo"><span>Fan Club</span></div>
             <div class="error-icon"><i class="fas fa-user-slash"></i></div>
+<<<<<<< HEAD
             <h2>HIBÁS FELHASZNÁLÓNÉV!</h2>
             <div class="message">A megadott felhasználónév nem létezik.<br>Kérlek ellenőrizd és próbáld újra!</div>
             <a href="login.html" class="btn">VISSZA</a>
+=======
+            <h2>Hibás felhasználónév!</h2>
+            <div class="message">A megadott felhasználónév nem létezik.<br>Kérlek ellenőrizd és próbáld újra!</div>
+            <a href="login.html" class="btn">Vissza</a>
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
         </div>
         </body>
         </html>

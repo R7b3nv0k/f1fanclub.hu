@@ -40,7 +40,27 @@
       background: radial-gradient(circle at 20% 50%, rgba(225, 6, 0, 0.05) 0%, transparent 50%),
         radial-gradient(circle at 80% 80%, rgba(225, 6, 0, 0.05) 0%, transparent 50%);
       pointer-events: none;
+<<<<<<< HEAD
+=======
       z-index: -1;
+    }
+
+    /* Speed lines effect */
+    .bg-lines {
+      position: fixed;
+      width: 200%;
+      height: 200%;
+      background: repeating-linear-gradient(60deg,
+          rgba(225, 6, 0, 0.03) 0px,
+          rgba(225, 6, 0, 0.03) 2px,
+          transparent 2px,
+          transparent 10px);
+      animation: slide 10s linear infinite;
+      opacity: 0.3;
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
+      z-index: -1;
+      top: 0;
+      left: 0;
     }
 
     /* Speed lines effect */
@@ -70,7 +90,11 @@
       padding: 50px 40px;
       border-radius: 30px;
       width: 100%;
+<<<<<<< HEAD
       max-width: 480px;
+=======
+      max-width: 450px;
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
       margin: 0 auto;
       border: 1px solid rgba(225, 6, 0, 0.3);
       box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8),
@@ -116,8 +140,20 @@
     }
 
     @keyframes borderGlow {
+<<<<<<< HEAD
       0%, 100% { opacity: 0.3; }
       50% { opacity: 0.8; }
+=======
+
+      0%,
+      100% {
+        opacity: 0.3;
+      }
+
+      50% {
+        opacity: 0.8;
+      }
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
     }
 
     .logo-title {
@@ -133,7 +169,10 @@
       gap: 12px;
       position: relative;
       z-index: 2;
+<<<<<<< HEAD
       text-align: center;
+=======
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
     }
 
     .logo-title img {
@@ -157,7 +196,10 @@
       display: inline-block;
       width: 100%;
       text-align: center;
+<<<<<<< HEAD
       word-break: break-word;
+=======
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
     }
 
     h2::after {
@@ -316,6 +358,153 @@
       font-style: italic;
       position: relative;
       z-index: 2;
+<<<<<<< HEAD
+=======
+    }
+
+    /* Animation for page load */
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Team color classes */
+    .team-red-bull {
+      --team-color: #1E41FF;
+      --team-color-rgb: 30, 65, 255;
+    }
+
+    .team-ferrari {
+      --team-color: #DC0000;
+      --team-color-rgb: 220, 0, 0;
+    }
+
+    .team-mercedes {
+      --team-color: #00D2BE;
+      --team-color-rgb: 0, 210, 190;
+    }
+
+    .team-mclaren {
+      --team-color: #FF8700;
+      --team-color-rgb: 255, 135, 0;
+    }
+
+    .team-aston-martin {
+      --team-color: #006F62;
+      --team-color-rgb: 0, 111, 98;
+    }
+
+    .team-alpine {
+      --team-color: #0090FF;
+      --team-color-rgb: 0, 144, 255;
+    }
+
+    .team-williams {
+      --team-color: #00A0DE;
+      --team-color-rgb: 0, 160, 222;
+    }
+
+    .team-rb {
+      --team-color: #2b2bff;
+      --team-color-rgb: 43, 43, 255;
+    }
+
+    .team-audi {
+      --team-color: #e3000f;
+      --team-color-rgb: 227, 0, 15;
+    }
+
+    .team-haas {
+      --team-color: #B6BABD;
+      --team-color-rgb: 182, 186, 189;
+    }
+
+    .team-cadillac {
+      --team-color: #B6BABD;
+      --team-color-rgb: 27, 27, 27;
+    }
+
+    .team-default {
+      --team-color: #e10600;
+      --team-color-rgb: 225, 6, 0;
+    }
+
+    /* Apply team color to various elements */
+    .register-box.team-active {
+      border-color: rgba(var(--team-color-rgb), 0.5);
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), 0 0 50px rgba(var(--team-color-rgb), 0.3);
+    }
+
+    .register-box.team-active::before {
+      background: linear-gradient(90deg, transparent 0%, var(--team-color) 20%, var(--team-color) 80%, transparent 100%);
+    }
+
+    .register-box.team-active::after {
+      background: linear-gradient(45deg, transparent 30%, rgba(var(--team-color-rgb), 0.15) 50%, transparent 70%);
+    }
+
+    .register-box.team-active h2 {
+      color: var(--team-color);
+    }
+
+    .register-box.team-active h2::after {
+      background: linear-gradient(90deg, transparent 0%, var(--team-color) 20%, var(--team-color) 80%, transparent 100%);
+    }
+
+    .register-box.team-active .field-label {
+      color: var(--team-color);
+    }
+
+    .register-box.team-active input:focus,
+    .register-box.team-active select:focus {
+      border-left-color: var(--team-color);
+      box-shadow: 0 0 20px rgba(var(--team-color-rgb), 0.3);
+    }
+
+    .register-box.team-active .back:hover {
+      color: var(--team-color);
+      text-shadow: 0 0 10px rgba(var(--team-color-rgb), 0.5);
+    }
+
+    /* Responsive design */
+    @media (max-width: 500px) {
+      body {
+        padding: 15px;
+      }
+
+      .register-box {
+        padding: 35px 25px;
+      }
+
+      .logo-title {
+        font-size: 26px;
+      }
+
+      .logo-title img {
+        width: 40px;
+      }
+
+      h2 {
+        font-size: 1.8rem;
+      }
+
+      input,
+      select {
+        padding: 12px 14px;
+      }
+
+      input[type="submit"] {
+        font-size: 1rem;
+        padding: 14px;
+      }
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
     }
 
     /* Animation for page load */
@@ -520,11 +709,14 @@
   <div class="bg-lines"></div>
 
   <form class="register-box team-default" id="registerForm" action="/f1fanclub/register/register.php" method="post">
+<<<<<<< HEAD
 
     <div class="logo-title">
       <img src="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg" alt="F1 Logo">
       <span>Fan Club</span>
     </div>
+=======
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
 
     <h2>Regisztráció</h2>
 
@@ -570,11 +762,19 @@
       const teamSelect = document.getElementById('teamSelect');
       const submitBtn = document.getElementById('submitBtn');
 
+<<<<<<< HEAD
+=======
+      // Input fields
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
       const username = document.getElementById('username');
       const email = document.getElementById('email');
       const password = document.getElementById('password');
       const passwordConfirm = document.getElementById('password_confirm');
 
+<<<<<<< HEAD
+=======
+      // Team color mapping from PHP function
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
       const teamColors = {
         'Red Bull': { color: '#1E41FF', rgb: '30, 65, 255' },
         'Ferrari': { color: '#DC0000', rgb: '220, 0, 0' },
@@ -589,8 +789,15 @@
         'Cadillac': { color: '#B6BABD', rgb: '182, 186, 189' }
       };
 
+<<<<<<< HEAD
       const defaultColor = { color: '#e10600', rgb: '225, 6, 0' };
 
+=======
+      // Default F1 red
+      const defaultColor = { color: '#e10600', rgb: '225, 6, 0' };
+
+      // Function to check if all inputs are valid
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
       function checkFormValidity() {
         const isUsernameValid = username.value.trim() !== '';
         const isEmailValid = email.value.trim() !== '' && email.validity.valid;
@@ -600,6 +807,10 @@
         return isUsernameValid && isEmailValid && isPasswordValid && isPasswordConfirmValid;
       }
 
+<<<<<<< HEAD
+=======
+      // Function to update button state
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
       function updateButtonState() {
         const isValid = checkFormValidity();
 
@@ -612,7 +823,13 @@
         }
       }
 
+<<<<<<< HEAD
       function updateTeamColor(selectedTeam) {
+=======
+      // Function to update team color
+      function updateTeamColor(selectedTeam) {
+        // Remove all team classes
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
         registerBox.classList.remove(
           'team-red-bull', 'team-ferrari', 'team-mercedes', 'team-mclaren',
           'team-aston-martin', 'team-alpine', 'team-williams', 'team-rb',
@@ -625,6 +842,10 @@
           teamColor = teamColors[selectedTeam].color;
           teamRgb = teamColors[selectedTeam].rgb;
 
+<<<<<<< HEAD
+=======
+          // Add specific team class
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
           switch (selectedTeam) {
             case 'Red Bull': registerBox.classList.add('team-red-bull'); break;
             case 'Ferrari': registerBox.classList.add('team-ferrari'); break;
@@ -644,6 +865,7 @@
           registerBox.classList.add('team-default');
         }
 
+<<<<<<< HEAD
         registerBox.style.setProperty('--team-color', teamColor);
         registerBox.style.setProperty('--team-color-rgb', teamRgb);
         registerBox.classList.add('team-active');
@@ -652,17 +874,45 @@
 
       updateTeamColor('');
 
+=======
+        // Set CSS custom property for RGB values
+        registerBox.style.setProperty('--team-color', teamColor);
+        registerBox.style.setProperty('--team-color-rgb', teamRgb);
+
+        // Add active class for transitions
+        registerBox.classList.add('team-active');
+
+        // Update button state (to refresh button color if valid)
+        updateButtonState();
+      }
+
+      // Initialize with default color
+      updateTeamColor('');
+
+      // Add event listeners for form inputs
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
       username.addEventListener('input', updateButtonState);
       email.addEventListener('input', updateButtonState);
       password.addEventListener('input', updateButtonState);
       passwordConfirm.addEventListener('input', updateButtonState);
 
+<<<<<<< HEAD
+=======
+      // Add event listener for team selection
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
       teamSelect.addEventListener('change', function () {
         updateTeamColor(this.value);
       });
 
+<<<<<<< HEAD
       updateButtonState();
 
+=======
+      // Initial button state check
+      updateButtonState();
+
+      // Prevent form submission if button is disabled (additional safety)
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
       submitBtn.addEventListener('click', function (e) {
         if (!checkFormValidity()) {
           e.preventDefault();

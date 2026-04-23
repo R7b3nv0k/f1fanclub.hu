@@ -23,6 +23,7 @@ $username = $isLoggedIn ? $_SESSION['username'] : null;
 
 function getTeamColor($team) {
     switch ($team) {
+<<<<<<< HEAD
         case 'Red Bull': return '#1E41FF'; 
         case 'Ferrari': return '#DC0000'; 
         case 'Mercedes': return '#00D2BE';
@@ -37,6 +38,12 @@ function getTeamColor($team) {
         case 'Haas': return '#B6BABD';
         case 'Cadillac': return '#B6BABD'; 
         default: return '#ffffff';
+=======
+        case 'Red Bull': return '#1E41FF'; case 'Ferrari': return '#DC0000'; case 'Mercedes': return '#00D2BE';
+        case 'McLaren': return '#FF8700'; case 'Aston Martin': return '#006F62'; case 'Alpine': return '#0090FF';
+        case 'Williams': return '#00A0DE'; case 'RB': return '#2b2bff'; case 'Audi': return '#e3000f';
+        case 'Haas F1 Team': return '#B6BABD'; case 'Cadillac': return '#1b1b1b'; default: return '#ffffff';
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
     }
 }
 
@@ -70,6 +77,7 @@ $teamColorsJS = [
     <link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;0,900;1,400&family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
     <style>
+<<<<<<< HEAD
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body { 
@@ -311,10 +319,33 @@ $teamColorsJS = [
             gap: 15px; 
         }
         
+=======
+        body { background-color: #050505; background-image: radial-gradient(circle at 50% 0%, #1a0505 0%, #050505 60%); background-attachment: fixed; font-family: 'Montserrat', sans-serif; color: #fff; }
+        
+        .live-wrapper { display: flex; gap: 20px; max-width: 1700px; width: 98%; margin: 30px auto; align-items: flex-start; }
+        .telemetry-panel { flex: 3; min-width: 0; } 
+        
+        .chat-panel { 
+            flex: 1; 
+            background: #0a0a0a; 
+            border: 1px solid #333; 
+            border-radius: 12px; 
+            height: calc(100vh - 120px); 
+            display: flex; 
+            flex-direction: column; 
+            position: sticky; 
+            top: 100px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8); 
+            overflow: hidden; 
+        }
+        .chat-header { background: #111; padding: 15px 20px; font-weight: 900; text-transform: uppercase; color: #fff; border-bottom: 2px solid #e10600; display: flex; align-items: center; gap: 10px; }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 15px; }
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
         .chat-messages::-webkit-scrollbar { width: 6px; }
         .chat-messages::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
 
         .chat-msg { display: flex; gap: 12px; animation: fadeIn 0.3s ease; }
+<<<<<<< HEAD
         .chat-msg img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid transparent; flex-shrink: 0; }
         .chat-msg-body { 
             background: #1a1a1a; 
@@ -326,10 +357,15 @@ $teamColorsJS = [
             border: 1px solid #222; 
         }
         
+=======
+        .chat-msg img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid transparent; }
+        .chat-msg-body { background: #1a1a1a; padding: 10px 14px; border-radius: 0 12px 12px 12px; font-size: 0.9rem; color: #ddd; width: 100%; border: 1px solid #222; }
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
         .chat-user-info { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.75rem; }
         .chat-user-name { font-weight: 800; text-transform: uppercase; }
         .chat-time { color: #666; }
         
+<<<<<<< HEAD
         .chat-input-area { 
             display: flex; 
             padding: 15px; 
@@ -483,11 +519,49 @@ $teamColorsJS = [
         
         .tyre-container { display: flex; align-items: center; gap: 8px; }
         .tyre-badge { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; color: #000; font-size: 0.85rem; }
+=======
+        .chat-input-area { display: flex; padding: 15px; background: #111; border-top: 1px solid #333; }
+        .chat-input-area input { flex: 1; padding: 12px 15px; border-radius: 25px; border: 1px solid #444; background: #000; color: #fff; font-family: 'Poppins', sans-serif; outline: none; transition: border 0.3s; }
+        .chat-input-area input:focus { border-color: #e10600; }
+        .chat-input-area button { background: #e10600; color: #fff; border: none; border-radius: 50%; width: 45px; height: 45px; margin-left: 10px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+        .chat-input-area button:hover { background: #ff1a1a; transform: scale(1.05); }
+        .chat-guest-msg { padding: 20px; text-align: center; color: #888; font-size: 0.9rem; background: #111; border-top: 1px solid #333; }
+        .chat-guest-msg a { color: #e10600; text-decoration: underline; }
+
+        .race-header { display: flex; justify-content: space-between; align-items: center; background: rgba(15, 15, 20, 0.8); backdrop-filter: blur(10px); padding: 25px 30px; border-radius: 12px; border-bottom: 4px solid #e10600; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .race-header h1 { margin: 0; font-size: 2.2rem; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; }
+        .lap-counter { font-size: 2.8rem; font-weight: 900; color: #fff; font-family: 'Roboto Mono', monospace; line-height: 1; }
+        .lap-label { font-size: 1rem; color: #888; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; margin-bottom: 5px; text-align:right;}
+        .indicators { display: flex; gap: 15px; margin-top: 10px; }
+        .indicator-badge { padding: 5px 15px; border-radius: 6px; font-weight: 800; font-size: 0.9rem; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
+        .weather-sunny { background: rgba(255, 204, 0, 0.1); color: #ffcc00; border: 1px solid #ffcc00; }
+        .weather-rain { background: rgba(0, 122, 255, 0.1); color: #007aff; border: 1px solid #007aff; }
+        .sc-active { background: rgba(255, 204, 0, 0.2); color: #ffcc00; border: 2px solid #ffcc00; animation: blink 1s infinite; }
+        .leaderboard-header { display: grid; grid-template-columns: 80px 3.5fr 2.5fr 200px 150px 120px; padding: 10px 20px; color: #888; text-transform: uppercase; font-size: 0.85rem; font-weight: 700; letter-spacing: 1px; border-bottom: 2px solid #333; margin-bottom: 10px; }
+        .leaderboard-grid { position: relative; width: 100%; transition: height 0.5s; }
+        .telemetry-row { position: absolute; left: 0; right: 0; height: 70px; display: grid; grid-template-columns: 80px 3.5fr 2.5fr 200px 150px 120px; align-items: center; background: linear-gradient(90deg, #151515, #0f0f0f); border-radius: 8px; border-left: 4px solid transparent; padding: 0 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease; }
+        .telemetry-row.leader { border-left-color: #e10600; background: linear-gradient(90deg, rgba(225,6,0,0.1), #0f0f0f); }
+        .telemetry-row.sc-mode { background: linear-gradient(90deg, rgba(255,204,0,0.1), #0f0f0f); border-left-color: #ffcc00; }
+        .pos-num { font-weight: 900; font-size: 1.6rem; width: 40px; text-align: center; }
+        .driver-info { display: flex; align-items: center; gap: 15px; }
+        .driver-pic-box { width: 50px; height: 50px; flex-shrink: 0; border-radius: 50%; border: 2px solid #333; background: rgba(255,255,255,0.05); overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .driver-portrait { width: 100%; height: 100%; object-fit: cover; object-position: top center; transform-origin: top center; transform: scale(1.3); }
+        .team-logo-box { width: 40px; height: 40px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+        .team-logo-small { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .driver-name { font-weight: 800; color: #fff; font-size: 1.2rem; }
+        .driver-abbr { color: #888; font-size: 0.9rem; font-weight: 700; }
+        .team-name { font-weight: 600; color: #ccc; font-size: 1rem; }
+        .gap-text { font-family: 'Roboto Mono', monospace; color: #e10600; font-weight: 700; font-size: 1.2rem; }
+        .gap-sc { color: #ffcc00 !important; }
+        .tyre-container { display: flex; align-items: center; gap: 10px; }
+        .tyre-badge { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; color: #000; font-size: 0.9rem; }
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
         .tyre-S { background-color: #ff3b30; box-shadow: 0 0 8px rgba(255,59,48,0.5); } 
         .tyre-M { background-color: #ffcc00; box-shadow: 0 0 8px rgba(255,204,0,0.5); } 
         .tyre-H { background-color: #fff; box-shadow: 0 0 8px rgba(255,255,255,0.5); } 
         .tyre-I { background-color: #34c759; box-shadow: 0 0 8px rgba(52,199,89,0.5); color: #fff;} 
         .tyre-W { background-color: #007aff; box-shadow: 0 0 8px rgba(0,122,255,0.5); color: #fff;} 
+<<<<<<< HEAD
         .wear-bar-bg { width: 60px; height: 6px; background: #222; border-radius: 3px; overflow: hidden; }
         .wear-bar-fill { height: 100%; background: #00D2BE; transition: width 0.5s; }
         .wear-high { background: #e10600; }
@@ -504,6 +578,134 @@ $teamColorsJS = [
         .standings-table td { padding: 12px; border-bottom: 1px solid #1a1a1a; }
         .standings-table tr:hover { background: #161616; }
         .champ-gold { color: #d4af37; font-weight: 900; }
+=======
+        .wear-bar-bg { width: 80px; height: 6px; background: #222; border-radius: 3px; overflow: hidden; }
+        .wear-bar-fill { height: 100%; background: #00D2BE; transition: width 0.5s; }
+        .wear-high { background: #e10600; }
+        .status-dnf { color: #e10600; font-weight: 800; background: rgba(225,6,0,0.1); padding: 5px 12px; border-radius: 4px; }
+        .status-pit { color: #ffcc00; font-weight: 800; animation: blink 1.5s infinite; background: rgba(255,204,0,0.1); padding: 5px 12px; border-radius: 4px; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        #postRaceStandings { display: none; margin-top: 60px; animation: fadeIn 1s; }
+        .standings-table { width: 100%; border-collapse: collapse; background: #0d0d0d; border-radius: 12px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.8); }
+        .standings-table th { background: #151515; color: #666; padding: 15px; text-transform: uppercase; text-align: left; }
+        .standings-table td { padding: 15px; border-bottom: 1px solid #1a1a1a; }
+        .standings-table tr:hover { background: #161616; }
+        .champ-gold { color: #d4af37; font-weight: 900; }
+        
+        @media(max-width: 1200px) { .live-wrapper { flex-direction: column; } .chat-panel { width: 100%; height: 500px; position: static; } }
+
+        /* Dropdown menu styles */
+        .dropdown-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .welcome {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 5px 12px;
+            border-radius: 30px;
+            border: 1px solid rgba(225, 6, 0, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .welcome:hover {
+            background: rgba(225, 6, 0, 0.15);
+            border-color: #e10600;
+        }
+
+        .dropdown-menu-modern {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: linear-gradient(145deg, #111111, #1a1a1f);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: 1px solid rgba(225, 6, 0, 0.4);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+            min-width: 240px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-8px);
+            transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            z-index: 1050;
+        }
+
+        .dropdown-container.open .dropdown-menu-modern {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-menu-modern a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: #eee;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .dropdown-menu-modern a:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-menu-modern a:hover {
+            background: rgba(225, 6, 0, 0.2);
+            color: white;
+            padding-left: 24px;
+        }
+
+        .dropdown-menu-modern i {
+            width: 24px;
+            color: #e10600;
+            font-size: 1.1rem;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 6px 0;
+        }
+
+        .dropdown-arrow-icon {
+            margin-left: 6px;
+            font-size: 0.7rem;
+            transition: transform 0.2s;
+            color: #e10600;
+        }
+
+        .dropdown-container.open .dropdown-arrow-icon {
+            transform: rotate(180deg);
+        }
+
+        .admin-badge {
+            position: absolute;
+            right: 15px;
+            background: #e10600;
+            color: white;
+            font-size: 0.65rem;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .clickable-user {
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .clickable-user:hover {
+            opacity: 0.8;
+        }
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
 
         /* Modal Styles */
         .user-modal-overlay {
@@ -522,7 +724,10 @@ $teamColorsJS = [
         .user-modal-content {
             background: linear-gradient(145deg, #111, #1a1a1a);
             width: 320px;
+<<<<<<< HEAD
             max-width: 90%;
+=======
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
             border-radius: 24px;
             border: 1px solid #e10600;
             padding: 20px;
@@ -545,7 +750,13 @@ $teamColorsJS = [
             font-size: 1.3rem;
             cursor: pointer;
         }
+<<<<<<< HEAD
         .user-modal-close:hover { color: #e10600; }
+=======
+        .user-modal-close:hover {
+            color: #e10600;
+        }
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
         .user-modal-header img {
             width: 80px;
             height: 80px;
@@ -573,11 +784,17 @@ $teamColorsJS = [
         .user-modal-footer {
             display: flex;
             gap: 10px;
+<<<<<<< HEAD
             flex-wrap: wrap;
         }
         .user-modal-footer button {
             flex: 1;
             min-width: 120px;
+=======
+        }
+        .user-modal-footer button {
+            flex: 1;
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
             padding: 10px;
             border: none;
             border-radius: 40px;
@@ -588,6 +805,7 @@ $teamColorsJS = [
             align-items: center;
             justify-content: center;
             gap: 6px;
+<<<<<<< HEAD
             font-size: 0.8rem;
         }
         .btn-add-friend { background: #333; color: white; }
@@ -891,11 +1109,29 @@ $teamColorsJS = [
     scrollbar-width: thin;
     scrollbar-color: #e10600 #1a1a1a;
 }
+=======
+        }
+        .btn-add-friend {
+            background: #333;
+            color: white;
+        }
+        .btn-add-friend:hover {
+            background: #444;
+        }
+        .btn-send-msg {
+            background: #e10600;
+            color: white;
+        }
+        .btn-send-msg:hover {
+            background: #b00500;
+        }
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
     </style>
 </head>
 <body>
 
 <header>
+<<<<<<< HEAD
     <div class="left-header">
         <a href="/f1fanclub/index.php" class="logo-title">
             <img src="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg" alt="F1 Logo">
@@ -952,6 +1188,66 @@ $teamColorsJS = [
             <a href="/f1fanclub/login/login.html" class="btn">Bejelentkezés</a>
         </div>
     <?php endif; ?>
+=======
+  <div class="left-header">
+    <h1 class="logo-title">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg" class="f1-logo" alt="F1 Logo" style="height: 40px; vertical-align: middle;">
+      <span>Fan Club</span>
+    </h1>
+  </div>
+  <nav style="margin: 20px 0;">
+      <a href="/f1fanclub/index.php" style="color:white; margin:0 10px;">Kezdőlap</a>
+      <a href="/f1fanclub/Championship/championship.php" style="color:white; margin:0 10px;">Bajnokság</a>
+      <a href="/f1fanclub/teams/teams.php" style="color:white; margin:0 10px;">Csapatok</a>
+      <a href="/f1fanclub/drivers/drivers.php" style="color:white; margin:0 10px;">Versenyzők</a>
+      <a href="/f1fanclub/news/feed.php" style="color:white; margin:0 10px;">Paddock</a>
+      <a href="/f1fanclub/pitwall/pitwall.php" style="color:white; margin:0 10px;"><i class="fas fa-trophy" style="margin-right: 5px;"></i> A Fal</a>
+  </nav>
+  
+  <!-- DROPDOWN MENU - Same as other pages -->
+  <?php if ($isLoggedIn): ?>
+    <div class="dropdown-container" id="userDropdownContainer">
+        <div class="auth">
+            <div class="welcome" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                <?php if ($profile_image): ?>
+                    <img src="/f1fanclub/uploads/<?php echo htmlspecialchars($profile_image); ?>" class="avatar clickable-user"
+                        alt="Profilkép" onclick="openUserProfile('<?php echo htmlspecialchars(addslashes($username)); ?>')"
+                        style="width:35px; height:35px; border-radius:50%; object-fit: cover; border: 2px solid <?php echo htmlspecialchars($teamColor); ?>;">
+                <?php endif; ?>
+                <span class="welcome-text">
+                    <span class="clickable-user" onclick="openUserProfile('<?php echo htmlspecialchars(addslashes($username)); ?>')"
+                        style="color: <?php echo htmlspecialchars($teamColor); ?>; font-weight:bold;"><?php echo htmlspecialchars($username); ?></span>
+                </span>
+                <i class="fas fa-chevron-down dropdown-arrow-icon"></i>
+            </div>
+        </div>
+        
+        <div class="dropdown-menu-modern">
+            <a href="/f1fanclub/profile/profile.php">
+                <i class="fas fa-user-circle"></i> Profilom
+            </a>
+            <a href="/f1fanclub/messages/messages.php">
+                <i class="fas fa-envelope"></i> Üzenetek
+            </a>
+            <?php if ($isAdmin): ?>
+                <a href="/f1fanclub/admin/admin.php" style="position: relative;">
+                    <i class="fas fa-shield-alt"></i> Admin Panel
+                    <span class="admin-badge">ADMIN</span>
+                </a>
+            <?php endif; ?>
+            <div class="dropdown-divider"></div>
+            <a href="/f1fanclub/logout/logout.php">
+                <i class="fas fa-sign-out-alt"></i> Kijelentkezés
+            </a>
+        </div>
+    </div>
+  <?php else: ?>
+    <div class="auth">
+        <a href="/f1fanclub/register/register.html" class="btn">Regisztráció</a>
+        <a href="/f1fanclub/login/login.html" class="btn">Bejelentkezés</a>
+    </div>
+  <?php endif; ?>
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
 </header>
 
 <div class="live-wrapper">
@@ -979,7 +1275,11 @@ $teamColorsJS = [
             <p id="loadingMsg" style="text-align:center; color:#666; padding: 20px;">Adatok betöltése...</p>
         </div>
 
+<<<<<<< HEAD
         <div id="postRaceStandings" style="display: none;">
+=======
+        <div id="postRaceStandings">
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
             <h2 style="color: #d4af37; text-align: center; font-size: 2rem; margin-bottom: 20px;"><i class="fas fa-trophy"></i> 2026 Versenyzői Bajnokság</h2>
             <table class="standings-table">
                 <thead><tr><th>Poz.</th><th>Versenyző</th><th>Csapat</th><th style="text-align:right;">Pontok</th></tr></thead>
@@ -988,8 +1288,13 @@ $teamColorsJS = [
         </div>
     </div>
     
+<<<<<<< HEAD
     <div class="chat-panel" id="chatPanel">
         <div class="chat-header" id="chatHeader">
+=======
+    <div class="chat-panel">
+        <div class="chat-header">
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
             <i class="fas fa-comments"></i> Paddock Élő Chat
         </div>
         
@@ -1029,6 +1334,7 @@ $teamColorsJS = [
 </div>
 
 <script>
+<<<<<<< HEAD
     // Team colors from PHP
     const teamColors = <?php echo json_encode($teamColorsJS); ?>;
     
@@ -1108,6 +1414,12 @@ $teamColorsJS = [
         }
     });
 
+=======
+    const rowHeight = 80; 
+    let isFetching = false;
+    let chatMessageCount = 0; 
+
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
     // USER PROFILE MODAL FUNCTIONS
     let currentModalUser = "";
     let currentFriendStatus = "";
@@ -1186,10 +1498,33 @@ $teamColorsJS = [
     function makeSafeStr(str) {
         return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
     }
+<<<<<<< HEAD
     
     function getTeamColor(teamName) {
         return teamColors[teamName] || '#ffffff';
     }
+=======
+
+    // DROPDOWN MENU TOGGLE
+    document.addEventListener('DOMContentLoaded', function() {
+        const dropdownContainer = document.getElementById('userDropdownContainer');
+        if (dropdownContainer) {
+            const welcomeDiv = dropdownContainer.querySelector('.welcome');
+            if (welcomeDiv) {
+                welcomeDiv.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    dropdownContainer.classList.toggle('open');
+                });
+            }
+            
+            document.addEventListener('click', function(e) {
+                if (!dropdownContainer.contains(e.target)) {
+                    dropdownContainer.classList.remove('open');
+                }
+            });
+        }
+    });
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
 
     // --- TELEMETRIA JS ---
     async function fetchData() {
@@ -1203,7 +1538,10 @@ $teamColorsJS = [
             catch(e) { document.getElementById('loadingMsg').innerHTML = '<span style="color:#e10600;">Hiba a szerver kommunikációban!</span>'; isFetching = false; return; }
 
             if (data && data.race) {
+<<<<<<< HEAD
                 window.lastRaceData = data;
+=======
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
                 renderRace(data);
                 if (data.race.status === 'running') {
                     let timeout = data.race.safety_car == "1" ? 15000 : 10000;
@@ -1258,8 +1596,11 @@ $teamColorsJS = [
 
             let wearColorClass = driver.tyre_wear > 60 ? 'wear-high' : '';
             let gap = ''; let posDisplay = ''; let statusHtml = '';
+<<<<<<< HEAD
             
             const teamColor = getTeamColor(driver.team_name);
+=======
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
 
             if (driver.status === 'DNF') {
                 posDisplay = '<span style="color:#e10600; font-size:1.3rem;">KI</span>';
@@ -1289,7 +1630,10 @@ $teamColorsJS = [
 
             row.style.transform = `translateY(${targetY}px)`;
             row.style.opacity = driver.status === 'DNF' ? '0.4' : '1';
+<<<<<<< HEAD
             row.style.borderLeftColor = teamColor;
+=======
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
 
             row.classList.remove('leader', 'sc-mode');
             if (driver.status !== 'DNF') {
@@ -1307,15 +1651,25 @@ $teamColorsJS = [
             row.innerHTML = `
                 <div class="pos-num">${posDisplay}</div>
                 <div class="driver-info">
+<<<<<<< HEAD
                     <div class="driver-pic-box" style="border-color: ${teamColor};"><img src="${imgPath}" class="driver-portrait" onerror="this.style.opacity=0;"></div>
                     <div style="display:flex; flex-direction:column; justify-content:center;">
                         <span class="driver-name" style="color: ${teamColor};">${driver.name}</span>
                         <span class="driver-abbr">${driver.abbreviation}</span>
+=======
+                    <div class="driver-pic-box"><img src="${imgPath}" class="driver-portrait" onerror="this.style.opacity=0;"></div>
+                    <div style="display:flex; flex-direction:column; justify-content:center;">
+                        <span class="driver-name">${driver.name}</span><span class="driver-abbr">${driver.abbreviation}</span>
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
                     </div>
                 </div>
                 <div class="driver-info">
                     <div class="team-logo-box"><img src="${logoPath}" class="team-logo-small" onerror="this.style.opacity=0;"></div>
+<<<<<<< HEAD
                     <span class="team-name" style="color: ${teamColor};">${driver.team_name}</span>
+=======
+                    <span class="team-name">${driver.team_name}</span>
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
                 </div>
                 <div class="tyre-container">
                     <div class="tyre-badge ${tyreClass}">${tyreLetter}</div>
@@ -1391,15 +1745,75 @@ $teamColorsJS = [
         loadChat(); 
     }
 
+    function renderStandings(standings) {
+        if (!standings || standings.length === 0) return;
+        document.getElementById('postRaceStandings').style.display = 'block';
+        const tbody = document.getElementById('standingsBody');
+        tbody.innerHTML = '';
+        standings.forEach(s => {
+            let tr = document.createElement('tr');
+            if(s.pos === 1) tr.style.background = 'linear-gradient(90deg, rgba(212,175,55,0.1), transparent)';
+            tr.innerHTML = `<td class="${s.pos === 1 ? 'champ-gold' : ''}">${s.pos}.</td><td style="font-weight:bold;">${s.name}</td><td style="color:#888;">${s.team}</td><td style="text-align:right; font-family:monospace; font-size:1.2rem; font-weight:bold;" class="${s.pos === 1 ? 'champ-gold' : ''}">${s.points} PONT</td>`;
+            tbody.appendChild(tr);
+        });
+    }
+
+    // --- CHAT JS ---
+    async function loadChat() {
+        try {
+            const res = await fetch('chat_api.php?_t=' + new Date().getTime());
+            const msgs = await res.json();
+            const box = document.getElementById('chatMessagesBox');
+            
+            if (msgs.length > chatMessageCount) {
+                box.innerHTML = '';
+                msgs.forEach(m => {
+                    box.innerHTML += `
+                        <div class="chat-msg">
+                            <img src="${m.profile_image}" class="clickable-user" onclick="openUserProfile('${makeSafeStr(m.username)}')" onerror="this.src='../drivers/default.png'" style="border-color: ${m.color}; width:35px; height:35px; border-radius:50%; object-fit: cover; border: 2px solid transparent;">
+                            <div class="chat-msg-body">
+                                <div class="chat-user-info">
+                                    <span class="chat-user-name clickable-user" onclick="openUserProfile('${makeSafeStr(m.username)}')" style="color:${m.color}; cursor:pointer;">${m.username}</span>
+                                    <span class="chat-time">${m.time}</span>
+                                </div>
+                                <div style="word-wrap: break-word;">${m.message}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+                box.scrollTop = box.scrollHeight; 
+                chatMessageCount = msgs.length;
+            }
+        } catch(e) { console.log("Chat error:", e); }
+    }
+
+    async function sendChat() {
+        const input = document.getElementById('chatInputMsg');
+        if(!input || input.value.trim() === '') return;
+        
+        let msg = input.value;
+        input.value = '';
+        
+        await fetch('chat_api.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ message: msg })
+        });
+        loadChat(); 
+    }
+
     fetchData();
     loadChat();
     setInterval(loadChat, 3000); 
+<<<<<<< HEAD
     
     window.addEventListener('resize', function() {
         if (window.lastRaceData) {
             renderRace(window.lastRaceData);
         }
     });
+=======
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
 </script>
 </body>
 </html>

@@ -40,6 +40,7 @@ $stmt->close();
 <html lang="hu">
 <head>
     <meta charset="UTF-8">
+<<<<<<< HEAD
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=1.0, viewport-fit=cover">
     <title>Üzenetek - F1 Fan Club</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -207,6 +208,62 @@ $stmt->close();
         .welcome-text { color: #ccc; }
         .welcome-text span { font-weight: 700; }
         
+=======
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Üzenetek - F1 Fan Club</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/messages.css?v=<?= time() ?>">
+    <style>
+        html, body { margin: 0; padding: 0; height: 100vh; overflow: hidden; }
+        .app-container { display: flex; flex-direction: column; height: 100vh; }
+        header { flex-shrink: 0; }
+        
+        /* ATOMBIZTOS KERESŐ STÍLUS BELEÉGETVE A HTML-BE */
+        .sidebar-header-safe {
+            padding: 20px;
+            background: #111118;
+            border-bottom: 1px solid #2a2a35;
+            min-height: 85px; 
+            flex-shrink: 0; 
+            position: relative;
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .sidebar-header-safe input {
+            width: 100%;
+            background: #202028;
+            border: 1px solid #333;
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            outline: none;
+            box-sizing: border-box;
+            height: 45px;
+        }
+        .sidebar-header-safe input:focus { border-color: #e10600; }
+
+        /* Dropdown menu styles */
+        .dropdown-container {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .welcome {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .welcome:hover {
+            background: rgba(225, 6, 0, 0.15);
+            border-color: #e10600;
+        }
+        
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
         .dropdown-menu-modern {
             position: absolute;
             top: calc(100% + 8px);
@@ -220,7 +277,11 @@ $stmt->close();
             opacity: 0;
             visibility: hidden;
             transform: translateY(-8px);
+<<<<<<< HEAD
             transition: all 0.2s;
+=======
+            transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
             z-index: 1050;
         }
         
@@ -239,6 +300,7 @@ $stmt->close();
             text-decoration: none;
             font-size: 0.9rem;
             font-weight: 500;
+<<<<<<< HEAD
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
         
@@ -247,6 +309,44 @@ $stmt->close();
         .dropdown-menu-modern i { width: 24px; color: #e10600; }
         .dropdown-arrow-icon { margin-left: 6px; font-size: 0.7rem; color: #e10600; }
         .dropdown-container.open .dropdown-arrow-icon { transform: rotate(180deg); }
+=======
+            transition: all 0.2s;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .dropdown-menu-modern a:last-child {
+            border-bottom: none;
+        }
+        
+        .dropdown-menu-modern a:hover {
+            background: rgba(225, 6, 0, 0.2);
+            color: white;
+            padding-left: 24px;
+        }
+        
+        .dropdown-menu-modern i {
+            width: 24px;
+            color: #e10600;
+            font-size: 1.1rem;
+        }
+        
+        .dropdown-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 6px 0;
+        }
+        
+        .dropdown-arrow-icon {
+            margin-left: 6px;
+            font-size: 0.7rem;
+            transition: transform 0.2s;
+            color: #e10600;
+        }
+        
+        .dropdown-container.open .dropdown-arrow-icon {
+            transform: rotate(180deg);
+        }
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
         
         .admin-badge {
             position: absolute;
@@ -258,6 +358,7 @@ $stmt->close();
             border-radius: 20px;
             font-weight: 600;
         }
+<<<<<<< HEAD
         
         .clickable-user { cursor: pointer; }
         .clickable-user:hover { opacity: 0.8; }
@@ -521,6 +622,19 @@ $stmt->close();
         .send-btn:hover { background: #ff1a00; transform: scale(1.05); }
         
         /* Modal */
+=======
+
+        .clickable-user {
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        
+        .clickable-user:hover {
+            opacity: 0.8;
+        }
+
+        /* User Modal Styles */
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
         .user-modal-overlay {
             display: none;
             position: fixed;
@@ -528,13 +642,21 @@ $stmt->close();
             left: 0;
             width: 100%;
             height: 100%;
+<<<<<<< HEAD
             background: rgba(0,0,0,0.85);
+=======
+            background: rgba(0, 0, 0, 0.85);
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
             backdrop-filter: blur(8px);
             z-index: 9999;
             justify-content: center;
             align-items: center;
         }
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
         .user-modal-content {
             background: linear-gradient(145deg, #111, #1a1a1a);
             width: 320px;
@@ -542,9 +664,22 @@ $stmt->close();
             border: 1px solid #e10600;
             padding: 20px;
             position: relative;
+<<<<<<< HEAD
             text-align: center;
         }
         
+=======
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            animation: popIn 0.3s ease;
+            text-align: center;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
         .user-modal-close {
             position: absolute;
             top: 12px;
@@ -555,9 +690,17 @@ $stmt->close();
             font-size: 1.3rem;
             cursor: pointer;
         }
+<<<<<<< HEAD
         
         .user-modal-close:hover { color: #e10600; }
         
+=======
+
+        .user-modal-close:hover {
+            color: #e10600;
+        }
+
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
         .user-modal-header img {
             width: 80px;
             height: 80px;
@@ -566,6 +709,7 @@ $stmt->close();
             object-fit: cover;
             margin-bottom: 10px;
         }
+<<<<<<< HEAD
         
         .user-modal-header h3 { margin-bottom: 5px; }
         
@@ -581,16 +725,41 @@ $stmt->close();
         .user-modal-body {
             margin: 15px 0;
             background: rgba(0,0,0,0.3);
+=======
+
+        .modal-role {
+            display: inline-block;
+            font-size: 0.7rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 10px;
+            border-radius: 20px;
+            margin-top: 5px;
+            color: #aaa;
+        }
+
+        .user-modal-body {
+            margin: 15px 0;
+            background: rgba(0, 0, 0, 0.3);
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
             padding: 12px;
             border-radius: 16px;
             text-align: left;
         }
+<<<<<<< HEAD
         
         .user-modal-body p { margin: 8px 0; color: #ccc; font-size: 0.85rem; }
         .user-modal-body i { width: 20px; color: #888; }
         
         .user-modal-footer { display: flex; gap: 10px; }
         
+=======
+
+        .user-modal-footer {
+            display: flex;
+            gap: 10px;
+        }
+
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
         .user-modal-footer button {
             flex: 1;
             padding: 10px;
@@ -598,12 +767,17 @@ $stmt->close();
             border-radius: 40px;
             cursor: pointer;
             font-weight: 600;
+<<<<<<< HEAD
             font-size: 0.8rem;
+=======
+            transition: all 0.2s;
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
         }
+<<<<<<< HEAD
         
         .btn-add-friend { background: #333; color: white; }
         .btn-send-msg { background: #e10600; color: white; }
@@ -787,6 +961,58 @@ $stmt->close();
                             <img src="/f1fanclub/uploads/<?php echo htmlspecialchars($profile_image); ?>" class="avatar clickable-user"
                                 alt="Profilkép" onclick="openUserProfile('<?php echo htmlspecialchars(addslashes($username)); ?>')"
                                 style="border-color: <?php echo htmlspecialchars($teamColor); ?>;">
+=======
+
+        .btn-add-friend {
+            background: #333;
+            color: white;
+        }
+
+        .btn-add-friend:hover {
+            background: #444;
+        }
+
+        .btn-send-msg {
+            background: #e10600;
+            color: white;
+        }
+
+        .btn-send-msg:hover {
+            background: #b00500;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header>
+        <div class="left-header">
+            <div class="logo-title">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg" alt="F1 Logo" style="height:40px; filter: brightness(0) invert(1);">
+                <span>Fan Club</span>
+            </div>
+        </div>
+
+        <nav style="margin: 20px 0; display: flex; align-items: center; gap: 20px;">
+            <a href="/f1fanclub/index.php" style="color:white; margin:0 10px;">Vissza a Főoldalra</a>
+            
+            <div style="position: relative;">
+                <input type="text" id="userSearchInput" placeholder="Felhasználó keresése..." autocomplete="off" oninput="searchUsers(this.value)" 
+                       style="width: 250px; background: #202028; border: 1px solid #333; color: #fff; padding: 8px 15px; border-radius: 20px; font-family: 'Poppins', sans-serif; outline: none;">
+                <div id="searchResults" class="search-results" style="top: calc(100% + 10px); left: 0; right: 0; min-width: 250px;"></div>
+            </div>
+        </nav>
+
+        <!-- DROPDOWN MENU - Updated from index.php -->
+        <?php if ($isLoggedIn): ?>
+            <div class="dropdown-container" id="userDropdownContainer">
+                <div class="auth">
+                    <div class="welcome" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <?php if ($profile_image): ?>
+                            <img src="/f1fanclub/uploads/<?php echo htmlspecialchars($profile_image); ?>" class="avatar clickable-user"
+                                alt="Profilkép" onclick="openUserProfile('<?php echo htmlspecialchars(addslashes($username)); ?>')"
+                                style="width:35px; height:35px; border-radius:50%; object-fit: cover; border: 2px solid <?php echo htmlspecialchars($teamColor); ?>;">
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
                         <?php endif; ?>
                         <span class="welcome-text">
                             <span class="clickable-user" onclick="openUserProfile('<?php echo htmlspecialchars(addslashes($username)); ?>')"
@@ -797,8 +1023,17 @@ $stmt->close();
                 </div>
                 
                 <div class="dropdown-menu-modern">
+<<<<<<< HEAD
                     <a href="/f1fanclub/profile/profile.php"><i class="fas fa-user-circle"></i> Profilom</a>
                     <a href="/f1fanclub/messages/messages.php"><i class="fas fa-envelope"></i> Üzenetek</a>
+=======
+                    <a href="/f1fanclub/profile/profile.php">
+                        <i class="fas fa-user-circle"></i> Profilom
+                    </a>
+                    <a href="/f1fanclub/messages/messages.php">
+                        <i class="fas fa-envelope"></i> Üzenetek
+                    </a>
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
                     <?php if ($isAdmin): ?>
                         <a href="/f1fanclub/admin/admin.php" style="position: relative;">
                             <i class="fas fa-shield-alt"></i> Admin Panel
@@ -806,7 +1041,13 @@ $stmt->close();
                         </a>
                     <?php endif; ?>
                     <div class="dropdown-divider"></div>
+<<<<<<< HEAD
                     <a href="/f1fanclub/logout/logout.php"><i class="fas fa-sign-out-alt"></i> Kijelentkezés</a>
+=======
+                    <a href="/f1fanclub/logout/logout.php">
+                        <i class="fas fa-sign-out-alt"></i> Kijelentkezés
+                    </a>
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
                 </div>
             </div>
         <?php else: ?>
@@ -817,6 +1058,7 @@ $stmt->close();
         <?php endif; ?>
     </header>
 
+<<<<<<< HEAD
     <div class="messenger-container">
         <div class="msg-sidebar">
             <!-- User search above friend list -->
@@ -841,6 +1083,23 @@ $stmt->close();
         <div class="chat-area">
             <div class="chat-header" id="chatHeader" style="display: none;">
                 <button class="back-btn" onclick="backToFriends()"><i class="fas fa-arrow-left"></i></button>
+=======
+    <div class="messenger-wrapper">
+        
+        <!-- BAL OLDALI SÁV -->
+        <div class="msg-sidebar">
+            
+            
+            <div class="friend-list" id="friendList">
+                <div style="color:#666; text-align:center; margin-top:20px;">Betöltés...</div>
+            </div>
+            
+        </div>
+
+        <!-- JOBB OLDALI CHAT SÁV -->
+        <div class="chat-area">
+            <div class="chat-header" id="chatHeader" style="display: none;">
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
                 <img src="" id="activeFriendImg" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
                 <h2 id="activeFriendName">Válassz partnert</h2>
             </div>
@@ -849,7 +1108,11 @@ $stmt->close();
                 <div class="empty-chat">
                     <i class="fas fa-comments"></i>
                     <h3>Nincs kiválasztott beszélgetés</h3>
+<<<<<<< HEAD
                     <p>Válassz egy barátot a bal oldali listából!</p>
+=======
+                    <p>Válassz egy barátot a bal oldali listából, hogy elkezdj csevegni!</p>
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
                 </div>
             </div>
 
@@ -863,6 +1126,7 @@ $stmt->close();
             </div>
         </div>
     </div>
+<<<<<<< HEAD
 
     <!-- User Profile Modal -->
     <div id="userProfileModal" class="user-modal-overlay" onclick="closeUserProfile(event)">
@@ -1154,5 +1418,267 @@ $stmt->close();
             if(!activePartner) loadFriends();
         }, 2000);
     </script>
+=======
+</div>
+
+<!-- POP-UP ABLAK -->
+<div id="userProfileModal" class="user-modal-overlay" onclick="closeUserProfile(event)">
+    <div class="user-modal-content" onclick="event.stopPropagation()">
+        <button class="user-modal-close" onclick="closeUserProfile(event)">&times;</button>
+        <div class="user-modal-header">
+            <img id="modalProfileImg" src="" alt="Avatar">
+            <h3 id="modalUsername">Felhasználónév</h3>
+            <span id="modalRole" class="modal-role">Szerepkör</span>
+        </div>
+        <div class="user-modal-body">
+            <p><i class="fas fa-flag-checkered" style="color:#888; width:20px;"></i> <strong>Csapat:</strong> <span id="modalTeam">Csapat</span></p>
+            <p><i class="far fa-calendar-alt" style="color:#888; width:20px;"></i> <strong>Regisztrált:</strong> <span id="modalRegDate">Dátum</span></p>
+        </div>
+        <div class="user-modal-footer">
+            <button id="modalFriendBtn" class="btn-add-friend" onclick="handleFriendAction()"><i class="fas fa-user-plus"></i> Barátnak jelölés</button>
+            <button class="btn-send-msg" onclick="startChatFromModal()"><i class="fas fa-comment"></i> Üzenet küldése</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let activePartner = null;
+    let messageCount = 0;
+    const currentUser = <?= json_encode($username) ?>;
+
+    function makeSafeStr(str) {
+        return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    }
+
+    function loadFriends() {
+        fetch('pm_api.php?action=get_friends')
+        .then(r => r.json())
+        .then(data => {
+            if(data.success) {
+                const list = document.getElementById('friendList');
+                if(data.friends.length === 0) {
+                    list.innerHTML = '<div style="color:#666; text-align:center; padding:20px; font-size:0.9rem;">Még nincsenek felvett barátaid. Keress egy felhasználót a fenti mezőben!</div>';
+                    return;
+                }
+                list.innerHTML = '';
+                data.friends.forEach(f => {
+                    const isActive = f.friend_name === activePartner ? 'active' : '';
+                    list.innerHTML += `
+                        <div class="friend-item ${isActive}" onclick="openChat('${makeSafeStr(f.friend_name)}', '${f.profile_image}', '${f.color}')">
+                            <img src="${f.profile_image}" class="friend-avatar" style="border-color: ${f.color}">
+                            <div class="friend-info">
+                                <div class="friend-name" style="color: ${f.color}">${f.friend_name}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+        });
+    }
+
+    function openChat(partnerName, partnerImg, partnerColor) {
+        activePartner = partnerName;
+        messageCount = 0; 
+        document.getElementById('chatHeader').style.display = 'flex';
+        document.getElementById('chatInputArea').style.display = 'flex';
+        document.getElementById('activeFriendName').innerText = partnerName;
+        document.getElementById('activeFriendName').style.color = partnerColor;
+        document.getElementById('activeFriendImg').src = partnerImg;
+        document.getElementById('activeFriendImg').style.border = `2px solid ${partnerColor}`;
+
+        loadFriends(); 
+        loadMessages(true); 
+    }
+
+    function loadMessages() {
+        if (!activePartner) return;
+        fetch('pm_api.php?action=get_messages&partner=' + encodeURIComponent(activePartner))
+        .then(r => r.json())
+        .then(data => {
+            if(data.success) {
+                if (data.messages.length !== messageCount) {
+                    const box = document.getElementById('chatBox');
+                    box.innerHTML = '';
+                    if(data.messages.length === 0) {
+                        box.innerHTML = '<div style="margin:auto; color:#666;">Itt kezdődik a beszélgetésed. Integess! 👋</div>';
+                    } else {
+                        data.messages.forEach(m => {
+                            const isMe = m.sender === currentUser;
+                            const rowClass = isMe ? 'me' : 'them';
+                            box.innerHTML += `
+                                <div class="message-row ${rowClass}">
+                                    <div class="message-bubble">${m.message}</div>
+                                    <div class="message-time">${m.time}</div>
+                                </div>
+                            `;
+                        });
+                    }
+                    messageCount = data.messages.length;
+                    box.scrollTop = box.scrollHeight;
+                }
+            }
+        });
+    }
+
+    function sendMessage() {
+        const input = document.getElementById('msgInput');
+        const msg = input.value.trim();
+        if (!msg || !activePartner) return;
+        input.value = '';
+
+        fetch('pm_api.php?action=send', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ receiver: activePartner, message: msg })
+        }).then(() => {
+            loadMessages(); 
+        });
+    }
+
+    function searchUsers(query) {
+        const resultsDiv = document.getElementById('searchResults');
+        if (query.length < 3) {
+            resultsDiv.style.display = 'none';
+            return;
+        }
+        
+        fetch('pm_api.php?action=search_users&term=' + encodeURIComponent(query))
+        .then(r => r.json())
+        .then(data => {
+            if(data.success && data.users.length > 0) {
+                resultsDiv.innerHTML = '';
+                data.users.forEach(u => {
+                    resultsDiv.innerHTML += `
+                        <div class="search-result-item" onclick="openUserProfile('${makeSafeStr(u.username)}')">
+                            <img src="${u.profile_image}" style="border-color: ${u.color}">
+                            <span style="color: ${u.color}; font-weight: 600;">${u.username}</span>
+                        </div>
+                    `;
+                });
+                resultsDiv.style.display = 'block';
+            } else {
+                resultsDiv.innerHTML = '<div style="padding: 10px; color: #888; text-align: center; font-size:0.9rem;">Nincs találat...</div>';
+                resultsDiv.style.display = 'block';
+            }
+        });
+    }
+
+    document.addEventListener('click', function(e) {
+        if(!e.target.closest('nav')) {
+            const resDiv = document.getElementById('searchResults');
+            if(resDiv) resDiv.style.display = 'none';
+        }
+    });
+
+    let currentModalUser = "";
+    let currentFriendStatus = "";
+
+    function openUserProfile(username) {
+        document.getElementById('searchResults').style.display = 'none';
+        document.getElementById('userSearchInput').value = '';
+
+        fetch('/f1fanclub/profile/user_profile_api.php?username=' + encodeURIComponent(username))
+        .then(r => r.json())
+        .then(data => {
+            if(data.success) {
+                currentModalUser = data.user.username;
+                currentFriendStatus = data.user.friendship_status;
+
+                document.getElementById('modalProfileImg').src = data.user.profile_image;
+                document.getElementById('modalProfileImg').style.borderColor = data.user.team_color;
+                document.getElementById('modalUsername').innerText = data.user.username;
+                document.getElementById('modalRole').innerText = data.user.role_name;
+                document.getElementById('modalTeam').innerText = data.user.fav_team || 'Nincs megadva';
+                document.getElementById('modalRegDate').innerText = data.user.reg_date;
+                
+                updateFriendButton(data.user.friendship_status);
+                document.getElementById('userProfileModal').style.display = 'flex';
+            } else {
+                alert("Hiba: " + data.error);
+            }
+        });
+    }
+
+    function closeUserProfile(e) {
+        if(e) e.stopPropagation();
+        document.getElementById('userProfileModal').style.display = 'none';
+    }
+
+    function updateFriendButton(status) {
+        const btn = document.getElementById('modalFriendBtn');
+        if(!btn) return;
+        btn.style.display = 'flex';
+        
+        if (status === 'self') {
+            btn.style.display = 'none'; 
+        } else if (status === 'none') {
+            btn.innerHTML = '<i class="fas fa-user-plus"></i> Barátnak jelölés';
+            btn.style.background = '#333';
+        } else if (status === 'pending_sent') {
+            btn.innerHTML = '<i class="fas fa-clock"></i> Elküldve (Visszavonás)';
+            btn.style.background = '#888';
+        } else if (status === 'pending_received') {
+            btn.innerHTML = '<i class="fas fa-check"></i> Jelölés elfogadása';
+            btn.style.background = '#28a745'; 
+        } else if (status === 'accepted') {
+            btn.innerHTML = '<i class="fas fa-user-minus"></i> Barát törlése';
+            btn.style.background = '#e10600'; 
+        }
+    }
+
+    function handleFriendAction() {
+        let action = '';
+        if (currentFriendStatus === 'none') action = 'add';
+        else if (currentFriendStatus === 'pending_sent' || currentFriendStatus === 'accepted') action = 'remove';
+        else if (currentFriendStatus === 'pending_received') action = 'accept';
+
+        if(!action) return;
+
+        fetch('/f1fanclub/profile/friend_api.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ action: action, target_user: currentModalUser })
+        }).then(r => r.json()).then(data => {
+            if(data.success) {
+                openUserProfile(currentModalUser);
+                loadFriends(); 
+            }
+        });
+    }
+
+    function startChatFromModal() {
+        closeUserProfile(); 
+        let img = document.getElementById('modalProfileImg').src;
+        let color = document.getElementById('modalProfileImg').style.borderColor;
+        openChat(currentModalUser, img, color);
+    }
+
+    // DROPDOWN MENU TOGGLE
+    document.addEventListener('DOMContentLoaded', function() {
+        const dropdownContainer = document.getElementById('userDropdownContainer');
+        if (dropdownContainer) {
+            const welcomeDiv = dropdownContainer.querySelector('.welcome');
+            if (welcomeDiv) {
+                welcomeDiv.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    dropdownContainer.classList.toggle('open');
+                });
+            }
+            
+            document.addEventListener('click', function(e) {
+                if (!dropdownContainer.contains(e.target)) {
+                    dropdownContainer.classList.remove('open');
+                }
+            });
+        }
+    });
+
+    loadFriends();
+    setInterval(() => {
+        loadMessages();
+        if(!activePartner) loadFriends(); 
+    }, 2000);
+</script>
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
 </body>
 </html>

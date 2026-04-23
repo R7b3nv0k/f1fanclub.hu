@@ -1272,6 +1272,7 @@ if ($hasPrediction && !empty($savedOrder)) {
     body.sortable-dragging .driver-item::after {
         display: none !important;
     }
+<<<<<<< HEAD
     /* Webkit browsers (Chrome, Safari, Edge) */
 ::-webkit-scrollbar {
     width: 6px;
@@ -1297,6 +1298,8 @@ if ($hasPrediction && !empty($savedOrder)) {
     scrollbar-width: thin;
     scrollbar-color: #e10600 #1a1a1a;
 }
+=======
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
   </style>
 </head>
 <body>

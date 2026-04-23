@@ -435,6 +435,7 @@ if ($resultAdmins && $resultAdmins->num_rows > 0) {
                 justify-content: center;
             }
         }
+<<<<<<< HEAD
         ::-webkit-scrollbar {
     width: 6px;
 }
@@ -448,6 +449,8 @@ if ($resultAdmins && $resultAdmins->num_rows > 0) {
     border-radius: 3px;
 }
 
+=======
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
     </style>
 </head>
 

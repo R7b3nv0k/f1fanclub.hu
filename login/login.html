@@ -8,8 +8,14 @@
   <title>Bejelentkezés – F1 Fan Club</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg">
+<<<<<<< HEAD
   <style>
     /* ===== TELJES RESET ÉS GLOBÁLIS STÍLUSOK ===== */
+=======
+  <link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg">
+  <style>
+    /* ===== TELJES RESET ÉS GLOBÁLIS STÍLUSOK (register.html-ből másolva) ===== */
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
     * {
       margin: 0;
       padding: 0;
@@ -66,7 +72,11 @@
       to { transform: translateX(-200px); }
     }
 
+<<<<<<< HEAD
     /* ----- bejelentkező doboz ----- */
+=======
+    /* ----- bejelentkező doboz – teljesen megegyezik a .register-box-szal ----- */
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
     .login-box {
       background: linear-gradient(145deg, #111111 0%, #1a1a1a 100%);
       padding: 50px 40px;
@@ -189,7 +199,11 @@
       transition: color 0.3s ease;
     }
 
+<<<<<<< HEAD
     /* input mezők */
+=======
+    /* input mezők - pontosan úgy, mint a register.html-ben */
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
     input[type="text"],
     input[type="password"],
     input[type="email"] {
@@ -277,7 +291,12 @@
       border-bottom-color: #e10600;
     }
 
+<<<<<<< HEAD
     /* ===== GOMB STÍLUSOK ===== */
+=======
+    /* ===== GOMB STÍLUSOK – MOST MÁR A TELJES REGISTER LOGIKÁVAL ===== */
+    /* Alapértelmezett (nem aktív) gomb – szürke, tiltott, pont mint a register.html-ben */
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
     .login-box input[type="submit"] {
       background: #333;
       color: #aaa;
@@ -299,7 +318,11 @@
       font-family: 'Poppins', sans-serif;
     }
 
+<<<<<<< HEAD
     /* Aktív gomb (valid állapot) */
+=======
+    /* Aktív gomb (valid állapot) – ugyanaz a látvány, mint a register.html valid gombja */
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
     .login-box input[type="submit"].valid {
       background: linear-gradient(145deg, #e10600, #ff4d4d);
       color: white;
@@ -364,6 +387,46 @@
       color: #e10600;
       transform: translateX(5px);
       text-shadow: 0 0 10px rgba(225, 6, 0, 0.5);
+<<<<<<< HEAD
+=======
+    }
+
+    /* slideInUp animáció */
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* reszponzív finomítás */
+    @media (max-width: 500px) {
+      body {
+        padding: 15px;
+      }
+      .login-box {
+        padding: 35px 25px;
+      }
+      .logo-title {
+        font-size: 26px;
+      }
+      .logo-title img {
+        width: 40px;
+      }
+      h2 {
+        font-size: 1.8rem;
+      }
+      input[type="text"],
+      input[type="password"],
+      .login-box input[type="submit"] {
+        padding: 12px 14px;
+        font-size: 1rem;
+      }
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
     }
 
     /* slideInUp animáció */
@@ -558,17 +621,28 @@
 
 <form class="login-box" id="loginForm" action="/f1fanclub/login/login.php" method="post">
   
+<<<<<<< HEAD
   <div class="logo-title">
     <img src="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg" alt="F1 Logo">
     <span>Fan Club</span>
   </div>
+=======
+
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
 
   <h2>BEJELENTKEZÉS</h2>
 
+<<<<<<< HEAD
   <div class="field-label">FELHASZNÁLÓNÉV</div>
   <input type="text" name="username" id="username" placeholder="pl.: hamiltonfan44" required>
 
   <div class="field-label">JELSZÓ</div>
+=======
+  <div class="field-label">Felhasználónév</div>
+  <input type="text" name="username" id="username" placeholder="pl.: hamiltonfan44" required>
+
+  <div class="field-label">Jelszó</div>
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
   <input type="password" name="password" id="password" placeholder="••••••••" required>
 
   <div class="checkbox-row">
@@ -579,7 +653,11 @@
     <a href="/f1fanclub/profile/forgot.php">Elfelejtett jelszó?</a>
   </div>
 
+<<<<<<< HEAD
   <input type="submit" value="BEJELENTKEZÉS" id="submitBtn">
+=======
+  <input type="submit" value="Bejelentkezem" id="submitBtn">
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
 
   <a href="/f1fanclub/index.php" class="back">← VISSZA A FŐOLDALRA</a>
   
@@ -591,6 +669,7 @@
     const password = document.getElementById('password');
     const submitBtn = document.getElementById('submitBtn');
     
+<<<<<<< HEAD
     function checkFormValidity() {
       const isUsernameValid = username.value.trim() !== '';
       const isPasswordValid = password.value.trim() !== '';
@@ -599,6 +678,20 @@
     
     function updateButtonState() {
       const isValid = checkFormValidity();
+=======
+    // Függvény ami ellenőrzi, hogy minden mező ki van-e töltve
+    function checkFormValidity() {
+      const isUsernameValid = username.value.trim() !== '';
+      const isPasswordValid = password.value.trim() !== '';
+      
+      return isUsernameValid && isPasswordValid;
+    }
+    
+    // Gomb állapotának frissítése
+    function updateButtonState() {
+      const isValid = checkFormValidity();
+      
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
       if (isValid) {
         submitBtn.classList.add('valid');
         submitBtn.disabled = false;
@@ -608,10 +701,21 @@
       }
     }
     
+<<<<<<< HEAD
     username.addEventListener('input', updateButtonState);
     password.addEventListener('input', updateButtonState);
     updateButtonState();
     
+=======
+    // Eseményfigyelők hozzáadása
+    username.addEventListener('input', updateButtonState);
+    password.addEventListener('input', updateButtonState);
+    
+    // Kezdeti állapot beállítása
+    updateButtonState();
+    
+    // Űrlap elküldésének megakadályozása, ha a gomb tiltott
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
     submitBtn.addEventListener('click', function(e) {
       if (!checkFormValidity()) {
         e.preventDefault();

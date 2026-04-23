@@ -1,10 +1,8 @@
 <?php
 session_start();
-// Hibaüzenetek bekapcsolása fejlesztés alatt
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Ha nincs bejelentkezve, dobja vissza a főoldalra
 if (!isset($_SESSION['username'])) {
     header("Location: index.php");
     exit;
@@ -21,6 +19,7 @@ if ($conn->connect_error) die("Hiba: " . $conn->connect_error);
 $username = $_SESSION['username'];
 $message = "";
 
+<<<<<<< HEAD
 // -------------------------------------------------------------
 // --- ÚJ: ADATOK MÓDOSÍTÁSÁNAK KÉRELMEZÉSE (E-MAIL KÜLDÉS) ---
 // -------------------------------------------------------------
@@ -91,6 +90,16 @@ $userIdResult = $userIdQuery->get_result();
 $userId = $userIdResult->fetch_assoc()['id'] ?? 0;
 $userIdQuery->close();
 
+=======
+// Get user ID from database
+$userIdQuery = $conn->prepare("SELECT id FROM users WHERE username=?");
+$userIdQuery->bind_param("s", $username);
+$userIdQuery->execute();
+$userIdResult = $userIdQuery->get_result();
+$userId = $userIdResult->fetch_assoc()['id'] ?? 0;
+$userIdQuery->close();
+
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
 // Upload handling
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['profile_image'])) {
     $target_dir = "../uploads/";
@@ -254,10 +263,17 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 <html lang="hu">
 <head>
     <meta charset="UTF-8">
+<<<<<<< HEAD
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>F1FC Super Licence - <?php echo htmlspecialchars($username); ?></title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+=======
+    <title>F1FC Super Licence - <?php echo htmlspecialchars($username); ?></title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/f1fanclub/css/style.css">
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
     <link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg">
     <style>
         * {
@@ -292,6 +308,7 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
             z-index: -1;
         }
 
+<<<<<<< HEAD
         .bg-lines {
             position: fixed;
             width: 200%;
@@ -530,6 +547,66 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 
         .fia-logo i { font-size: 2.5rem; }
 
+=======
+        /* SUPER LICENCE CARD */
+        .super-licence {
+            max-width: 1000px;
+            width: 90%;
+            margin: 40px auto 60px;
+            background: linear-gradient(145deg, #111111 0%, #0a0a0a 100%);
+            border-radius: 24px;
+            border: 2px solid;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+            transition: all 0.3s ease;
+        }
+
+        /* Holographic overlay */
+        .super-licence::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg,
+                transparent 40%,
+                rgba(225, 6, 0, 0.03) 50%,
+                transparent 60%);
+            transform: rotate(45deg);
+            animation: hologram 8s infinite linear;
+            pointer-events: none;
+        }
+
+        @keyframes hologram {
+            0% { transform: rotate(45deg) translateX(-50%); }
+            100% { transform: rotate(45deg) translateX(50%); }
+        }
+
+        /* Header */
+        .fia-header {
+            background: linear-gradient(135deg, #0a0a0a 0%, #151515 100%);
+            padding: 20px 30px;
+            border-bottom: 2px solid;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .fia-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .fia-logo i {
+            font-size: 2.5rem;
+        }
+
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
         .fia-logo h1 {
             font-size: 1.8rem;
             font-weight: 800;
@@ -555,6 +632,10 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
             letter-spacing: 1px;
         }
 
+<<<<<<< HEAD
+=======
+        /* Main Content */
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
         .licence-content {
             padding: 30px;
             display: flex;
@@ -562,6 +643,10 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
             flex-wrap: wrap;
         }
 
+<<<<<<< HEAD
+=======
+        /* Photo Section */
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
         .photo-section {
             flex: 0 0 220px;
             text-align: center;
@@ -605,7 +690,13 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
             border-radius: 8px;
         }
 
+<<<<<<< HEAD
         .photo-frame:hover .photo-overlay { opacity: 1; }
+=======
+        .photo-frame:hover .photo-overlay {
+            opacity: 1;
+        }
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
 
         .photo-overlay span {
             font-size: 0.8rem;
@@ -621,7 +712,14 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
             letter-spacing: 1px;
         }
 
+<<<<<<< HEAD
         .info-section { flex: 1; }
+=======
+        /* Info Section */
+        .info-section {
+            flex: 1;
+        }
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
 
         .info-row {
             display: flex;
@@ -653,6 +751,10 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
             vertical-align: middle;
         }
 
+<<<<<<< HEAD
+=======
+        /* Points Section - YELLOW (exception) */
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
         .points-section {
             background: rgba(0,0,0,0.3);
             border: 1px solid rgba(212, 175, 55, 0.3);
@@ -685,11 +787,19 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
             opacity: 0.7;
         }
 
+<<<<<<< HEAD
+=======
+        /* Rank styling */
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
         .rank-value {
             font-size: 1.8rem;
             font-weight: 800;
         }
 
+<<<<<<< HEAD
+=======
+        /* Security Features */
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
         .security-features {
             background: rgba(0,0,0,0.3);
             padding: 12px 30px;
@@ -721,8 +831,16 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
             opacity: 0.2;
         }
 
+<<<<<<< HEAD
         .signature { font-size: 0.65rem; }
 
+=======
+        .signature {
+            font-size: 0.65rem;
+        }
+
+        /* Buttons */
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
         .action-buttons {
             padding: 20px 30px 30px;
             display: flex;
@@ -747,6 +865,67 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
             background: rgba(225, 6, 0, 0.15);
             border: 1px solid rgba(225, 6, 0, 0.5);
             color: #e10600;
+<<<<<<< HEAD
+=======
+        }
+
+        .btn-primary:hover {
+            background: #e10600;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ccc;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(225, 6, 0, 0.2);
+            border-color: #e10600;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: rgba(225, 6, 0, 0.1);
+            border: 1px solid rgba(225, 6, 0, 0.3);
+            color: #ff6b6b;
+        }
+
+        .btn-danger:hover {
+            background: #e10600;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        /* Alert */
+        .alert {
+            margin: 20px 30px 0;
+            padding: 12px 20px;
+            background: rgba(225, 6, 0, 0.15);
+            border-left: 3px solid #e10600;
+            color: #ff6b6b;
+            font-size: 0.85rem;
+            border-radius: 8px;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 700px) {
+            .licence-content { flex-direction: column; align-items: center; }
+            .photo-section { flex: 0 0 auto; width: 180px; }
+            .info-row { flex-direction: column; gap: 5px; }
+            .info-label { width: auto; }
+            .fia-header { flex-direction: column; text-align: center; }
+            .super-licence { width: 95%; margin-top: 20px; }
+            .points-section { flex-direction: column; text-align: center; }
+            .rank-value { font-size: 1.3rem; }
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
         }
 
         .btn-primary:hover {
@@ -1155,6 +1334,7 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 
 <header>
     <div class="left-header">
+<<<<<<< HEAD
         <a href="/f1fanclub/index.php" class="logo-title">
             <img src="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg" alt="F1 Logo">
             <span>Fan Club</span>
@@ -1182,6 +1362,32 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
                         <img src="/f1fanclub/uploads/<?php echo htmlspecialchars($user['profile_image']); ?>" class="avatar clickable-user"
                             alt="Profilkép" onclick="openUserProfile('<?php echo htmlspecialchars(addslashes($username)); ?>')"
                             style="border: 2px solid <?php echo htmlspecialchars($teamColor); ?>;">
+=======
+        <div class="logo-title">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg" alt="F1 Logo">
+            <span>Fan Club</span>
+        </div>
+    </div>
+
+    <nav>
+        <a href="/f1fanclub/index.php">Kezdőlap</a>
+        <a href="/f1fanclub/Championship/championship.php">Bajnokság</a>
+        <a href="/f1fanclub/teams/teams.php">Csapatok</a>
+        <a href="/f1fanclub/drivers/drivers.php">Versenyzők</a>
+        <a href="/f1fanclub/news/feed.php">Paddock</a>
+        <a href="/f1fanclub/pitwall/pitwall.php"><i class="fas fa-trophy" style="margin-right: 5px;"></i> A Fal</a>
+    </nav>
+
+    <!-- DROPDOWN MENU -->
+    <?php if (isset($_SESSION['username'])): ?>
+        <div class="dropdown-container" id="userDropdownContainer">
+            <div class="auth">
+                <div class="welcome" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                    <?php if ($user['profile_image']): ?>
+                        <img src="/f1fanclub/uploads/<?php echo htmlspecialchars($user['profile_image']); ?>" class="avatar clickable-user"
+                            alt="Profilkép" onclick="openUserProfile('<?php echo htmlspecialchars(addslashes($username)); ?>')"
+                            style="width:35px; height:35px; border-radius:50%; object-fit: cover; border: 2px solid <?php echo htmlspecialchars($teamColor); ?>;">
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
                     <?php endif; ?>
                     <span class="welcome-text">
                         <span class="clickable-user" onclick="openUserProfile('<?php echo htmlspecialchars(addslashes($username)); ?>')"
@@ -1218,6 +1424,10 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
     <?php endif; ?>
 </header>
 
+<<<<<<< HEAD
+=======
+<!-- SUPER LICENCE CARD WITH TEAM COLOR -->
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
 <div class="super-licence" style="border-color: <?php echo $teamColor; ?>; box-shadow: 0 30px 60px rgba(0,0,0,0.8), 0 0 20px <?php echo $teamColor; ?>20;">
     <div class="fia-header" style="border-bottom: 2px solid <?php echo $teamColor; ?>;">
         <div class="fia-logo">
@@ -1281,7 +1491,16 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
                 <div class="info-label" style="color: <?php echo $teamColor; ?>;">KIÁLLÍTÁS DÁTUMA</div>
                 <div class="info-value"><?php echo date('Y. m. d.'); ?></div>
             </div>
+<<<<<<< HEAD
 
+=======
+            <div class="info-row">
+                <div class="info-label" style="color: <?php echo $teamColor; ?>;">LEJÁRAT DÁTUMA</div>
+                <div class="info-value"><?php echo date('Y. m. d.', strtotime('+5 years')); ?></div>
+            </div>
+
+            <!-- Points Section - YELLOW (exception from team color) -->
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
             <div class="points-section">
                 <div>
                     <div class="points-label"><i class="fas fa-trophy"></i> PITWALL PONTOK</div>
@@ -1339,6 +1558,7 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
     </div>
 </div>
 
+<<<<<<< HEAD
 <div class="settings-card" style="border-color: <?php echo $teamColor; ?>;">
     <h3><i class="fas fa-cog"></i> Biztonság és Adatmódosítás</h3>
     <p class="settings-desc">A változtatások megerősítéséhez e-mailt küldünk a fiókodhoz tartozó címre!</p>
@@ -1397,6 +1617,11 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
         }
 
         // Dropdown menu
+=======
+<script>
+    // DROPDOWN MENU TOGGLE
+    document.addEventListener('DOMContentLoaded', function() {
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
         const dropdownContainer = document.getElementById('userDropdownContainer');
         if (dropdownContainer) {
             const welcomeDiv = dropdownContainer.querySelector('.welcome');
@@ -1524,5 +1749,111 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
     }
 </script>
 
+<<<<<<< HEAD
+=======
+<style>
+    /* Modal Styles */
+    .user-modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(8px);
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+    }
+    .user-modal-content {
+        background: linear-gradient(145deg, #111, #1a1a1a);
+        width: 320px;
+        border-radius: 24px;
+        border: 1px solid #e10600;
+        padding: 20px;
+        position: relative;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        animation: popIn 0.3s ease;
+        text-align: center;
+    }
+    @keyframes popIn {
+        from { transform: scale(0.8); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+    .user-modal-close {
+        position: absolute;
+        top: 12px;
+        right: 15px;
+        background: none;
+        border: none;
+        color: #888;
+        font-size: 1.3rem;
+        cursor: pointer;
+    }
+    .user-modal-close:hover {
+        color: #e10600;
+    }
+    .user-modal-header img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        border: 3px solid #e10600;
+        object-fit: cover;
+        margin-bottom: 10px;
+    }
+    .modal-role {
+        display: inline-block;
+        font-size: 0.7rem;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 2px 10px;
+        border-radius: 20px;
+        margin-top: 5px;
+        color: #aaa;
+    }
+    .user-modal-body {
+        margin: 15px 0;
+        background: rgba(0, 0, 0, 0.3);
+        padding: 12px;
+        border-radius: 16px;
+        text-align: left;
+    }
+    .user-modal-footer {
+        display: flex;
+        gap: 10px;
+    }
+    .user-modal-footer button {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 40px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+    .btn-add-friend {
+        background: #333;
+        color: white;
+    }
+    .btn-add-friend:hover {
+        background: #444;
+    }
+    .btn-send-msg {
+        background: #e10600;
+        color: white;
+    }
+    .btn-send-msg:hover {
+        background: #b00500;
+    }
+    .clickable-user {
+        cursor: pointer;
+    }
+</style>
+
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
 </body>
 </html>

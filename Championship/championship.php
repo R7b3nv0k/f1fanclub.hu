@@ -1022,6 +1022,7 @@ if ($isLoggedIn) {
                 grid-template-columns: repeat(2, 1fr) !important;
             }
         }
+<<<<<<< HEAD
         /* Webkit browsers (Chrome, Safari, Edge) */
 ::-webkit-scrollbar {
     width: 6px;
@@ -1047,6 +1048,8 @@ if ($isLoggedIn) {
     scrollbar-width: thin;
     scrollbar-color: #e10600 #1a1a1a;
 }
+=======
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
     </style>
 </head>
 

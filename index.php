@@ -562,6 +562,17 @@ $liveStatus = ($resLive && $resLive->num_rows > 0) ? $resLive->fetch_assoc()['st
 
     .welcome img.avatar:hover {
         transform: scale(1.1);
+<<<<<<< HEAD
+=======
+    }
+
+    .welcome-text {
+        color: #ccc;
+    }
+
+    .welcome-text span {
+        font-weight: 700;
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
     }
 
     .welcome-text {

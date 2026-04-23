@@ -53,11 +53,17 @@ $conn->close();
 <html lang="hu">
 <head>
     <meta charset="UTF-8">
+<<<<<<< HEAD
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>Fiók Aktiválás – F1 Fan Club</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg">
     
+=======
+    <title>Fiók Aktiválás – F1 Fan Club</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg">
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
     <style>
         * {
             margin: 0;
@@ -79,6 +85,10 @@ $conn->close();
             padding: 20px;
         }
 
+<<<<<<< HEAD
+=======
+        /* F1-themed background with gradient */
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
         body::before {
             content: "";
             position: fixed;
@@ -92,6 +102,10 @@ $conn->close();
             z-index: -1;
         }
 
+<<<<<<< HEAD
+=======
+        /* Speed lines effect */
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
         .bg-lines {
             position: fixed;
             width: 200%;
@@ -130,6 +144,10 @@ $conn->close();
             text-align: center;
         }
 
+<<<<<<< HEAD
+=======
+        /* F1-inspired accent line */
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
         .card::before {
             content: "";
             position: absolute;
@@ -145,6 +163,10 @@ $conn->close();
             z-index: 2;
         }
 
+<<<<<<< HEAD
+=======
+        /* Glowing effect */
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
         .card::after {
             content: "";
             position: absolute;
@@ -190,8 +212,11 @@ $conn->close();
             gap: 12px;
             position: relative;
             z-index: 2;
+<<<<<<< HEAD
             flex-wrap: wrap;
             word-break: break-word;
+=======
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
         }
 
         .logo-title img {
@@ -228,7 +253,10 @@ $conn->close();
             letter-spacing: 3px;
             position: relative;
             display: inline-block;
+<<<<<<< HEAD
             word-break: break-word;
+=======
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
         }
 
         h2.success {
@@ -259,7 +287,10 @@ $conn->close();
             font-size: 1rem;
             line-height: 1.6;
             color: #ddd;
+<<<<<<< HEAD
             word-break: break-word;
+=======
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
         }
 
         .message strong {
@@ -281,8 +312,11 @@ $conn->close();
             transition: all 0.3s ease;
             border: 2px solid #e10600;
             box-shadow: 0 5px 15px rgba(225, 6, 0, 0.3);
+<<<<<<< HEAD
             position: relative;
             overflow: hidden;
+=======
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
         }
 
         .btn:hover {
@@ -295,6 +329,27 @@ $conn->close();
             transform: translateY(0);
         }
 
+<<<<<<< HEAD
+=======
+        .btn-secondary {
+            background: #333;
+            border-color: #555;
+            box-shadow: none;
+        }
+
+        .btn-secondary:hover {
+            background: #444;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Speed lines effect on button */
+        .btn {
+            position: relative;
+            overflow: hidden;
+        }
+
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
         .btn::before {
             content: "";
             position: absolute;
@@ -316,6 +371,7 @@ $conn->close();
             transform: rotate(45deg) translateY(-100%);
         }
 
+<<<<<<< HEAD
         .btn-secondary {
             background: #333;
             border-color: #555;
@@ -432,6 +488,26 @@ $conn->close();
     scrollbar-width: thin;
     scrollbar-color: #e10600 #1a1a1a;
 }
+=======
+        @media (max-width: 500px) {
+            .card {
+                padding: 35px 25px;
+            }
+            .logo-title {
+                font-size: 26px;
+            }
+            .logo-title img {
+                width: 40px;
+            }
+            h2 {
+                font-size: 1.6rem;
+            }
+            .btn {
+                padding: 12px 24px;
+                font-size: 0.9rem;
+            }
+        }
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
     </style>
 </head>
 <body>
@@ -461,6 +537,10 @@ $conn->close();
     <?php endif; ?>
 </div>
 
+<<<<<<< HEAD
+=======
+<!-- Font Awesome for icons -->
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 </body>

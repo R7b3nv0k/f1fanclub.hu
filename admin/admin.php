@@ -154,6 +154,7 @@ $pitwallUsers = $conn->query("
         
         * {
             box-sizing: border-box;
+<<<<<<< HEAD
         }
 
         /* Override body styles to match global */
@@ -216,12 +217,351 @@ $pitwallUsers = $conn->query("
             border-left: 4px solid var(--primary);
         }
 
+=======
+        }
+
+        /* Override body styles to match global */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(circle at 20% 50%, rgba(225, 6, 0, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(225, 6, 0, 0.05) 0%, transparent 50%);
+            background-color: var(--darker);
+        }
+
+        /* Update sidebar to match global dark theme */
+        .sidebar {
+            background: linear-gradient(180deg, #0a0a0a 0%, #111 100%);
+            border-right: 1px solid rgba(225, 6, 0, 0.3);
+        }
+
+        /* Update menu buttons */
+        .menu-btn {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .menu-btn i {
+            width: 24px;
+            font-size: 1rem;
+        }
+
+        .menu-btn:hover, .menu-btn.active {
+            background: linear-gradient(135deg, #e10600, #ff1a00);
+            color: white;
+            box-shadow: 0 4px 15px rgba(225, 6, 0, 0.4);
+        }
+
+        /* Update user panel */
+        .user-panel {
+            border-top: 1px solid rgba(225, 6, 0, 0.3);
+        }
+
+        .user-panel img {
+            border: 2px solid var(--primary);
+        }
+
+        /* Update cards to match global style */
+        .card {
+            background: linear-gradient(145deg, #111111 0%, #1a1a1a 100%);
+            border: 1px solid rgba(225, 6, 0, 0.3);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Update headers */
+        h2 {
+            color: var(--primary);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-left: 4px solid var(--primary);
+        }
+
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
         /* Update buttons */
         .btn {
             font-family: 'Poppins', sans-serif;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+<<<<<<< HEAD
+=======
+        }
+
+        .btn-ban {
+            background: #b30000;
+        }
+
+        .btn-ban:hover {
+            background: #ff0000;
+            transform: translateY(-2px);
+        }
+
+        .btn-unban {
+            background: #008f00;
+        }
+
+        .btn-unban:hover {
+            background: #00b300;
+            transform: translateY(-2px);
+        }
+
+        .btn-save {
+            background: #333;
+            border: 1px solid #555;
+        }
+
+        .btn-save:hover {
+            background: #555;
+            transform: translateY(-2px);
+        }
+
+        /* Update table styles */
+        th {
+            color: var(--primary);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+        }
+
+        td {
+            color: #ddd;
+        }
+
+        tr:hover {
+            background: rgba(225, 6, 0, 0.05);
+        }
+
+        /* Update race status */
+        .race-status {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            display: block;
+            text-shadow: 0 2px 10px rgba(225, 6, 0, 0.3);
+        }
+
+        /* Update large buttons */
+        .btn-large {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 50px;
+        }
+
+        .btn-large:hover {
+            transform: translateY(-3px);
+        }
+
+        .start {
+            background: #00d2be;
+            color: #000;
+        }
+
+        .stop {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .hard-stop {
+            background: #8b0000;
+            color: #fff;
+            border: 2px solid #ff4a4a;
+        }
+
+        /* Update alert styles */
+        .alert {
+            background: rgba(0, 210, 190, 0.1);
+            border: 1px solid #00d2be;
+            border-radius: 12px;
+            color: #00d2be;
+            font-weight: 600;
+        }
+
+        /* Update log items */
+        .log-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .log-action {
+            color: var(--primary);
+        }
+
+        /* Update select dropdown */
+        select {
+            background: #222;
+            color: white;
+            border: 1px solid #444;
+            border-radius: 6px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Update brand */
+        .brand {
+            color: #fff;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+
+        /* Update hr */
+        hr {
+            border-top: 1px solid rgba(225, 6, 0, 0.2);
+        }
+
+        /* Avatar images */
+        .user-panel img,
+        .card img[style*="width:30px"] {
+            border: 2px solid var(--primary);
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ff1a00;
+        }
+
+        /* =========================================
+           RESPONSIVE STYLES - ADDED ONLY THESE
+           ========================================= */
+        
+        /* Hamburger menu button */
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 10px;
+            z-index: 1001;
+            transition: color 0.3s ease;
+            position: fixed;
+            top: 15px;
+            right: 20px;
+        }
+
+        .hamburger:hover {
+            color: #e10600;
+        }
+
+        /* Mobile responsive styles */
+        @media (max-width: 992px) {
+            .hamburger {
+                display: block;
+            }
+            
+            .sidebar {
+                position: fixed;
+                left: -260px;
+                top: 0;
+                bottom: 0;
+                z-index: 1000;
+                transition: left 0.3s ease;
+            }
+            
+            .sidebar.open {
+                left: 0;
+            }
+            
+            .main-content {
+                width: 100%;
+                padding: 70px 15px 15px 15px;
+            }
+            
+            .card {
+                padding: 15px;
+                overflow-x: auto;
+            }
+            
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            
+            th, td {
+                padding: 8px 10px;
+                font-size: 0.75rem;
+            }
+            
+            .btn-large {
+                padding: 10px 20px;
+                font-size: 0.8rem;
+            }
+            
+            .control-btns {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .control-btns .btn-large {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .race-status {
+                font-size: 1.2rem;
+            }
+            
+            .log-item {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .log-item > div:last-child {
+                text-align: left;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .hamburger {
+                font-size: 24px;
+                top: 12px;
+                right: 15px;
+            }
+            
+            .main-content {
+                padding: 60px 10px 10px 10px;
+            }
+            
+            .brand {
+                font-size: 0.9rem;
+            }
+            
+            .brand img {
+                height: 22px;
+            }
+            
+            .menu-btn {
+                padding: 10px 12px;
+                font-size: 0.7rem;
+            }
+            
+            .menu-btn i {
+                font-size: 0.8rem;
+            }
+            
+            .card h3 {
+                font-size: 1rem;
+            }
+>>>>>>> f81424192996985be2da559c0f9a2c1f13f5eb7f
         }
 
         .btn-ban {
